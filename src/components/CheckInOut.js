@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime} from "luxon";
 import React, { useEffect, useState } from "react";
 import {
   Row,
@@ -72,7 +72,7 @@ const CheckInOut = ({ show, setShow, member }) => {
           update.hours = 1;
           minutes = 0;
         }
-        newDuration = { hours, minutes, seconds };
+        newDuration = { hours, minutes, seconds: seconds.toFixed(1) };
         update.duration = newDuration;
         update.finish = DateTime.local().plus(newDuration).toFormat("HH:mm:ss");
 
@@ -82,13 +82,6 @@ const CheckInOut = ({ show, setShow, member }) => {
         if (type === "minutes") {
           let { hours, seconds } = checkIn.duration;
           let minutes = value * checkIn.mileage;
-          if (seconds > 60) {
-            minutes += Math.floor(seconds / 60);
-            seconds = seconds % 60;
-          } else if (seconds === 60) {
-            minutes += 1;
-            seconds = 0;
-          }
           if (minutes > 60) {
             hours += Math.floor(minutes / 60);
             minutes = minutes % 60;
@@ -101,7 +94,7 @@ const CheckInOut = ({ show, setShow, member }) => {
             ...checkIn,
             [group]: {
               ...checkIn[group],
-              [type]: value,
+              [type]: Number(value),
             },
             duration: newDuration,
             finish: DateTime.local().plus(newDuration).toFormat("HH:mm:ss"),
@@ -128,7 +121,7 @@ const CheckInOut = ({ show, setShow, member }) => {
             ...checkIn,
             [group]: {
               ...checkIn[group],
-              [type]: value,
+              [type]: Number(value),
             },
             duration: newDuration,
             finish: DateTime.local().plus(newDuration).toFormat("HH:mm:ss"),
@@ -146,14 +139,14 @@ const CheckInOut = ({ show, setShow, member }) => {
             ...checkIn,
             [group]: {
               ...checkIn[group],
-              [type]: value,
+              [type]: Number(value),
             },
             pace: {
               minutes,
               seconds,
             },
             finish: DateTime.local()
-              .plus({ hours: value, minutes: durMin, seconds: durSec })
+              .plus({ hours: value, minues: durMin, seconds: durSec })
               .toFormat("HH:mm:ss"),
           });
         } else if (type === "minutes") {
@@ -166,7 +159,7 @@ const CheckInOut = ({ show, setShow, member }) => {
             ...checkIn,
             [group]: {
               ...checkIn[group],
-              [type]: value,
+              [type]: Number(value),
             },
             pace: {
               minutes,
@@ -186,7 +179,7 @@ const CheckInOut = ({ show, setShow, member }) => {
             ...checkIn,
             [group]: {
               ...checkIn[group],
-              [type]: value,
+              [type]: Number(value),
             },
             pace: {
               minutes,
@@ -220,7 +213,7 @@ const CheckInOut = ({ show, setShow, member }) => {
         paceSeconds = paceSeconds.toFixed(1);
         durationHours = Math.floor(durationHours);
         durationMinutes = Math.floor(durationMinutes);
-        durationSeconds = durationSeconds.toFixed(1);
+        durationSeconds = durationSeconds?.toFixed(1) || 0
         setCheckIn({
           ...checkIn,
           [group]: value,
