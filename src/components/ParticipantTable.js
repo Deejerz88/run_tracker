@@ -1,30 +1,48 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Form, FloatingLabel, InputGroup } from "react-bootstrap";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator.min.css";
-import {CheckInOut} from "./index.js";
+import { CheckInOut } from "./index.js";
+import axios from "axios";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
   const [member, setMember] = useState({});
-  const tableRef = useRef(null);
+  const [races, setRaces] = useState([]);
 
   // const getMembers = async (table) => {
-  //   const { data } = await axios.get("http://localhost:5000/member");
+  //   const { data } = await axios.get("/member");
   //   console.log("data", data);
   //   if (!data) return;
   //   table.setData(data);
   // };
 
-  useEffect(() => {
-    // getMembers();
-    const table = new Tabulator("#participantTable", {
-      ajaxURL: "http://localhost:5000/member",
-      layout: "fitColumns",
+  const getRaces = async () => {
+    const { data } = await axios.get("/race");
+    return data;
+  };
 
+  useEffect(() => {
+
+    const table = new Tabulator("#participant-table", {
+      ajaxURL: `/member/club/1127`,
+      layout: "fitColumns",
+      pagination: true,
+      paginationSize: 50,
       columns: [
-        { title: "ID", field: "id" },
-        { title: "First Name", field: "firstName" },
-        { title: "Last Name", field: "lastName" },
+        { title: "ID", field: "user_id" },
+        { title: "First Name", field: "first_name" },
+        { title: "Last Name", field: "last_name" },
+        { title: "checkIn", field: "checkIn", visible: false },
+        { title: "checkOut", field: "checkOut", visible: false },
+        {
+          title: "Checked In",
+          field: "checkedIn",
+        },
+        {
+          title: "Checked Out",
+          field: "checkedOut",
+        },
       ],
     });
     table.on("rowClick", (e, row) => {
@@ -36,13 +54,49 @@ const ParticipantTable = () => {
     table.on("tableBuilt", () => {
       // console.log("table built");
       // getMembers(table);
+    getRaces().then((data) => setRaces(data));
+
     });
   }, []);
+
+  const handleChange = async (e) => {
+    table.setData([])
+    console.log("e.target", e.target);
+    const { value } = e.target;
+    const [raceId, type] = value.split("-");
+    const eventIds = e.target.selectedOptions[0].dataset.eventids;
+    console.log("value", value, "raceId", raceId, "type", type);
+    const table = Tabulator.findTable("#participant-table")[0];
+    console.log("table", table);
+    // table.setData(
+    //   `/member/${type}/${raceId}/?eventIds=${eventIds}`
+    // );
+  };
 
   return (
     <>
       <CheckInOut show={showCheck} setShow={setShowCheck} member={member} />
-      <div id="participantTable" ref={tableRef} />
+      <InputGroup className="m-3 w-50">
+        <FloatingLabel label="Select Race">
+          <Form.Select
+            id="raceSelect"
+            aria-label="Default select example"
+            onChange={handleChange}
+          >
+            {races.map((race) => (
+              <option
+                key={race.id}
+                value={`${race.id}-${race.type}`}
+                data-eventids={race.eventIds}
+              >
+                {race.name}
+              </option>
+            ))}
+          </Form.Select>
+        </FloatingLabel>
+      </InputGroup>
+      <h1>Participants</h1>
+      <div className="m-3" id="participant-table" />
     </>
   );
 };

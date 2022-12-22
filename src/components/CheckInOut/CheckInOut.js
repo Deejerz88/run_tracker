@@ -42,7 +42,7 @@ const CheckInOut = ({ show, setShow, member }) => {
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{`${member.firstName} ${member.lastName}`}</Modal.Title>
+        <Modal.Title>{`${member.first_name} ${member.last_name}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Inputs
