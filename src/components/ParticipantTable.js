@@ -1,21 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator.min.css";
-import axios from "axios";
 import CheckInOut from "./CheckInOut.js";
-import { DateTime } from "luxon";
 
-const ParticipantTable = ({}) => {
+const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
   const [member, setMember] = useState({});
   const tableRef = useRef(null);
 
-  const getMembers = async (table) => {
-    const { data } = await axios.get("http://localhost:5000/member");
-    console.log("data", data);
-    if (!data) return;
-    table.setData(data);
-  };
+  // const getMembers = async (table) => {
+  //   const { data } = await axios.get("http://localhost:5000/member");
+  //   console.log("data", data);
+  //   if (!data) return;
+  //   table.setData(data);
+  // };
 
   useEffect(() => {
     // getMembers();

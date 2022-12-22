@@ -11,7 +11,6 @@ import {
   FloatingLabel,
   FormLabel,
 } from "react-bootstrap";
-import $ from "jquery";
 
 const CheckInOut = ({ show, setShow, member }) => {
   const [checkIn, setCheckIn] = useState({
