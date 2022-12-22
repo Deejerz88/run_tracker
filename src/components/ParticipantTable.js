@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator.min.css";
-import CheckInOut from "./CheckInOut.js";
+import {CheckInOut} from "./index.js";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
