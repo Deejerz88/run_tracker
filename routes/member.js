@@ -18,8 +18,9 @@ router.get("/:type/:id", async (req, res) => {
   mp = type == "race" ? mp : "club_members";
   let members = [];
   if (type === "race") {
-    data.forEach((event) => members.push(...event.participants));
+    data.forEach((event) => members.push(...(event.participants || [])));
   } else members = data.club_members;
+  if (!members.length) return res.json([]);
   members = members
     .map((member) => {
       const { user_id, first_name, last_name } = member.user;

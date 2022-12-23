@@ -22,15 +22,25 @@ const ParticipantTable = () => {
     return data;
   };
 
-  useEffect(() => {
+  const handleChange = async (e) => {
+    const table = Tabulator.findTable("#participant-table")[0];
+    console.log("e.target", e.target);
+    const { value } = e.target;
+    const [raceId, type] = value.split("-");
+    const eventIds = e.target.selectedOptions[0].dataset.eventids;
+    console.log("value", value, "raceId", raceId, "type", type);
+    console.log("table", table);
+    table.setData(`/member/${type}/${raceId}?eventIds=${eventIds}`);
+  };
 
+  useEffect(() => {
     const table = new Tabulator("#participant-table", {
       ajaxURL: `/member/club/1127`,
       layout: "fitColumns",
       pagination: true,
       paginationSize: 50,
       columns: [
-        { title: "ID", field: "user_id" },
+        { title: "ID", field: "user_id", visible: true },
         { title: "First Name", field: "first_name" },
         { title: "Last Name", field: "last_name" },
         { title: "checkIn", field: "checkIn", visible: false },
@@ -38,10 +48,16 @@ const ParticipantTable = () => {
         {
           title: "Checked In",
           field: "checkedIn",
+          maxWidth: 120,
+          hozAlign: "center",
+          headerHozAlign: "center",
         },
         {
           title: "Checked Out",
           field: "checkedOut",
+          maxWidth: 120,
+          hozAlign: "center",
+          headerHozAlign: "center",
         },
       ],
     });
@@ -54,24 +70,9 @@ const ParticipantTable = () => {
     table.on("tableBuilt", () => {
       // console.log("table built");
       // getMembers(table);
-    getRaces().then((data) => setRaces(data));
-
+      getRaces().then((data) => setRaces(data));
     });
   }, []);
-
-  const handleChange = async (e) => {
-    table.setData([])
-    console.log("e.target", e.target);
-    const { value } = e.target;
-    const [raceId, type] = value.split("-");
-    const eventIds = e.target.selectedOptions[0].dataset.eventids;
-    console.log("value", value, "raceId", raceId, "type", type);
-    const table = Tabulator.findTable("#participant-table")[0];
-    console.log("table", table);
-    // table.setData(
-    //   `/member/${type}/${raceId}/?eventIds=${eventIds}`
-    // );
-  };
 
   return (
     <>
