@@ -19,7 +19,14 @@ const participantSchema = new Schema({
       totalDuration: Number,
       avgPace: Number,
       attendance: [
-        { date: Date, duration: Number, mileage: Number, pace: Number },
+        {
+          date: Date,
+          duration: Number,
+          mileage: Number,
+          pace: Number,
+          checkedIn: Boolean,
+          checkedOut: Boolean,
+        },
       ],
     },
   ],

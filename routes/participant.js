@@ -16,23 +16,22 @@ router.get("/:type/:id", async (req, res) => {
   // console.log("data", data);
   // console.log("data", data);
   mp = type == "race" ? mp : "club_members";
-  let members = [];
+  let participants = [];
   if (type === "race") {
-    data.forEach((event) => members.push(...(event.participants || [])));
-  } else members = data.club_members;
-  if (!members.length) return res.json([]);
-  members = members
-    .map((member) => {
-      const { user_id, first_name, last_name } = member.user;
-      return {
-        user_id,
-        first_name,
-        last_name,
-      };
-    })
-    .filter((member) => member.user_id);
-  console.log("members", members);
-  res.json(members);
+    data.forEach((event) => participants.push(...(event.participants || [])));
+  } else participants = data.club_members;
+  if (!participants.length) return res.json([]);
+  participants = participants.map((participant) => {
+    const { user_id, first_name, last_name } = participant.user;
+    return {
+      user_id,
+      first_name,
+      last_name,
+    };
+  });
+  console.log("participants", participants);
+  res.json(participants)
 });
+
 
 export default router;

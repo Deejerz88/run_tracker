@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Row,
   Col,
@@ -12,10 +12,16 @@ import {
 import { DateTime } from "luxon";
 
 const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
+  const [activeKey, setActiveKey] = useState("in");
   return (
     <Form onSubmit={handleSubmit}>
-      <Accordion>
-        <Accordion.Item eventKey="0">
+      <Accordion
+        id="checkInOut"
+        defaultActiveKey="in"
+        onSelect={(val) => setActiveKey(val)}
+        name={activeKey}
+      >
+        <Accordion.Item eventKey="in">
           <Accordion.Header>Check In</Accordion.Header>
           <Accordion.Body>
             <Row>
@@ -28,6 +34,7 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       placeholder="Target Mileage"
                       value={checkIn.mileage || 3}
                       onChange={handleChange}
+                      name="in"
                     />
                   </FloatingLabel>
                 </InputGroup>
@@ -43,11 +50,12 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       return (
                         <FloatingLabel key={type} label={type}>
                           <Form.Control
-                            id={`${group}-${type}-in`}
+                            id={`${group}-${type}`}
                             type="number"
                             step={type === "seconds" ? 5 : 1}
                             value={checkIn[group][type]}
                             onChange={handleChange}
+                            name="in"
                           />
                         </FloatingLabel>
                       );
@@ -72,12 +80,13 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       .toFormat("HH:mm")
                   }
                   onChange={handleChange}
+                  name="in"
                 />
               </Col>
             </Row>
           </Accordion.Body>
         </Accordion.Item>
-        <Accordion.Item eventKey="1">
+        <Accordion.Item eventKey="out">
           <Accordion.Header>Check Out</Accordion.Header>
           <Accordion.Body>
             <Row>
@@ -90,6 +99,7 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       placeholder="Actual Mileage"
                       value={checkIn.mileage || 3}
                       onChange={handleChange}
+                      name="out"
                     />
                   </FloatingLabel>
                 </InputGroup>
@@ -105,11 +115,12 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       return (
                         <FloatingLabel key={type} label={type}>
                           <Form.Control
-                            id={`${group}-${type}-out`}
+                            id={`${group}-${type}`}
                             type="number"
                             step={type === "seconds" ? 5 : 1}
                             value={checkIn[group][type]}
                             onChange={handleChange}
+                            name="out"
                           />
                         </FloatingLabel>
                       );
@@ -134,14 +145,15 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                       .toFormat("HH:mm")
                   }
                   onChange={handleChange}
+                  name="out"
                 />
               </Col>
             </Row>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Button variant="primary" type="submit" className='m-3'>
-        Submit
+      <Button variant="primary" type="submit" className="m-3">
+        {activeKey === "in" ? "Check In" : "Check Out"}
       </Button>
     </Form>
   );

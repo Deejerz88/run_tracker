@@ -7,11 +7,12 @@ import axios from "axios";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
-  const [member, setMember] = useState({});
+  const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
+  const [table,setTable] = useState(null);
 
-  // const getMembers = async (table) => {
-  //   const { data } = await axios.get("/member");
+  // const getParticipants = async (table) => {
+  //   const { data } = await axios.get("/participant");
   //   console.log("data", data);
   //   if (!data) return;
   //   table.setData(data);
@@ -23,22 +24,18 @@ const ParticipantTable = () => {
   };
 
   const handleChange = async (e) => {
-    const table = Tabulator.findTable("#participant-table")[0];
-    console.log("e.target", e.target);
-    const { value } = e.target;
-    const [raceId, type] = value.split("-");
+    const [raceId, type] = e.target.value.split("-");
     const eventIds = e.target.selectedOptions[0].dataset.eventids;
-    console.log("value", value, "raceId", raceId, "type", type);
-    console.log("table", table);
-    table.setData(`/member/${type}/${raceId}?eventIds=${eventIds}`);
+    table.setData(`/participant/${type}/${raceId}?eventIds=${eventIds}`);
   };
 
   useEffect(() => {
     const table = new Tabulator("#participant-table", {
-      ajaxURL: `/member/club/1127`,
+      ajaxURL: `/participant/club/1127`,
       layout: "fitColumns",
       pagination: true,
       paginationSize: 50,
+      index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: true },
         { title: "First Name", field: "first_name" },
@@ -63,20 +60,21 @@ const ParticipantTable = () => {
     });
     table.on("rowClick", (e, row) => {
       console.log("rowClick", row);
-      setMember(row.getData());
+      setParticipant(row.getData());
       setShowCheck(true);
     });
 
     table.on("tableBuilt", () => {
       // console.log("table built");
-      // getMembers(table);
+      // getParticipants(table);
       getRaces().then((data) => setRaces(data));
     });
+    setTable(table);
   }, []);
 
   return (
     <>
-      <CheckInOut show={showCheck} setShow={setShowCheck} member={member} />
+      <CheckInOut show={showCheck} setShow={setShowCheck} participant={participant} table={table} />
       <InputGroup className="m-3 w-50">
         <FloatingLabel label="Select Race">
           <Form.Select

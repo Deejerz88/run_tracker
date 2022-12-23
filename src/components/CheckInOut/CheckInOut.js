@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
 
-const CheckInOut = ({ show, setShow, member }) => {
+const CheckInOut = ({ show, setShow, participant, event, table }) => {
   const [checkIn, setCheckIn] = useState({
     mileage: 3,
     pace: {
@@ -28,12 +28,12 @@ const CheckInOut = ({ show, setShow, member }) => {
   const handleClose = () => setShow(false);
 
   useEffect(() => {
-    console.log("member", member);
-    // if (member) {
-    //   setCheckIn(member.checkIn);
-    //   setCheckOut(member.checkOut);
+    console.log("participant", participant);
+    // if (participant) {
+    //   setCheckIn(participant.checkIn);
+    //   setCheckOut(participant.checkOut);
     // }
-  }, [member]);
+  }, [participant]);
 
   useEffect(() => {
     console.log("checkIn", checkIn);
@@ -42,13 +42,14 @@ const CheckInOut = ({ show, setShow, member }) => {
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{`${member.first_name} ${member.last_name}`}</Modal.Title>
+        <Modal.Title>{`${participant.first_name} ${participant.last_name}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Inputs
           checkIn={checkIn}
           handleChange={(e) => handleChange({ e, checkIn, setCheckIn })}
-          handleSubmit={(e) => handleSubmit({ e, checkIn, setCheckIn })}
+          handleSubmit={(e) => handleSubmit({ e, checkIn, setCheckIn, participant, event, table })}
+          table={table}
         />
       </Modal.Body>
     </Modal>

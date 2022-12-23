@@ -1,6 +1,6 @@
 import { DateTime, Duration } from "luxon";
 
-export default ({ e, checkIn, setCheckIn }) => {
+const handleChange = ({ e, checkIn, setCheckIn }) => {
   let { id, value } = e.target;
   let group = id.split("-")[0];
   let type = id.split("-")[1];
@@ -175,3 +175,5 @@ export default ({ e, checkIn, setCheckIn }) => {
       break;
   }
 };
+
+export default handleChange;
