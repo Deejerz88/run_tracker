@@ -39,8 +39,21 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                   </FloatingLabel>
                 </InputGroup>
               </Col>
+              <Col xs={6}>
+                <InputGroup className="mb-3">
+                  <FloatingLabel label="Start Time">
+                    <Form.Control
+                      id="start-time"
+                      type="time"
+                      value={checkIn.start || DateTime.now().toFormat("HH:mm")}
+                      onChange={handleChange}
+                      name="in"
+                    />
+                  </FloatingLabel>
+                </InputGroup>
+              </Col>
             </Row>
-            <Row>
+            <Row className='mb-3'>
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
                   <FormLabel>{group}</FormLabel>
@@ -66,22 +79,23 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
             </Row>
             <Row>
               <Col xs={6}>
-                <FormLabel>Estimated Return</FormLabel>
-                <Form.Control
-                  id="finish-target"
-                  type="time"
-                  value={
-                    checkIn.finish ||
-                    DateTime.now()
-                      .plus({
-                        minutes: checkIn.duration.minutes,
-                        seconds: checkIn.duration.seconds,
-                      })
-                      .toFormat("HH:mm")
-                  }
-                  onChange={handleChange}
-                  name="in"
-                />
+                <FloatingLabel label="Estimated Return">
+                  <Form.Control
+                    id="finish-target"
+                    type="time"
+                    value={
+                      checkIn.finish ||
+                      DateTime.now()
+                        .plus({
+                          minutes: checkIn.duration.minutes,
+                          seconds: checkIn.duration.seconds,
+                        })
+                        .toFormat("HH:mm")
+                    }
+                    onChange={handleChange}
+                    name="in"
+                  />
+                </FloatingLabel>
               </Col>
             </Row>
           </Accordion.Body>
@@ -103,6 +117,25 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     />
                   </FloatingLabel>
                 </InputGroup>
+              </Col>
+              <Col xs={6}>
+                <FloatingLabel label="Return Time">
+                  <Form.Control
+                    id="finish-actual"
+                    type="time"
+                    value={
+                      checkIn.finish ||
+                      DateTime.now()
+                        .plus({
+                          minutes: checkIn.duration.minutes,
+                          seconds: checkIn.duration.seconds,
+                        })
+                        .toFormat("HH:mm")
+                    }
+                    onChange={handleChange}
+                    name="out"
+                  />
+                </FloatingLabel>
               </Col>
             </Row>
             <Row>
@@ -128,26 +161,6 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                   </InputGroup>
                 </Col>
               ))}
-            </Row>
-            <Row>
-              <Col xs={6}>
-                <FormLabel>Actual Return</FormLabel>
-                <Form.Control
-                  id="finish-actual"
-                  type="time"
-                  value={
-                    checkIn.finish ||
-                    DateTime.now()
-                      .plus({
-                        minutes: checkIn.duration.minutes,
-                        seconds: checkIn.duration.seconds,
-                      })
-                      .toFormat("HH:mm")
-                  }
-                  onChange={handleChange}
-                  name="out"
-                />
-              </Col>
             </Row>
           </Accordion.Body>
         </Accordion.Item>

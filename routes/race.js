@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
   );
   console.log("data", data);
   const races = data.races.map((race) => {
-    const { race_id, name, events } = race.race;
+    const { race_id: id, name, events } = race.race;
     return {
-      id: race_id,
+      id,
       name,
       type: "race",
       eventIds: events.map((event) => event.event_id),

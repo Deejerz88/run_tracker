@@ -1,42 +1,47 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
+const durationSchema = new Schema({
+  hours: Number,
+  minutes: Number,
+  seconds: Number,
+});
+
+const paceSchema = new Schema({
+  minutes: Number,
+  seconds: Number,
+});
+
+const attendanceSchema = new Schema({
+  date: String,
+  mileage: Number,
+  start: String,
+  finish: String,
+  duration: durationSchema,
+  pace: paceSchema,
+  checkedIn: Boolean,
+  checkedOut: Boolean,
+});
+
+const raceSchema = new Schema({
+  id: Number,
+  name: String,
+  type: String,
+  attendance: [attendanceSchema],
+});
+
 const participantSchema = new Schema({
-  user_id: String,
-  fullName: String,
+  user_id: Number,
   firstName: String,
   lastName: String,
-  totalAttendance: Number,
-  totalMileage: Number,
-  totalDuration: Number,
-  avgPace: Number,
-  events: [
-    {
-      event_id: String,
-      name: String,
-      totalAttendance: Number,
-      totalMileage: Number,
-      totalDuration: Number,
-      avgPace: Number,
-      attendance: [
-        {
-          date: Date,
-          duration: Number,
-          mileage: Number,
-          pace: Number,
-          checkedIn: Boolean,
-          checkedOut: Boolean,
-        },
-      ],
-    },
-  ],
+  races: [raceSchema],
 });
 
 participantSchema.set("toJSON", { virtuals: true });
 
 participantSchema.virtual("totalAttendance").set(function () {
-  return this.events.reduce((total, event) => {
-    return total + event.totalAttendance;
+  return this.races.reduce((total, race) => {
+    return total + race.totalAttendance;
   }, 0);
 });
 
@@ -45,10 +50,10 @@ participantSchema.virtual("fullName").set(function () {
 });
 
 participantSchema.virtual("totalMileage").set(function () {
-  return this.events.reduce((total, event) => {
+  return this.races.reduce((total, race) => {
     return (
       total +
-      event.attendance.reduce((total, attendance) => {
+      race.attendance.reduce((total, attendance) => {
         return total + attendance.mileage;
       }, 0)
     );
@@ -56,10 +61,10 @@ participantSchema.virtual("totalMileage").set(function () {
 });
 
 participantSchema.virtual("totalDuration").set(function () {
-  return this.events.reduce((total, event) => {
+  return this.races.reduce((total, race) => {
     return (
       total +
-      event.attendance.reduce((total, attendance) => {
+      race.attendance.reduce((total, attendance) => {
         return total + attendance.duration;
       }, 0)
     );
@@ -70,24 +75,24 @@ participantSchema.virtual("avgPace").set(function () {
   return this.totalDuration / this.totalMileage;
 });
 
-participantSchema.virtual("events.totalAttendance").set(function () {
+participantSchema.virtual("races.totalAttendance").set(function () {
   return this.attendance.length;
 });
 
-participantSchema.virtual("events.totalMileage").set(function () {
+participantSchema.virtual("races.totalMileage").set(function () {
   return this.attendance.reduce((total, attendance) => {
     return total + attendance.mileage;
   }, 0);
 });
 
-participantSchema.virtual("events.totalDuration").set(function () {
+participantSchema.virtual("races.totalDuration").set(function () {
   return this.attendance.reduce((total, attendance) => {
     return total + attendance.duration;
   }, 0);
 });
 
-participantSchema.virtual("events.avgPace").set(function () {
+participantSchema.virtual("races.avgPace").set(function () {
   return this.totalDuration / this.totalMileage;
 });
 
-export default mongoose.model("Participant", participantSchema);
+export default mongoose.model("Participant", participantSchema, "Participant");

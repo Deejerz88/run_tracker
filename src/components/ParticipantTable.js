@@ -9,7 +9,8 @@ const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
   const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
-  const [table,setTable] = useState(null);
+  const [race, setRace] = useState({});
+  const [table, setTable] = useState(null);
 
   // const getParticipants = async (table) => {
   //   const { data } = await axios.get("/participant");
@@ -26,7 +27,9 @@ const ParticipantTable = () => {
   const handleChange = async (e) => {
     const [raceId, type] = e.target.value.split("-");
     const eventIds = e.target.selectedOptions[0].dataset.eventids;
+    const raceName = e.target.selectedOptions[0].innerText;
     table.setData(`/participant/${type}/${raceId}?eventIds=${eventIds}`);
+    setRace({ id: raceId, name: raceName, type, eventIds });
   };
 
   useEffect(() => {
@@ -67,14 +70,25 @@ const ParticipantTable = () => {
     table.on("tableBuilt", () => {
       // console.log("table built");
       // getParticipants(table);
-      getRaces().then((data) => setRaces(data));
+      getRaces().then((data) => {
+        console.log('data', data)
+        setRaces(data);
+        console.log("race", data[0]);
+        setRace(data[0]);
+      });
     });
     setTable(table);
   }, []);
 
   return (
     <>
-      <CheckInOut show={showCheck} setShow={setShowCheck} participant={participant} table={table} />
+      <CheckInOut
+        show={showCheck}
+        setShow={setShowCheck}
+        participant={participant}
+        table={table}
+        race={race}
+      />
       <InputGroup className="m-3 w-50">
         <FloatingLabel label="Select Race">
           <Form.Select
@@ -82,13 +96,13 @@ const ParticipantTable = () => {
             aria-label="Default select example"
             onChange={handleChange}
           >
-            {races.map((race) => (
+            {races.map((r) => (
               <option
-                key={race.id}
-                value={`${race.id}-${race.type}`}
-                data-eventids={race.eventIds}
+                key={r.id}
+                value={`${r.id}-${r.type}`}
+                data-eventids={r.eventIds}
               >
-                {race.name}
+                {r.name}
               </option>
             ))}
           </Form.Select>

@@ -1,16 +1,17 @@
 import express from "express";
 import axios from "axios";
-import _ from "lodash";
+import mongoose from "mongoose";
+import { Participant } from "../schemas/index.js";
 import "dotenv/config";
 
 const router = express.Router();
 
-router.get("/:type/:id", async (req, res) => {
-  const { type, id } = req.params;
+router.get("/:type/:raceId", async (req, res) => {
+  const { type, raceId } = req.params;
   const { eventIds } = req.query;
   let mp = type === "race" ? "participants" : "members";
-  console.log("type", type, "id", id, "mp", mp, "eventIds", eventIds);
-  const url = `https://runsignup.com/rest/${type}/${id}/${mp}?api_key=${process.env.RSU_KEY}&api_secret=${process.env.RSU_SECRET}&format=json&event_id=${eventIds}&results_per_page=2500`;
+  console.log("type", type, "raceId", raceId, "mp", mp, "eventIds", eventIds);
+  const url = `https://runsignup.com/rest/${type}/${raceId}/${mp}?api_key=${process.env.RSU_KEY}&api_secret=${process.env.RSU_SECRET}&format=json&event_id=${eventIds}&results_per_page=2500`;
   console.log("url", url);
   let { data } = await axios.get(url);
   // console.log("data", data);
@@ -30,8 +31,25 @@ router.get("/:type/:id", async (req, res) => {
     };
   });
   console.log("participants", participants);
-  res.json(participants)
+  res.json(participants);
 });
 
-
+router.post("/", async (req, res) => {
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const  participant  = req.body;
+  console.log("participant", participant);
+  const update = await Participant.findOneAndUpdate(
+    { user_id: participant.user_id },
+    participant,
+    {
+      upsert: true,
+      new: true,
+    }
+  );
+  console.log("update", update);
+  res.json(update);
+});
 export default router;

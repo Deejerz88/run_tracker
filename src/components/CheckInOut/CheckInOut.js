@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
 
-const CheckInOut = ({ show, setShow, participant, event, table }) => {
+const CheckInOut = ({ show, setShow, participant, race, table }) => {
   const [checkIn, setCheckIn] = useState({
     mileage: 3,
     pace: {
@@ -16,6 +16,7 @@ const CheckInOut = ({ show, setShow, participant, event, table }) => {
       minutes: 30,
       seconds: 0,
     },
+    start: null,
     finish: null,
   });
   const [checkOut, setCheckOut] = useState({
@@ -42,13 +43,15 @@ const CheckInOut = ({ show, setShow, participant, event, table }) => {
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{`${participant.first_name} ${participant.last_name}`}</Modal.Title>
+        <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Inputs
           checkIn={checkIn}
           handleChange={(e) => handleChange({ e, checkIn, setCheckIn })}
-          handleSubmit={(e) => handleSubmit({ e, checkIn, setCheckIn, participant, event, table })}
+          handleSubmit={(e) =>
+            handleSubmit({ e, checkIn, setCheckIn, participant, race, table })
+          }
           table={table}
         />
       </Modal.Body>
