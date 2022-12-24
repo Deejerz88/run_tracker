@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { startCase, mapKeys } from "lodash";
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import axios from "axios";
 
 const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
@@ -40,8 +40,15 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
         {
           date: DateTime.local().toISODate(),
           [`checked${startCase(activeKey)}`]: true,
-          pace: `${pace.minutes}:${pace.seconds}`,
-          duration: `${duration.hours}:${duration.minutes}:${duration.seconds}`,
+          pace: Duration.fromObject({
+            minutes: pace.minutes,
+            seconds: pace.seconds,
+          }).toFormat("mm:ss"),
+          duration: Duration.fromObject({
+            hours: duration.hours,
+            minutes: duration.minutes,
+            seconds: duration.seconds,
+          }).toFormat("hh:mm:ss"),
           start: start.time,
           finish: finish.actual || finish.target,
           mileage: mileage.actual || mileage.target,
@@ -52,7 +59,7 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
   console.log("participant", participant);
   const res = await axios.post("/participant", participant);
   if (res.statusText === "OK") {
-    console.log( "updated", res.data);
+    console.log("updated", res.data);
   }
 };
 

@@ -57,6 +57,17 @@ const ParticipantTable = () => {
       : renderToString(<BsXCircleFill color="red" />);
   };
 
+  const checkInOutMutator = (value, data, type, params, component) => {
+    const field = component.getField();
+    const selectedRace = $(`#race-select option:selected`).text();
+    const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
+    const today = DateTime.local().toISODate();
+    const bool = _.find(thisRace.attendance, (a) => a.date === today) || {
+      [field]: false,
+    };
+    return bool[field];
+  };
+
   useEffect(() => {
     if (!race.name) return;
     const table = Tabulator.findTable("#participant-table")[0];
@@ -92,6 +103,7 @@ const ParticipantTable = () => {
           hozAlign: "center",
           headerHozAlign: "center",
           formatter: checkInOutFormatter,
+          mutatorData: checkInOutMutator,
         },
         {
           title: "Checked Out",
@@ -100,6 +112,7 @@ const ParticipantTable = () => {
           hozAlign: "center",
           headerHozAlign: "center",
           formatter: checkInOutFormatter,
+          mutatorData: checkInOutMutator,
         },
       ],
     });
