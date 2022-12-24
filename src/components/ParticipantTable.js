@@ -1,9 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { renderToString } from "react-dom/server";
 import { Form, FloatingLabel, InputGroup } from "react-bootstrap";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator.min.css";
 import { CheckInOut } from "./index.js";
 import axios from "axios";
+import _ from "lodash";
+import { DateTime } from "luxon";
+import $ from "jquery";
+import {
+  BsFillCheckCircleFill,
+  BsXCircleFill,
+} from "react-icons/bs/index.esm.js";
+import { render } from "@testing-library/react";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
@@ -12,15 +21,16 @@ const ParticipantTable = () => {
   const [race, setRace] = useState({});
   const [table, setTable] = useState(null);
 
-  // const getParticipants = async (table) => {
-  //   const { data } = await axios.get("/participant");
-  //   console.log("data", data);
-  //   if (!data) return;
-  //   table.setData(data);
-  // };
-
   const getRaces = async () => {
     const { data } = await axios.get("/race");
+    return data;
+  };
+
+  const getParticipants = async (table) => {
+    const { data } = await axios.get("/participant");
+    console.log("participants", data);
+    table.updateData(data);
+    table.redraw(true);
     return data;
   };
 
@@ -28,13 +38,43 @@ const ParticipantTable = () => {
     const [raceId, type] = e.target.value.split("-");
     const eventIds = e.target.selectedOptions[0].dataset.eventids;
     const raceName = e.target.selectedOptions[0].innerText;
-    table.setData(`/participant/${type}/${raceId}?eventIds=${eventIds}`);
     setRace({ id: raceId, name: raceName, type, eventIds });
+    // table.setData(`/participant/${type}/${raceId}?eventIds=${eventIds}`);
+    // getParticipants(table);
+  };
+
+  const checkInOutFormatter = (cell) => {
+    const data = cell.getRow().getData();
+    const field = cell.getField();
+    const selectedRace = $(`#race-select option:selected`).text();
+    const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
+    const today = DateTime.local().toISODate();
+    const bool = _.find(thisRace.attendance, (a) => a.date === today) || {
+      [field]: false,
+    };
+    return bool[field]
+      ? renderToString(<BsFillCheckCircleFill color="green" />)
+      : renderToString(<BsXCircleFill color="red" />);
   };
 
   useEffect(() => {
+    if (!race.name) return;
+    const table = Tabulator.findTable("#participant-table")[0];
+    table
+      .setData(`/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`)
+      .then(() => {
+        console.log("race", race);
+        getParticipants(table);
+      });
+  }, [race]);
+
+  useEffect(() => {
+    getRaces().then((data) => {
+      console.log("data", data);
+      setRaces(data);
+      setRace(data[0]);
+    });
     const table = new Tabulator("#participant-table", {
-      ajaxURL: `/participant/club/1127`,
       layout: "fitColumns",
       pagination: true,
       paginationSize: 50,
@@ -51,6 +91,7 @@ const ParticipantTable = () => {
           maxWidth: 120,
           hozAlign: "center",
           headerHozAlign: "center",
+          formatter: checkInOutFormatter,
         },
         {
           title: "Checked Out",
@@ -58,6 +99,7 @@ const ParticipantTable = () => {
           maxWidth: 120,
           hozAlign: "center",
           headerHozAlign: "center",
+          formatter: checkInOutFormatter,
         },
       ],
     });
@@ -68,16 +110,8 @@ const ParticipantTable = () => {
     });
 
     table.on("tableBuilt", () => {
-      // console.log("table built");
-      // getParticipants(table);
-      getRaces().then((data) => {
-        console.log('data', data)
-        setRaces(data);
-        console.log("race", data[0]);
-        setRace(data[0]);
-      });
+      setTable(table);
     });
-    setTable(table);
   }, []);
 
   return (
@@ -92,7 +126,7 @@ const ParticipantTable = () => {
       <InputGroup className="m-3 w-50">
         <FloatingLabel label="Select Race">
           <Form.Select
-            id="raceSelect"
+            id="race-select"
             aria-label="Default select example"
             onChange={handleChange}
           >

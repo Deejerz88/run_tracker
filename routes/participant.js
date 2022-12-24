@@ -12,11 +12,10 @@ router.get("/:type/:raceId", async (req, res) => {
   let mp = type === "race" ? "participants" : "members";
   console.log("type", type, "raceId", raceId, "mp", mp, "eventIds", eventIds);
   const url = `https://runsignup.com/rest/${type}/${raceId}/${mp}?api_key=${process.env.RSU_KEY}&api_secret=${process.env.RSU_SECRET}&format=json&event_id=${eventIds}&results_per_page=2500`;
-  console.log("url", url);
   let { data } = await axios.get(url);
   // console.log("data", data);
   // console.log("data", data);
-  mp = type == "race" ? mp : "club_members";
+  mp = type === "race" ? mp : "club_members";
   let participants = [];
   if (type === "race") {
     data.forEach((event) => participants.push(...(event.participants || [])));
@@ -30,9 +29,18 @@ router.get("/:type/:raceId", async (req, res) => {
       last_name,
     };
   });
-  console.log("participants", participants);
   res.json(participants);
 });
+
+router.get('/', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const participants = await Participant.find({});
+  res.json(participants);
+});
+
 
 router.post("/", async (req, res) => {
   mongoose.connect(process.env.MONGO_URI, {
@@ -40,7 +48,6 @@ router.post("/", async (req, res) => {
     useUnifiedTopology: true,
   });
   const  participant  = req.body;
-  console.log("participant", participant);
   const update = await Participant.findOneAndUpdate(
     { user_id: participant.user_id },
     participant,
@@ -49,7 +56,6 @@ router.post("/", async (req, res) => {
       new: true,
     }
   );
-  console.log("update", update);
   res.json(update);
 });
 export default router;

@@ -25,36 +25,35 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
     const group = id.split("-")[0];
     const type = id.split("-")[1];
     data[group][type] =
-      group === "start" || group === "finish" ? value : Number(value);
+      group === "start" || group === "finish"
+        ? DateTime.fromFormat(value, "HH:mm").toMillis()
+        : Number(value);
   });
   console.log("data", data);
   table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
-  participant = mapKeys(participant, (value, key) => {
-    return key.replace(/_n/g, "N");
-  });
   // console.log("participant", participant);
+  const { pace, duration, start, finish, mileage } = data;
   participant.races = [
     {
       ...race,
       attendance: [
         {
           date: DateTime.local().toISODate(),
-          ...data,
-          start: data.start.time,
-          finish: data.finish.actual || data.finish.target,
-          mileage: data.mileage.actual || data.mileage.target,
+          [`checked${startCase(activeKey)}`]: true,
+          pace: `${pace.minutes}:${pace.seconds}`,
+          duration: `${duration.hours}:${duration.minutes}:${duration.seconds}`,
+          start: start.time,
+          finish: finish.actual || finish.target,
+          mileage: mileage.actual || mileage.target,
         },
       ],
     },
   ];
   console.log("participant", participant);
   const res = await axios.post("/participant", participant);
-
-  console.log("res", res);
   if (res.statusText === "OK") {
-    console.log(participant.name, "updated", res.data);
+    console.log( "updated", res.data);
   }
 };
 
 export default handleSubmit;
- 
