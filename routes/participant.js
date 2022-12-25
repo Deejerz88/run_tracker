@@ -48,6 +48,7 @@ router.post("/", async (req, res) => {
     useUnifiedTopology: true,
   });
   const update = req.body;
+  console.log('update', update.races[0].attendance[0])
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
   // console.log("raceUpdate", raceUpdate, "attendanceUpdate", attendanceUpdate);

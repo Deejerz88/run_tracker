@@ -27,6 +27,7 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
   });
   // table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
   // console.log("participant", participant);
+  console.log("data", data);
   const { pace, duration, start, finish, mileage } = data;
   participant.races = [
     {
@@ -35,15 +36,8 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
         {
           date: DateTime.local().toISODate(),
           [`checked${startCase(activeKey)}`]: true,
-          pace: Duration.fromObject({
-            minutes: pace.minutes,
-            seconds: pace.seconds,
-          }).toFormat("mm:ss"),
-          duration: Duration.fromObject({
-            hours: duration.hours,
-            minutes: duration.minutes,
-            seconds: duration.seconds,
-          }).toFormat("hh:mm:ss"),
+          pace,
+          duration,
           start: start.time,
           finish: finish.actual || finish.target,
           mileage: mileage.actual || mileage.target,
