@@ -30,7 +30,7 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
         : Number(value);
   });
   console.log("data", data);
-  table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
+  // table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
   // console.log("participant", participant);
   const { pace, duration, start, finish, mileage } = data;
   participant.races = [

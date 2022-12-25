@@ -3,6 +3,7 @@ import axios from "axios";
 import mongoose from "mongoose";
 import { Participant } from "../schemas/index.js";
 import "dotenv/config";
+import _ from "lodash";
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.get("/:type/:raceId", async (req, res) => {
   res.json(participants);
 });
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -41,21 +42,42 @@ router.get('/', async (req, res) => {
   res.json(participants);
 });
 
-
 router.post("/", async (req, res) => {
   mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  const  participant  = req.body;
-  const update = await Participant.findOneAndUpdate(
-    { user_id: participant.user_id },
-    participant,
-    {
-      upsert: true,
-      new: true,
+  const update = req.body;
+  const raceUpdate = update.races[0];
+  const attendanceUpdate = raceUpdate.attendance[0];
+  // console.log("raceUpdate", raceUpdate, "attendanceUpdate", attendanceUpdate);
+  const doc = await Participant.findOne({ user_id: update.user_id });
+  if (doc) {
+    // console.log("doc", doc);
+    const { races } = doc;
+    let race = _.pickBy(races, (r) => r.id === raceUpdate.id)[0];
+    // console.log("race", race);
+    if (race) {
+      const { attendance } = race;
+      let attendanceInd = _.findIndex(
+        attendance,
+        (a) => a.date === attendanceUpdate.date
+      );
+      console.log('attendanceInd', attendanceInd)
+      if (attendanceInd > -1) {
+        attendance[attendanceInd] = attendanceUpdate;
+      } else attendance.push(attendanceUpdate);
+      doc.save();
+    } else {
+      race = raceUpdate;
     }
-  );
-  res.json(update);
+
+    console.log("race", race, "doc", doc.races[0].attendance[0]);
+    console.log("updated doc", doc);
+  } else {
+    const participant = new Participant(update);
+    const updatedDoc = await participant.save();
+    res.json(updatedDoc);
+  }
 });
 export default router;
