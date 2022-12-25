@@ -21,8 +21,8 @@ const attendanceSchema = new Schema({
   finish: Number,
   duration: durationSchema,
   pace: paceSchema,
-  checkedIn: Boolean,
-  checkedOut: Boolean,
+  checkedIn: { type: Boolean, default: () => false },
+  checkedOut: { type: Boolean, default: () => false },
 });
 
 const raceSchema = new Schema({
@@ -54,19 +54,16 @@ raceSchema.pre("save", function (next) {
     const { hours, minutes, seconds } = a.duration;
     return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
   });
-  console.log("durationMinutes", durationMinutes);
   this.avgPace = Duration.fromObject({
     minutes: durationMinutes / this.totalMileage,
   })
     .shiftTo("minutes", "seconds")
     .toObject();
-  console.log("this.avgPace", this.avgPace);
   this.totalDuration = Duration.fromObject({
     minutes: durationMinutes,
   })
     .shiftTo("hours", "minutes", "seconds")
     .toObject();
-  console.log("this.totalDuration", this.totalDuration);
   next();
 });
 
@@ -74,7 +71,7 @@ participantSchema.pre("save", function (next) {
   this.totalAttendance = _.sumBy(this.races, "totalAttendance");
   this.totalMileage = _.sumBy(this.races, "totalMileage");
   const durationMinutes = _.sumBy(this.races, (r) => {
-    const {hours, minutes, seconds} = r.totalDuration
+    const { hours, minutes, seconds } = r.totalDuration;
     return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
   });
   this.avgPace = Duration.fromObject({

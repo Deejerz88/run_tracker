@@ -53,7 +53,7 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                 </InputGroup>
               </Col>
             </Row>
-            <Row className='mb-3'>
+            <Row className="mb-3">
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
                   <FormLabel>{group}</FormLabel>
@@ -66,7 +66,11 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                             id={`${group}-${type}`}
                             type="number"
                             step={type === "seconds" ? 5 : 1}
-                            value={checkIn[group][type]}
+                            value={
+                              type === "seconds"
+                                ? checkIn[group][type]?.toFixed(1)
+                                : checkIn[group][type]
+                            }
                             onChange={handleChange}
                             name="in"
                           />

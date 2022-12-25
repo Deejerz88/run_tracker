@@ -48,33 +48,33 @@ router.post("/", async (req, res) => {
     useUnifiedTopology: true,
   });
   const update = req.body;
-  console.log('update', update.races[0].attendance[0])
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
-  // console.log("raceUpdate", raceUpdate, "attendanceUpdate", attendanceUpdate);
   const doc = await Participant.findOne({ user_id: update.user_id });
   if (doc) {
-    // console.log("doc", doc);
     const { races } = doc;
     let race = _.pickBy(races, (r) => r.id === raceUpdate.id)[0];
-    // console.log("race", race);
     if (race) {
       const { attendance } = race;
       let attendanceInd = _.findIndex(
         attendance,
         (a) => a.date === attendanceUpdate.date
       );
-      console.log('attendanceInd', attendanceInd)
       if (attendanceInd > -1) {
-        attendance[attendanceInd] = attendanceUpdate;
-      } else attendance.push(attendanceUpdate);
+        attendance[attendanceInd] = {
+          ...attendanceUpdate,
+          start: attendanceUpdate.start || attendance[attendanceInd].start,
+          finish: attendanceUpdate.finish || attendance[attendanceInd].finish,
+          checkedIn:
+            attendanceUpdate.checkedIn || attendance[attendanceInd].checkedIn,
+          checkedOut:
+            attendanceUpdate.checkedOut || attendance[attendanceInd].checkedOut,
+        };
+      } else attendance.push({ ...attendanceUpdate });
       doc.save();
     } else {
       race = raceUpdate;
     }
-
-    console.log("race", race, "doc", doc.races[0].attendance[0]);
-    console.log("updated doc", doc);
   } else {
     const participant = new Participant(update);
     const updatedDoc = await participant.save();
