@@ -12,7 +12,6 @@ import {
   BsFillCheckCircleFill,
   BsXCircleFill,
 } from "react-icons/bs/index.esm.js";
-import { render } from "@testing-library/react";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);

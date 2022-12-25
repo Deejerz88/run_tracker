@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { startCase, mapKeys } from "lodash";
+import { startCase } from "lodash";
 import { DateTime, Duration } from "luxon";
 import axios from "axios";
 
@@ -9,9 +9,6 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
   console.log("race", race);
   const activeKey = $("#checkInOut").attr("name");
   const fields = $(`input[name=${activeKey}]`);
-  const { user_id } = participant;
-  console.log("participant", participant);
-  console.log("fields", fields);
   const data = {
     duration: {},
     pace: {},
@@ -21,7 +18,6 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
   };
   fields.each((i, field) => {
     const { id, value } = field;
-    console.log("id", id, "value", value);
     const group = id.split("-")[0];
     const type = id.split("-")[1];
     data[group][type] =
@@ -29,7 +25,6 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
         ? DateTime.fromFormat(value, "HH:mm").toMillis()
         : Number(value);
   });
-  console.log("data", data);
   // table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
   // console.log("participant", participant);
   const { pace, duration, start, finish, mileage } = data;
@@ -56,7 +51,6 @@ const handleSubmit = async ({ e, checkIn, participant, table, race }) => {
       ],
     },
   ];
-  console.log("participant", participant);
   const res = await axios.post("/participant", participant);
   if (res.statusText === "OK") {
     console.log("updated", res.data);
