@@ -1,4 +1,3 @@
-import ParticipantTable from "./ParticipantTable.js";
-import CheckInOut from "./CheckInOut/CheckInOut.js";
+import ParticipantTable from "./ParticipantTable/ParticipantTable.js";
 
-export { ParticipantTable, CheckInOut };
+export { ParticipantTable };
