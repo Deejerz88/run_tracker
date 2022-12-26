@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab } from "react-bootstrap";
+import { Modal, Tabs, Tab, Row, Col } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
 import { DateTime } from "luxon";
+import { BsThreeDotsVertical } from "react-icons/bs/index.esm.js";
 
 const CheckInOut = ({
   show,
@@ -51,7 +52,7 @@ const CheckInOut = ({
     if (!participant.user_id || !race.id || !table) return;
     console.log("participant", participant);
     if (!participant?.races || !race) return;
-    const thisRace = participant.races.find((r) => r.id === race.id);
+    const thisRace = participant.races.find((r) => r?.id === race.id);
     console.log("thisRace", thisRace);
     if (!thisRace) return;
     const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
@@ -113,6 +114,72 @@ const CheckInOut = ({
           </Tab>
           <Tab eventKey="stats" title="Stats">
             <h1>Stats</h1>
+            <Row className="stats-row">
+              <h4>Overall</h4>
+              <Col>
+                <h5>Mileage</h5>
+                <p>Total: {participant.totalMileage}</p>
+                <p>Average: {participant.avgMileage}</p>
+              </Col>
+              <Col>
+                <h5>Duration</h5>
+                <p>
+                  Total:{" "}
+                  {`${participant.totalDuration?.hours} hours
+                ${participant.totalDuration?.minutes} minutes
+                ${participant.totalDuration?.seconds} seconds`}
+                </p>
+                <p>
+                  Average:{" "}
+                  {`${participant.avgDuration?.hours} hours
+                ${participant.avgDuration?.minutes} minutes
+                ${participant.avgDuration?.seconds} seconds`}
+                </p>
+              </Col>
+              <Col>
+                <h5>Pace</h5>
+                <p>{`${participant.avgPace?.minutes} minutes
+                ${participant.avgPace?.seconds} seconds`}</p>
+              </Col>
+            </Row>
+            <Row className="stats-row">
+              <h4>{race.name}</h4>
+              {[participant?.races?.find((r) => r?.id === race.id)].map((r) => {
+                return (
+                  <>
+                    <Col>
+                      <h5>Attendance</h5>
+                      <p>Total: {r?.totalAttendance}</p>
+                    </Col>
+                    <Col>
+                      <h5>Mileage</h5>
+                      <p>Total: {r?.totalMileage}</p>
+                      <p>Average: {r?.avgMileage}</p>
+                    </Col>
+                    <Col>
+                      <h5>Duration</h5>
+                      <p>
+                        Total:{" "}
+                        {`${r?.totalDuration?.hours} hours
+                      ${r?.totalDuration?.minutes} minutes
+                      ${r?.totalDuration?.seconds} seconds`}
+                      </p>
+                      <p>
+                        Average:{" "}
+                        {`${r?.avgDuration?.hours} hours
+                      ${r?.avgDuration?.minutes} minutes
+                      ${r?.avgDuration?.seconds} seconds`}
+                      </p>
+                    </Col>
+                    <Col>
+                      <h3>Pace</h3>
+                      <p>{`${r?.avgPace?.minutes} minutes
+                      ${r?.avgPace?.seconds} seconds`}</p>
+                    </Col>
+                  </>
+                );
+              })}
+            </Row>
           </Tab>
         </Tabs>
       </Modal.Body>
