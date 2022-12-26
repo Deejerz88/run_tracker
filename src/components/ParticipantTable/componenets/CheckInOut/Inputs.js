@@ -15,8 +15,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
   const [activeKey, setActiveKey] = useState("in");
 
   const handleClick = (e) => {
-    const { type } = e.target;
-    if (type === "number") {
+    if (e.target.type === "number") {
       e.target.select();
     }
   };

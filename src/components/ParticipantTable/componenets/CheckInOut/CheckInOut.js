@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Tabs, Tab } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
 import { DateTime } from "luxon";
@@ -10,8 +10,8 @@ const CheckInOut = ({
   participant,
   setParticipant,
   race,
-  setRace,
   table,
+  date,
 }) => {
   const [state, setState] = useState({
     mileage: 3,
@@ -54,10 +54,7 @@ const CheckInOut = ({
     const thisRace = participant.races.find((r) => r.id === race.id);
     console.log("thisRace", thisRace);
     if (!thisRace) return;
-
-    const todaysAttendance = thisRace.attendance.find(
-      (a) => a.date === DateTime.local().toISODate()
-    );
+    const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
     console.log("todaysAttendance", todaysAttendance);
     if (!todaysAttendance) {
       setState({
@@ -70,7 +67,8 @@ const CheckInOut = ({
       return;
     }
 
-    const { mileage, pace, duration, start, finish, checkedIn, checkedOut } = todaysAttendance;
+    const { mileage, pace, duration, start, finish, checkedIn, checkedOut } =
+      todaysAttendance;
 
     setState({
       mileage,
@@ -79,7 +77,7 @@ const CheckInOut = ({
       checkedIn,
       checkedOut,
       start: start,
-      finish: finish
+      finish: finish,
     });
   }, [participant, race, table]);
 
@@ -88,27 +86,35 @@ const CheckInOut = ({
   }, [state]);
 
   return (
-    <Modal size="xl" show={show} onHide={handleClose}>
+    <Modal size="xl" fullscreen={true} show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Inputs
-          state={state}
-          handleChange={(e) => handleChange({ e, state, setState })}
-          handleSubmit={(e) =>
-            handleSubmit({
-              e,
-              state,
-              setState,
-              participant,
-              race,
-              table,
-              handleClose,
-            })
-          }
-          table={table}
-        />
+        <Tabs justify defaultActiveKey="checkIn">
+          <Tab eventKey="checkIn" title="Check In">
+            <Inputs
+              state={state}
+              handleChange={(e) => handleChange({ e, state, setState })}
+              handleSubmit={(e) =>
+                handleSubmit({
+                  e,
+                  state,
+                  setState,
+                  participant,
+                  race,
+                  table,
+                  handleClose,
+                  date,
+                })
+              }
+              table={table}
+            />
+          </Tab>
+          <Tab eventKey="stats" title="Stats">
+            <h1>Stats</h1>
+          </Tab>
+        </Tabs>
       </Modal.Body>
     </Modal>
   );

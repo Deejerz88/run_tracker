@@ -19,6 +19,7 @@ const ParticipantTable = () => {
   const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
   const [race, setRace] = useState({});
+  const [date, setDate] = useState(DateTime.local().toISODate());
   const [table, setTable] = useState(null);
 
   const getRaces = async () => {
@@ -28,66 +29,82 @@ const ParticipantTable = () => {
 
   const getParticipants = async (table) => {
     const { data } = await axios.get("/participant");
-    console.log("participants", data);
-    // table.updateData(data);
-    // table.redraw(true);
     return data;
   };
 
   const handleChange = async (e) => {
-    const [raceId, type] = e.target.value.split("-");
-    const eventIds = e.target.selectedOptions[0].dataset.eventids;
-    const raceName = e.target.selectedOptions[0].innerText;
-    setRace({ id: raceId, name: raceName, type, eventIds });
+    const { id, value, selectedOptions } = e.target;
+    if (id === "race-select") {
+      const [raceId, type] = value.split("-");
+      const eventIds = selectedOptions[0].dataset.eventids;
+      const raceName = selectedOptions[0].innerText;
+      setRace({ id: raceId, name: raceName, type, eventIds });
+    } else if (id === "race-date") {
+      console.log("date", value);
+      setDate(value);
+      table.getRows().forEach((row) => {
+        const data = row.getData();
+        const checkedIn = checkInOutMutator(
+          null,
+          data,
+          null,
+          { field: "checkedIn" },
+        );
+        const checkedOut = checkInOutMutator(
+          null,
+          data,
+          null,
+          { field: "checkedIn" },
+        );
+        row.update({ checkedIn, checkedOut, date: value, date2: value });
+      });
+      // const participants = await getParticipants(table);
+      // table.updateData(participants);
+      // table.redraw(true);
+    }
   };
 
   const checkInOutFormatter = (cell) => {
-    const data = cell.getRow().getData();
-    const field = cell.getField();
-    const selectedRace = $(`#race-select option:selected`).text();
-    const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
-    console.log("thisRace formatter", thisRace);
-    const today = DateTime.local().toISODate();
-    const bool = _.find(thisRace.attendance, (a) => a.date === today) || {
-      [field]: false,
-    };
-    console.log("name", data.first_name, "field", field, "bool", bool[field]);
-    return bool[field]
+    const value = cell.getValue();
+    return value
       ? renderToString(<BsFillCheckCircleFill color="green" />)
       : renderToString(<BsXCircleFill color="red" />);
   };
 
   const checkInOutMutator = (value, data, type, params, component) => {
-    const field = component.getField();
+    const field = component?.getField() || params?.field;
     const selectedRace = $(`#race-select option:selected`).text();
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
-    const today = DateTime.local().toISODate();
-    const bool = _.find(thisRace.attendance, (a) => a.date === today) || {
+    const selectedDate = $(`#race-date`).val();
+    // console.log("selectedDate", selectedDate);
+    const bool = _.find(
+      thisRace.attendance,
+      (a) => a.date === selectedDate
+    ) || {
       [field]: false,
     };
+    // console.log("bool", bool[field]);
     return bool[field];
   };
+
   const startFinishMutator = (value, data, type, mutatorParams, component) => {
     const field = component.getField();
 
     const selectedRace = $(`#race-select option:selected`).text();
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
-    console.log("return formatter", thisRace);
     if (!thisRace.attendance) return;
-    const today = DateTime.local().toISODate();
-    const update = _.find(thisRace.attendance, (a) => a.date === today);
+    const selectedDate = $(`#race-date`).val();
+    const update = _.find(thisRace.attendance, (a) => a.date === selectedDate);
+    if (!update) return;
     return DateTime.fromMillis(update[field]).toFormat("hh:mm a");
   };
 
   useEffect(() => {
     if (!race.name) return;
     const table = Tabulator.findTable("#participant-table")[0];
-    table
-      .setData(`/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`)
-      // .then(() => {
-      //   console.log("race", race);
-      //   getParticipants(table);
-      // });
+    table.setData(
+      `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
+    );
   }, [race]);
 
   useEffect(() => {
@@ -98,7 +115,7 @@ const ParticipantTable = () => {
     });
     const table = new Tabulator("#participant-table", {
       ajaxResponse: async (url, params, response) => {
-        const participants = await getParticipants(table)
+        const participants = await getParticipants(table);
         let updated = response.map((d) => {
           const participant = _.find(
             participants,
@@ -151,6 +168,12 @@ const ParticipantTable = () => {
           headerHozAlign: "center",
           mutator: startFinishMutator,
         },
+        {
+          title: "Date",
+          field: "date",
+          visible: true,
+          mutateLink: ["checkedIn", "checkedOut", "start", "finish"],
+        },
       ],
     });
     table.on("rowClick", (e, row) => {
@@ -174,12 +197,13 @@ const ParticipantTable = () => {
         table={table}
         race={race}
         setRace={setRace}
+        date={date}
       />
-      <InputGroup className="m-3 w-50">
-        <FloatingLabel label="Select Race">
+      <InputGroup className="m-3">
+        <FloatingLabel label="Race">
           <Form.Select
             id="race-select"
-            aria-label="Default select example"
+            aria-label="race-select"
             onChange={handleChange}
           >
             {races.map((r) => (
@@ -193,8 +217,17 @@ const ParticipantTable = () => {
             ))}
           </Form.Select>
         </FloatingLabel>
+        <FloatingLabel label="Date">
+          <Form.Control
+            type="date"
+            id="race-date"
+            aria-label="race-select"
+            value={date}
+            onChange={handleChange}
+          />
+        </FloatingLabel>
       </InputGroup>
-      <h1 className="text-dark">Participants</h1>
+      {/* <h1 className="text-dark">Participants</h1> */}
       <div className="m-3 " id="participant-table" />
     </>
   );

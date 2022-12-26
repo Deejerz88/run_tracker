@@ -10,6 +10,7 @@ const handleSubmit = async ({
   table,
   race,
   handleClose,
+  date
 }) => {
   e.preventDefault();
   e.stopPropagation();
@@ -41,11 +42,10 @@ const handleSubmit = async ({
       ...race,
       attendance: [
         {
-          date: DateTime.local().toISODate(),
+          date,
           pace,
           duration,
-          start: start.time
-          ,
+          start: start.time,
           finish: finish.actual || finish.target,
           mileage: mileage.actual || mileage.target,
           checkedIn: state.checkedIn,
@@ -74,8 +74,7 @@ const handleSubmit = async ({
     {
       user_id,
       ...participant,
-      start: DateTime.fromMillis(start.time
-      ).toFormat("HH:mm"),
+      start: DateTime.fromMillis(start.time || state.start).toFormat("HH:mm"),
       return: DateTime.fromMillis(mileage.actual || mileage.target).toFormat(
         "HH:mm"
       ),
