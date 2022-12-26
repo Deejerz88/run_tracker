@@ -42,22 +42,23 @@ const ParticipantTable = () => {
     } else if (id === "race-date") {
       console.log("date", value);
       setDate(value);
-      table.getRows().forEach((row) => {
-        const data = row.getData();
-        const checkedIn = checkInOutMutator(
-          null,
-          data,
-          null,
-          { field: "checkedIn" },
-        );
-        const checkedOut = checkInOutMutator(
-          null,
-          data,
-          null,
-          { field: "checkedIn" },
-        );
-        row.update({ checkedIn, checkedOut, date: value, date2: value });
-      });
+      table.setData()
+      // table.getRows().forEach((row) => {
+      //   const data = row.getData();
+      //   const checkedIn = checkInOutMutator(
+      //     null,
+      //     data,
+      //     null,
+      //     { field: "checkedIn" },
+      //   );
+      //   const checkedOut = checkInOutMutator(
+      //     null,
+      //     data,
+      //     null,
+      //     { field: "checkedIn" },
+      //   );
+      //   row.update({ checkedIn, checkedOut, date: value, date2: value });
+      // });
       // const participants = await getParticipants(table);
       // table.updateData(participants);
       // table.redraw(true);
