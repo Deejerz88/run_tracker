@@ -11,10 +11,17 @@ import {
 } from "react-bootstrap";
 import { DateTime } from "luxon";
 
-const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
+const Inputs = ({ state, handleChange, handleSubmit }) => {
   const [activeKey, setActiveKey] = useState("in");
+
+  const handleClick = (e) => {
+    const { type } = e.target;
+    if (type === "number") {
+      e.target.select();
+    }
+  };
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} onClick={handleClick}>
       <Accordion
         id="checkInOut"
         defaultActiveKey="in"
@@ -31,8 +38,9 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     <Form.Control
                       id="mileage-target"
                       type="number"
+                      step={0.1}
                       placeholder="Target Mileage"
-                      value={checkIn.mileage || 3}
+                      value={state.mileage || 3}
                       onChange={handleChange}
                       name="in"
                     />
@@ -45,7 +53,11 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     <Form.Control
                       id="start-time"
                       type="time"
-                      value={checkIn.start || DateTime.now().toFormat("HH:mm")}
+                      value={
+                        state.start
+                          ? DateTime.fromMillis(state.start).toFormat("HH:mm")
+                          : DateTime.now().toFormat("HH:mm")
+                      }
                       onChange={handleChange}
                       name="in"
                     />
@@ -60,22 +72,23 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                   <InputGroup className="mb-3">
                     {["hours", "minutes", "seconds"].map((type, i) => {
                       if (group === "pace" && type === "hours") return null;
-                      return (
-                        <FloatingLabel key={type} label={type}>
-                          <Form.Control
-                            id={`${group}-${type}`}
-                            type="number"
-                            step={type === "seconds" ? 5 : 1}
-                            value={
-                              type === "seconds"
-                                ? checkIn[group][type]?.toFixed(1)
-                                : checkIn[group][type]
-                            }
-                            onChange={handleChange}
-                            name="in"
-                          />
-                        </FloatingLabel>
-                      );
+                      else
+                        return (
+                          <FloatingLabel key={type} label={type}>
+                            <Form.Control
+                              id={`${group}-${type}`}
+                              type="number"
+                              step={type === "seconds" ? 5 : 1}
+                              value={
+                                type === "seconds"
+                                  ? Math.round(state[group][type])
+                                  : state[group][type]
+                              }
+                              onChange={handleChange}
+                              name="in"
+                            />
+                          </FloatingLabel>
+                        );
                     })}
                   </InputGroup>
                 </Col>
@@ -88,13 +101,14 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     id="finish-target"
                     type="time"
                     value={
-                      checkIn.finish ||
-                      DateTime.now()
-                        .plus({
-                          minutes: checkIn.duration.minutes,
-                          seconds: checkIn.duration.seconds,
-                        })
-                        .toFormat("HH:mm")
+                      state.finish
+                        ? DateTime.fromMillis(state.finish).toFormat("HH:mm")
+                        : DateTime.now()
+                            .plus({
+                              minutes: state.duration.minutes,
+                              seconds: state.duration.seconds,
+                            })
+                            .toFormat("HH:mm")
                     }
                     onChange={handleChange}
                     name="in"
@@ -114,8 +128,9 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     <Form.Control
                       id="mileage-actual"
                       type="number"
+                      step={0.1}
                       placeholder="Actual Mileage"
-                      value={checkIn.mileage || 3}
+                      value={state.mileage || 3}
                       onChange={handleChange}
                       name="out"
                     />
@@ -128,13 +143,14 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                     id="finish-actual"
                     type="time"
                     value={
-                      checkIn.finish ||
-                      DateTime.now()
-                        .plus({
-                          minutes: checkIn.duration.minutes,
-                          seconds: checkIn.duration.seconds,
-                        })
-                        .toFormat("HH:mm")
+                      state.finish
+                        ? DateTime.fromMillis(state.finish).toFormat("HH:mm")
+                        : DateTime.now()
+                            .plus({
+                              minutes: state.duration.minutes,
+                              seconds: state.duration.seconds,
+                            })
+                            .toFormat("HH:mm")
                     }
                     onChange={handleChange}
                     name="out"
@@ -155,7 +171,11 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
                             id={`${group}-${type}`}
                             type="number"
                             step={type === "seconds" ? 5 : 1}
-                            value={checkIn[group][type]}
+                            value={
+                              type === "seconds"
+                                ? Math.round(state[group][type])
+                                : state[group][type]
+                            }
                             onChange={handleChange}
                             name="out"
                           />
@@ -169,7 +189,7 @@ const Inputs = ({ checkIn, handleChange, handleSubmit }) => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Button variant="primary" type="submit" className="m-3">
+      <Button variant="primary" name={activeKey} type="submit" className="m-3">
         {activeKey === "in" ? "Check In" : "Check Out"}
       </Button>
     </Form>

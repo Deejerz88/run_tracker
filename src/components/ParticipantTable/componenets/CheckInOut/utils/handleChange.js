@@ -1,7 +1,7 @@
 import { DateTime, Duration } from "luxon";
 import $ from "jquery";
 
-const handleChange = ({ e, checkIn, setCheckIn }) => {
+const handleChange = ({ e, state, setState }) => {
   let { id, value } = e.target;
   let group = id.split("-")[0];
   let type = id.split("-")[1];
@@ -9,13 +9,22 @@ const handleChange = ({ e, checkIn, setCheckIn }) => {
   console.log("value", value);
   const startTime = DateTime.fromFormat($("#start-time").val(), "HH:mm");
   const update = {
-    ...checkIn,
+    ...state,
   };
-  if (group === "pace" || group === "duration")
+  delete update.duration._id;
+  delete update.pace._id;
+  if (group === "pace" || group === "duration") {
     update[group][type] = Number(value);
-  else update[group] = group === "mileage" ? Number(value) : value;
+    const groupDuration = Duration.fromObject(update[group])
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
+    update[group] = groupDuration;
+  } else
+    update[group] =
+      group === "mileage"
+        ? Number(value)
+        : DateTime.fromFormat(value, "HH:mm").toMillis();
   console.log("update", update);
-  // checkIn[group][type] = value;
   if (group !== "start" && group !== "finish") {
     group === "duration"
       ? (update.pace = Duration.fromObject({
@@ -30,9 +39,9 @@ const handleChange = ({ e, checkIn, setCheckIn }) => {
         })
           .shiftTo("hours", "minutes", "seconds")
           .toObject());
-    update.finish = startTime.plus(update.duration).toFormat("HH:mm");
+    update.finish = startTime.plus(update.duration).toMillis();
   } else if (group === "finish") {
-    let finish = DateTime.fromFormat(update.finish, "HH:mm");
+    let finish = DateTime.fromMillis(update.finish);
     update.duration = finish
       .diff(startTime, ["hours", "minutes", "seconds"])
       .toObject();
@@ -43,13 +52,13 @@ const handleChange = ({ e, checkIn, setCheckIn }) => {
     })
       .shiftTo("minutes", "seconds")
       .toObject();
-    update.finish = finish.toFormat("HH:mm");
+    update.finish = finish.toMillis();
   } else if (group === "start") {
-    update.finish = DateTime.fromFormat(update.start, "HH:mm")
+    update.finish = DateTime.fromMillis(update.start)
       .plus(update.duration)
-      .toFormat("HH:mm");
+      .toMillis();
   }
-  setCheckIn(update);
+  setState(update);
 };
 
 export default handleChange;

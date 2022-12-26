@@ -1,11 +1,19 @@
-import { DateTime, Duration } from "luxon";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
+import { DateTime } from "luxon";
 
-const CheckInOut = ({ show, setShow, participant, race, table }) => {
-  const [checkIn, setCheckIn] = useState({
+const CheckInOut = ({
+  show,
+  setShow,
+  participant,
+  setParticipant,
+  race,
+  setRace,
+  table,
+}) => {
+  const [state, setState] = useState({
     mileage: 3,
     pace: {
       minutes: 10,
@@ -19,26 +27,65 @@ const CheckInOut = ({ show, setShow, participant, race, table }) => {
     start: null,
     finish: null,
   });
-  const [checkOut, setCheckOut] = useState({
-    mileage: 0,
-    pace: {},
-    duration: {},
-    finish: null,
-  });
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setState({
+      mileage: 3,
+      pace: {
+        minutes: 10,
+        seconds: 0,
+      },
+      duration: {
+        hours: 0,
+        minutes: 30,
+        seconds: 0,
+      },
+      start: null,
+      finish: null,
+    });
+    setParticipant({});
+  };
 
   useEffect(() => {
+    if (!participant.user_id || !race.id || !table) return;
     console.log("participant", participant);
-    // if (participant) {
-    //   setCheckIn(participant.checkIn);
-    //   setCheckOut(participant.checkOut);
-    // }
-  }, [participant]);
+    if (!participant?.races || !race) return;
+    const thisRace = participant.races.find((r) => r.id === race.id);
+    console.log("thisRace", thisRace);
+    if (!thisRace) return;
+
+    const todaysAttendance = thisRace.attendance.find(
+      (a) => a.date === DateTime.local().toISODate()
+    );
+    console.log("todaysAttendance", todaysAttendance);
+    if (!todaysAttendance) {
+      setState({
+        mileage: thisRace.avgMileage,
+        pace: thisRace.avgPace,
+        duration: thisRace.avgDuration,
+        start: null,
+        finish: null,
+      });
+      return;
+    }
+
+    const { mileage, pace, duration, start, finish, checkedIn, checkedOut } = todaysAttendance;
+
+    setState({
+      mileage,
+      pace,
+      duration,
+      checkedIn,
+      checkedOut,
+      start: start,
+      finish: finish
+    });
+  }, [participant, race, table]);
 
   useEffect(() => {
-    console.log("checkIn", checkIn);
-  }, [checkIn]);
+    console.log("state", state);
+  }, [state]);
 
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
@@ -47,10 +94,18 @@ const CheckInOut = ({ show, setShow, participant, race, table }) => {
       </Modal.Header>
       <Modal.Body>
         <Inputs
-          checkIn={checkIn}
-          handleChange={(e) => handleChange({ e, checkIn, setCheckIn })}
+          state={state}
+          handleChange={(e) => handleChange({ e, state, setState })}
           handleSubmit={(e) =>
-            handleSubmit({ e, checkIn, setCheckIn, participant, race, table })
+            handleSubmit({
+              e,
+              state,
+              setState,
+              participant,
+              race,
+              table,
+              handleClose,
+            })
           }
           table={table}
         />

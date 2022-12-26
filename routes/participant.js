@@ -38,7 +38,8 @@ router.get("/", async (req, res) => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  const participants = await Participant.find({});
+  const participants = await Participant.find({}).lean();
+  console.log("participants", participants);
   res.json(participants);
 });
 

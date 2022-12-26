@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import _ from "lodash";
-import { DateTime, Duration } from "luxon";
+import { Duration } from "luxon";
 const { Schema } = mongoose;
 
 const durationSchema = new Schema({
@@ -33,15 +33,19 @@ const raceSchema = new Schema({
   totalMileage: Number,
   totalDuration: durationSchema,
   avgPace: paceSchema,
+  avgMileage: Number,
+  avgDuration: durationSchema,
   attendance: [attendanceSchema],
 });
 
 const participantSchema = new Schema({
-  user_id: { type: String, index: true, unique: true },
+  user_id: { type: Number, index: true, unique: true },
   first_name: String,
   last_name: String,
   totalAttendance: Number,
   totalMileage: Number,
+  avgMileage: Number,
+  avgDuration: durationSchema,
   totalDuration: durationSchema,
   avgPace: paceSchema,
   races: [raceSchema],
@@ -64,6 +68,13 @@ raceSchema.pre("save", function (next) {
   })
     .shiftTo("hours", "minutes", "seconds")
     .toObject();
+  this.avgMileage = this.totalMileage / this.totalAttendance;
+  this.avgDuration = Duration.fromObject({
+    minutes: durationMinutes / this.totalAttendance,
+  })
+    .shiftTo("hours", "minutes", "seconds")
+    .toObject();
+  
   next();
 });
 
@@ -81,6 +92,12 @@ participantSchema.pre("save", function (next) {
     .toObject();
   this.totalDuration = Duration.fromObject({
     minutes: durationMinutes,
+  })
+    .shiftTo("hours", "minutes", "seconds")
+    .toObject();
+  this.avgMileage = this.totalMileage / this.totalAttendance;
+  this.avgDuration = Duration.fromObject({
+    minutes: durationMinutes / this.totalAttendance,
   })
     .shiftTo("hours", "minutes", "seconds")
     .toObject();
