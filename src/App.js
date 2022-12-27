@@ -6,10 +6,10 @@ import { Image, Row } from "react-bootstrap";
 function App() {
   return (
     <>
+      <ToastContainer />
       <Row>
         <Image id='logo' fluid src="./assets/images/logo.png" className="mx-auto my-3" />
       </Row>
-      <ToastContainer />
       <ParticipantTable />
     </>
   );
