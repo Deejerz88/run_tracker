@@ -68,7 +68,7 @@ const handleSubmit = async ({
   console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
-  console.log('newParticipant', newParticipant)
+  console.log("newParticipant", newParticipant);
   // console.log("res", res);
   // if (res.statusText === "OK") {
   // console.log("updated", res.data);
@@ -81,18 +81,22 @@ const handleSubmit = async ({
     checkedOut,
     [`checked${startCase(activeKey)}`]: true,
   });
+  console.log("start", start.time, state.start, newParticipant.start);
   table.updateData([
     {
       user_id,
       ...newParticipant,
-      start: DateTime.fromMillis(start.time || state.start).toFormat("HH:mm"),
-      finish: DateTime.fromMillis(mileage.actual || mileage.target).toFormat(
+      start: DateTime.fromMillis(
+        start.time || state.start || participant.start
+      ).toFormat("HH:mm"),
+      finish: DateTime.fromMillis(finish.actual || finish.target).toFormat(
         "HH:mm"
       ),
       [`checked${startCase(activeKey)}`]: true,
     },
   ]);
-  table.redraw(true)
+  table.redraw(true);
+  table.setSort()
   handleClose();
   toast.success(`${participant.name} checked ${activeKey}`, {
     position: toast.POSITION.TOP_CENTER,

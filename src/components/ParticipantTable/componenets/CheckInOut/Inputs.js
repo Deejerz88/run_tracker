@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -11,9 +11,27 @@ import {
 } from "react-bootstrap";
 import { DateTime } from "luxon";
 import { startCase } from "lodash";
+import { handleChange, handleSubmit } from "./utils/index.js";
 
-const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
+const Inputs = ({
+  state,
+  setState,
+  checkedIn,
+  participant,
+  race,
+  table,
+  handleClose,
+  date,
+}) => {
   const [activeKey, setActiveKey] = useState("in");
+
+  useEffect(() => {
+    setActiveKey(checkedIn ? "out" : "in");
+  }, [checkedIn]);
+
+  useEffect(() => {
+    console.log('inputs state', state)
+  }, [state])
 
   const handleClick = (e) => {
     if (e.target.type === "number") {
@@ -21,7 +39,23 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
     }
   };
   return (
-    <Form onSubmit={handleSubmit} onClick={handleClick}>
+    <Form
+      onSubmit={(
+        e,
+      ) =>
+        handleSubmit({
+          e,
+          state,
+          setState,
+          participant,
+          race,
+          table,
+          handleClose,
+          date,
+        })
+      }
+      onClick={handleClick}
+    >
       <Accordion
         id="checkInOut"
         defaultActiveKey={checkedIn ? "out" : "in"}
@@ -41,7 +75,7 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                       step={0.1}
                       placeholder="Target Mileage"
                       value={state.mileage?.toFixed(1) || 3}
-                      onChange={handleChange}
+                      onChange={(e) => handleChange({ e, state, setState })}
                       name="in"
                     />
                   </FloatingLabel>
@@ -58,7 +92,7 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                           ? DateTime.fromMillis(state.start).toFormat("HH:mm")
                           : DateTime.now().toFormat("HH:mm")
                       }
-                      onChange={handleChange}
+                      onChange={(e) => handleChange({ e, state, setState })}
                       name="in"
                     />
                   </FloatingLabel>
@@ -84,7 +118,9 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                                   ? Math.round(state[group][type])
                                   : state[group][type]
                               }
-                              onChange={handleChange}
+                              onChange={(e) =>
+                                handleChange({ e, state, setState })
+                              }
                               name="in"
                             />
                           </FloatingLabel>
@@ -110,7 +146,7 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                             })
                             .toFormat("HH:mm")
                     }
-                    onChange={handleChange}
+                    onChange={(e) => handleChange({ e, state, setState })}
                     name="in"
                   />
                 </FloatingLabel>
@@ -131,7 +167,7 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                       step={0.1}
                       placeholder="Actual Mileage"
                       value={state.mileage?.toFixed(1) || 3}
-                      onChange={handleChange}
+                      onChange={(e) => handleChange({ e, state, setState })}
                       name="out"
                     />
                   </FloatingLabel>
@@ -152,7 +188,7 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                             })
                             .toFormat("HH:mm")
                     }
-                    onChange={handleChange}
+                    onChange={(e) => handleChange({ e, state, setState })}
                     name="out"
                   />
                 </FloatingLabel>
@@ -176,7 +212,9 @@ const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
                                 ? Math.round(state[group][type])
                                 : state[group][type]
                             }
-                            onChange={handleChange}
+                            onChange={(e) =>
+                              handleChange({ e, state, setState })
+                            }
                             name="out"
                           />
                         </FloatingLabel>

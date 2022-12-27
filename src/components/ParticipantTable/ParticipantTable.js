@@ -39,7 +39,7 @@ const ParticipantTable = () => {
       const [raceId, type] = value.split("-");
       const eventIds = selectedOptions[0].dataset.eventids;
       const raceName = selectedOptions[0].innerText;
-      setRace({ id: raceId, name: raceName, type, eventIds });
+      setRace({ id: Number(raceId), name: raceName, type, eventIds });
     } else if (id === "race-date") {
       console.log("date", value);
       setDate(value);
@@ -69,8 +69,10 @@ const ParticipantTable = () => {
   const checkInOutFormatter = (cell) => {
     const value = cell.getValue();
     return value
-      ? renderToString(<BsFillCheckCircleFill className='check' color="green" />)
-      : renderToString(<BsXCircleFill className='ex' color="red" />);
+      ? renderToString(
+          <BsFillCheckCircleFill className="check" color="green" />
+        )
+      : renderToString(<BsXCircleFill className="ex" color="red" />);
   };
 
   const checkInOutMutator = (value, data, type, params, component) => {
@@ -120,8 +122,8 @@ const ParticipantTable = () => {
 
   useEffect(() => {
     getRaces().then((data) => {
-      console.log("data", data);
       setRaces(data);
+      console.log("races: ", data);
       setRace(data[0]);
     });
     const table = new Tabulator("#participant-table", {
@@ -143,6 +145,13 @@ const ParticipantTable = () => {
       height: "100%",
       // pagination: true,
       // paginationSize: 50,
+      initialSort: [
+        { column: "last_name", dir: "asc" },
+        {
+          column: "finish",
+          dir: "asc",
+        },
+      ],
       index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: false },
@@ -153,6 +162,7 @@ const ParticipantTable = () => {
           field: "checkedIn",
           maxWidth: 150,
           hozAlign: "center",
+          sorter: "boolean",
           headerHozAlign: "center",
           formatter: checkInOutFormatter,
           mutatorData: checkInOutMutator,
@@ -163,6 +173,7 @@ const ParticipantTable = () => {
           maxWidth: 150,
           hozAlign: "center",
           headerHozAlign: "center",
+          sorter: "boolean",
           formatter: checkInOutFormatter,
           mutatorData: checkInOutMutator,
         },
@@ -171,6 +182,12 @@ const ParticipantTable = () => {
           field: "start",
           maxWidth: 120,
           hozAlign: "center",
+          sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {
+            return (
+              DateTime.fromFormat(a, "hh:mm a").toMillis() -
+              DateTime.fromFormat(b, "hh:mm a").toMillis()
+            );
+          },
           headerHozAlign: "center",
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
@@ -181,6 +198,12 @@ const ParticipantTable = () => {
           maxWidth: 120,
           hozAlign: "center",
           headerHozAlign: "center",
+          sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {
+            return (
+              DateTime.fromFormat(a, "hh:mm a").toMillis() -
+              DateTime.fromFormat(b, "hh:mm a").toMillis()
+            );
+          },
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
         },
@@ -217,7 +240,7 @@ const ParticipantTable = () => {
         setRace={setRace}
         date={date}
       />
-      <InputGroup id='race-group' className="m-3 group">
+      <InputGroup id="race-group" className="m-3 group">
         <FloatingLabel label="Race">
           <Form.Select
             id="race-select"

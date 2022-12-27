@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Tabs, Tab, Row, Col, Card } from "react-bootstrap";
 import Inputs from "./Inputs.js";
-import { handleChange, handleSubmit } from "./utils/index.js";
 import "./style.css";
 
 const CheckInOut = ({
@@ -44,16 +43,26 @@ const CheckInOut = ({
       start: null,
       finish: null,
     });
-    setParticipant({});
+    setTimeout(() => setParticipant({}), 100);
   };
 
   useEffect(() => {
     if (!participant.user_id || !race.id || !table) return;
-    console.log("participant", participant);
+    console.log("participant", participant, "race", race);
     if (!participant?.races || !race) return;
     const thisRace = participant.races.find((r) => r?.id === race.id);
     console.log("thisRace", thisRace);
-    if (!thisRace) return;
+    if (!thisRace) {
+      if (!participant.avgMileage) return;
+      setState({
+        mileage: participant.avgMileage,
+        pace: participant.avgPace,
+        duration: participant.avgDuration,
+        start: null,
+        finish: null,
+      });
+      return;
+    }
     const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
     console.log("todaysAttendance", todaysAttendance);
     if (!todaysAttendance) {
@@ -95,27 +104,19 @@ const CheckInOut = ({
           <Tab eventKey="checkIn" title="Check In / Out">
             <Inputs
               state={state}
+              setState={setState}
               checkedIn={participant.checkedIn}
-              handleChange={(e) => handleChange({ e, state, setState })}
-              handleSubmit={(e) =>
-                handleSubmit({
-                  e,
-                  state,
-                  setState,
-                  participant,
-                  race,
-                  table,
-                  handleClose,
-                  date,
-                })
-              }
+              participant={participant}
+              race={race}
               table={table}
+              handleClose={handleClose}
+              date={date}
             />
           </Tab>
           <Tab eventKey="stats" title="Stats">
             <Row className="stats-row m-3">
               <h1>Stats</h1>
-              {["race", "Overall"].map((title) => {
+              {["race", "Overall"].map((title, i) => {
                 title = title === "race" ? race.name : title;
                 const stats =
                   title === "Overall" && participant.totalDuration
@@ -140,7 +141,7 @@ const CheckInOut = ({
                         },
                       };
                 return (
-                  <Row className="mb-3">
+                  <Row key={i} className="mb-3">
                     <Col>
                       <Card>
                         <Card.Header className="fs-4">{title}</Card.Header>

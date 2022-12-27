@@ -21,10 +21,12 @@
 
 .tabulator-row.tabulator-selectable:hover {
   /* background-color: #fd272757; */
-  background-color: #fd272764;
+  background-color: #ef00005e;
 
   color: white;
   font-weight: bold;
+  -webkit-text-stroke: 0.25px black;
+  font-size: 1.2em;
 }
 
 .tabulator-col-content {
