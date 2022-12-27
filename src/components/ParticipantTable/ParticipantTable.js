@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { Form, FloatingLabel, InputGroup } from "react-bootstrap";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
-import { CheckInOut } from "./index.js";
+import { CheckInOut, Filters } from "./index.js";
 import axios from "axios";
 import _ from "lodash";
 import { DateTime } from "luxon";
@@ -12,6 +12,7 @@ import {
   BsFillCheckCircleFill,
   BsXCircleFill,
 } from "react-icons/bs/index.esm.js";
+
 import "./style.css";
 
 const ParticipantTable = () => {
@@ -42,7 +43,7 @@ const ParticipantTable = () => {
     } else if (id === "race-date") {
       console.log("date", value);
       setDate(value);
-      table.setData()
+      table.setData();
       // table.getRows().forEach((row) => {
       //   const data = row.getData();
       //   const checkedIn = checkInOutMutator(
@@ -68,8 +69,8 @@ const ParticipantTable = () => {
   const checkInOutFormatter = (cell) => {
     const value = cell.getValue();
     return value
-      ? renderToString(<BsFillCheckCircleFill color="green" />)
-      : renderToString(<BsXCircleFill color="red" />);
+      ? renderToString(<BsFillCheckCircleFill className='check' color="green" />)
+      : renderToString(<BsXCircleFill className='ex' color="red" />);
   };
 
   const checkInOutMutator = (value, data, type, params, component) => {
@@ -108,6 +109,15 @@ const ParticipantTable = () => {
     );
   }, [race]);
 
+  const startFinishFormatter = (cell) => {
+    const value = cell.getValue() || "";
+    // console.log('value', value)
+    const data = cell.getRow().getData();
+    // console.log('data', data)
+    const { checkedOut, checkedIn } = data;
+    return checkedOut && checkedIn ? `<b>${value}</b>` : `<em>${value}</em>`;
+  };
+
   useEffect(() => {
     getRaces().then((data) => {
       console.log("data", data);
@@ -128,8 +138,11 @@ const ParticipantTable = () => {
         return _.uniqBy(updated, "user_id");
       },
       layout: "fitColumns",
-      pagination: true,
-      paginationSize: 50,
+      placeholder: "No Participants",
+      footerElement: "<div id='footer' class='tabulator-footer'></div>",
+      height: "100%",
+      // pagination: true,
+      // paginationSize: 50,
       index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: false },
@@ -160,6 +173,7 @@ const ParticipantTable = () => {
           hozAlign: "center",
           headerHozAlign: "center",
           mutator: startFinishMutator,
+          formatter: startFinishFormatter,
         },
         {
           title: "Finish",
@@ -168,12 +182,15 @@ const ParticipantTable = () => {
           hozAlign: "center",
           headerHozAlign: "center",
           mutator: startFinishMutator,
+          formatter: startFinishFormatter,
         },
         {
-          title: "Date",
-          field: "date",
-          visible: true,
-          mutateLink: ["checkedIn", "checkedOut", "start", "finish"],
+          title: "Name",
+          field: "name",
+          visible: false,
+          mutator: (value, data) => {
+            return `${data.first_name} ${data.last_name}`;
+          },
         },
       ],
     });
@@ -200,7 +217,7 @@ const ParticipantTable = () => {
         setRace={setRace}
         date={date}
       />
-      <InputGroup className="m-3">
+      <InputGroup id='race-group' className="m-3 group">
         <FloatingLabel label="Race">
           <Form.Select
             id="race-select"
@@ -222,12 +239,13 @@ const ParticipantTable = () => {
           <Form.Control
             type="date"
             id="race-date"
-            aria-label="race-select"
+            aria-label="race-date"
             value={date}
             onChange={handleChange}
           />
         </FloatingLabel>
       </InputGroup>
+      <Filters />
       {/* <h1 className="text-dark">Participants</h1> */}
       <div className="m-3 " id="participant-table" />
     </>

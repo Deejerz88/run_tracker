@@ -1,0 +1,32 @@
+#checkInOut{
+  margin: 10px;
+}
+
+form{
+  border: none;
+}
+
+#checkInOut .form-control{
+  box-shadow: inset 0 0 5px #d4d1d1;
+
+  border: 1px solid #ddd
+}
+
+.nav-item>button{
+  color: red
+}
+
+.nav-item>button:hover{
+  color: red;
+  font-weight: bold
+}
+
+.nav-item>button.active{
+  color: red !important;
+  font-weight: bolder
+}
+
+.tab-pane.active{
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}

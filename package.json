@@ -22,17 +22,18 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
     "tabulator-tables": "^5.4.3"
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"nodemon server.js\" \"npm start\""
+    "dev": "concurrently \"nodemon server.js\" \"npm react-scripts start\""
   },
   "eslintConfig": {
     "extends": [

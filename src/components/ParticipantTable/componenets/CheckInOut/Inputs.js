@@ -10,8 +10,9 @@ import {
   FormLabel,
 } from "react-bootstrap";
 import { DateTime } from "luxon";
+import { startCase } from "lodash";
 
-const Inputs = ({ state, handleChange, handleSubmit }) => {
+const Inputs = ({ state, checkedIn, handleChange, handleSubmit }) => {
   const [activeKey, setActiveKey] = useState("in");
 
   const handleClick = (e) => {
@@ -23,7 +24,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
     <Form onSubmit={handleSubmit} onClick={handleClick}>
       <Accordion
         id="checkInOut"
-        defaultActiveKey="in"
+        defaultActiveKey={checkedIn ? "out" : "in"}
         onSelect={(val) => setActiveKey(val)}
         name={activeKey}
       >
@@ -39,7 +40,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
                       type="number"
                       step={0.1}
                       placeholder="Target Mileage"
-                      value={state.mileage || 3}
+                      value={state.mileage?.toFixed(1) || 3}
                       onChange={handleChange}
                       name="in"
                     />
@@ -67,7 +68,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
             <Row className="mb-3">
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
-                  <FormLabel>{group}</FormLabel>
+                  <FormLabel>{startCase(group)}</FormLabel>
                   <InputGroup className="mb-3">
                     {["hours", "minutes", "seconds"].map((type, i) => {
                       if (group === "pace" && type === "hours") return null;
@@ -129,7 +130,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
                       type="number"
                       step={0.1}
                       placeholder="Actual Mileage"
-                      value={state.mileage || 3}
+                      value={state.mileage?.toFixed(1) || 3}
                       onChange={handleChange}
                       name="out"
                     />
@@ -160,7 +161,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
             <Row>
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
-                  <FormLabel>{group}</FormLabel>
+                  <FormLabel>{startCase(group)}</FormLabel>
                   <InputGroup className="mb-3">
                     {["hours", "minutes", "seconds"].map((type, i) => {
                       if (group === "pace" && type === "hours") return null;
@@ -188,7 +189,7 @@ const Inputs = ({ state, handleChange, handleSubmit }) => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Button variant="primary" name={activeKey} type="submit" className="m-3">
+      <Button variant="danger" name={activeKey} type="submit" className="m-3">
         {activeKey === "in" ? "Check In" : "Check Out"}
       </Button>
     </Form>

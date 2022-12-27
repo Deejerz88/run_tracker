@@ -1,4 +1,4 @@
-import { CheckInOut } from "./componenets/index.js";
+import { CheckInOut, Filters } from "./componenets/index.js";
 
 
-export { CheckInOut };
+export { CheckInOut, Filters };

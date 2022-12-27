@@ -2,6 +2,7 @@ import $ from "jquery";
 import { startCase } from "lodash";
 import { DateTime } from "luxon";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const handleSubmit = async ({
   e,
@@ -10,12 +11,20 @@ const handleSubmit = async ({
   table,
   race,
   handleClose,
-  date
+  date,
 }) => {
   e.preventDefault();
   e.stopPropagation();
   console.log("race", race, "state", state.start, e.target.name);
   const activeKey = $("#checkInOut").attr("name");
+  if (activeKey === "out" && !participant.checkedIn) {
+    console.log("not checked in");
+    toast.error("Participant must be checked in before checking out", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 1500,
+    });
+    return;
+  }
   const fields = $(`input[name=${activeKey}]`);
   const data = {
     duration: {},
@@ -57,15 +66,17 @@ const handleSubmit = async ({
   ];
   delete participant._id;
   console.log("participant", participant);
-  axios.post("/participant", participant);
+  let newParticipant = await axios.post("/participant", participant);
+  newParticipant = newParticipant.data;
+  console.log('newParticipant', newParticipant)
   // console.log("res", res);
   // if (res.statusText === "OK") {
   // console.log("updated", res.data);
-  const { user_id } = participant;
+  const { user_id } = newParticipant;
   const { checkedIn, checkedOut } = state;
   console.log("update", {
     user_id,
-    ...participant,
+    ...newParticipant,
     checkedIn,
     checkedOut,
     [`checked${startCase(activeKey)}`]: true,
@@ -73,16 +84,20 @@ const handleSubmit = async ({
   table.updateData([
     {
       user_id,
-      ...participant,
+      ...newParticipant,
       start: DateTime.fromMillis(start.time || state.start).toFormat("HH:mm"),
-      return: DateTime.fromMillis(mileage.actual || mileage.target).toFormat(
+      finish: DateTime.fromMillis(mileage.actual || mileage.target).toFormat(
         "HH:mm"
       ),
       [`checked${startCase(activeKey)}`]: true,
     },
   ]);
+  table.redraw(true)
   handleClose();
-  // } else console.log("error", res);
+  toast.success(`${participant.name} checked ${activeKey}`, {
+    position: toast.POSITION.TOP_CENTER,
+    autoClose: 1500,
+  });
 };
 
 export default handleSubmit;

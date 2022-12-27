@@ -7,6 +7,27 @@ import _ from "lodash";
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const participants = await Participant.find({}).lean();
+  // console.log("participants", participants);
+  res.json(participants);
+});
+
+router.get("/:user_id", async (req, res) => {
+  const { user_id } = req.params;
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const participant = await Participant.findOne({ user_id }).lean();
+  console.log("participant", participant);
+  res.json(participant);
+});
+
 router.get("/:type/:raceId", async (req, res) => {
   const { type, raceId } = req.params;
   const { eventIds } = req.query;
@@ -33,16 +54,6 @@ router.get("/:type/:raceId", async (req, res) => {
   res.json(participants);
 });
 
-router.get("/", async (req, res) => {
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  const participants = await Participant.find({}).lean();
-  console.log("participants", participants);
-  res.json(participants);
-});
-
 router.post("/", async (req, res) => {
   mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -51,7 +62,7 @@ router.post("/", async (req, res) => {
   const update = req.body;
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
-  const doc = await Participant.findOne({ user_id: update.user_id });
+  let doc = await Participant.findOne({ user_id: update.user_id });
   if (doc) {
     const { races } = doc;
     let race = _.pickBy(races, (r) => r.id === raceUpdate.id)[0];
@@ -72,14 +83,15 @@ router.post("/", async (req, res) => {
             attendanceUpdate.checkedOut || attendance[attendanceInd].checkedOut,
         };
       } else attendance.push({ ...attendanceUpdate });
-      doc.save();
     } else {
       race = raceUpdate;
+      races.push(race)
+      
     }
   } else {
-    const participant = new Participant(update);
-    const updatedDoc = await participant.save();
-    res.json(updatedDoc);
+    doc = new Participant(update);
   }
+  const updatedDoc = await doc.save()
+  res.json(updatedDoc);
 });
 export default router;

@@ -1,0 +1,70 @@
+#name-group {
+  filter: drop-shadow(0px 0px 5px #9593937d);
+}
+
+#checkin-group {
+  box-shadow: 0 0 10px #6461617d;
+}
+
+#clear-name {
+  background-color: white;
+  border: none;
+  color: #ed1c24;
+  font-size: 1.25em;
+  box-shadow: 0px 0px 5px #838181, inset 0 0 5px #c8c6c6cb;
+}
+
+#clear-name:hover {
+  background-color: #ed1c24;
+}
+
+#clear-name:hover > #name-x {
+  color: white;
+}
+
+#checked-in,
+#checked-out {
+  background-color: white;
+  color: #ed1c24;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0px 0px 5px #838181, inset 0 0 3px #c8c6c673;
+}
+
+#checked-in {
+  border-right: 1px solid #ddd;
+  /* background-color: red */
+}
+
+#checked-in:hover,
+#checked-out:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+#checked-in.active,
+#checked-out.active {
+  background-color: #ed1c24;
+  color: white;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.accordion-button[aria-expanded="true"] {
+  background-color: white;
+  color: #ed1c24;
+  font-weight: bold;
+}
+
+.accordion-button[aria-expanded='false'] {
+  background-color:whitede21218b;
+  color: #ed1c24;
+}
+
+.accordion-button:hover {
+  background-color: #e70a0ad0;
+  color: white;
+  font-weight: bold;
+}

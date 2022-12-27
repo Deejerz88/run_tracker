@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Row, Col } from "react-bootstrap";
+import { Modal, Tabs, Tab, Row, Col, Card } from "react-bootstrap";
 import Inputs from "./Inputs.js";
 import { handleChange, handleSubmit } from "./utils/index.js";
-import { DateTime } from "luxon";
-import { BsThreeDotsVertical } from "react-icons/bs/index.esm.js";
+import "./style.css";
 
 const CheckInOut = ({
   show,
@@ -80,7 +79,7 @@ const CheckInOut = ({
       start: start,
       finish: finish,
     });
-  }, [participant, race, table]);
+  }, [participant, race, table, date]);
 
   useEffect(() => {
     console.log("state", state);
@@ -93,9 +92,10 @@ const CheckInOut = ({
       </Modal.Header>
       <Modal.Body>
         <Tabs justify defaultActiveKey="checkIn">
-          <Tab eventKey="checkIn" title="Check In">
+          <Tab eventKey="checkIn" title="Check In / Out">
             <Inputs
               state={state}
+              checkedIn={participant.checkedIn}
               handleChange={(e) => handleChange({ e, state, setState })}
               handleSubmit={(e) =>
                 handleSubmit({
@@ -113,70 +113,94 @@ const CheckInOut = ({
             />
           </Tab>
           <Tab eventKey="stats" title="Stats">
-            <h1>Stats</h1>
-            <Row className="stats-row">
-              <h4>Overall</h4>
-              <Col>
-                <h5>Mileage</h5>
-                <p>Total: {participant.totalMileage}</p>
-                <p>Average: {participant.avgMileage}</p>
-              </Col>
-              <Col>
-                <h5>Duration</h5>
-                <p>
-                  Total:{" "}
-                  {`${participant.totalDuration?.hours} hours
-                ${participant.totalDuration?.minutes} minutes
-                ${participant.totalDuration?.seconds} seconds`}
-                </p>
-                <p>
-                  Average:{" "}
-                  {`${participant.avgDuration?.hours} hours
-                ${participant.avgDuration?.minutes} minutes
-                ${participant.avgDuration?.seconds} seconds`}
-                </p>
-              </Col>
-              <Col>
-                <h5>Pace</h5>
-                <p>{`${participant.avgPace?.minutes} minutes
-                ${participant.avgPace?.seconds} seconds`}</p>
-              </Col>
-            </Row>
-            <Row className="stats-row">
-              <h4>{race.name}</h4>
-              {[participant?.races?.find((r) => r?.id === race.id)].map((r) => {
+            <Row className="stats-row m-3">
+              <h1>Stats</h1>
+              {["race", "Overall"].map((title) => {
+                title = title === "race" ? race.name : title;
+                const stats =
+                  title === "Overall" && participant.totalDuration
+                    ? participant
+                    : participant.races?.find((r) => r.name === title) || {
+                        totalAttendance: 0,
+                        totalMileage: 0,
+                        avgMileage: 0,
+                        totalDuration: {
+                          hours: 0,
+                          minutes: 0,
+                          seconds: 0,
+                        },
+                        avgDuration: {
+                          hours: 0,
+                          minutes: 0,
+                          seconds: 0,
+                        },
+                        avgPace: {
+                          minutes: 0,
+                          seconds: 0,
+                        },
+                      };
                 return (
-                  <>
+                  <Row className="mb-3">
                     <Col>
-                      <h5>Attendance</h5>
-                      <p>Total: {r?.totalAttendance}</p>
+                      <Card>
+                        <Card.Header className="fs-4">{title}</Card.Header>
+                        <Card.Body>
+                          <Row>
+                            <Col>
+                              <Card.Title className="">
+                                <u>Attendance</u>
+                              </Card.Title>
+                              <h6 className="d-inline">Total: </h6>
+                              {stats.totalAttendance}
+                            </Col>
+                            <Col>
+                              <Card.Title>
+                                <u>Mileage</u>
+                              </Card.Title>
+                              <h6 className="d-inline">Total: </h6>{" "}
+                              {stats.totalMileage}
+                              <br />
+                              <h6 className="d-inline">Average: </h6>
+                              {stats.avgMileage?.toFixed(2)}
+                            </Col>
+                            <Col>
+                              <Card.Title>
+                                <u>Duration</u>
+                              </Card.Title>
+                              <h6>Total:</h6>
+                              <p>
+                                {`${stats.totalDuration?.hours} hours
+                                 ${stats.totalDuration?.minutes} minutes 
+                                 ${Math.round(
+                                   stats.totalDuration?.seconds
+                                 )} seconds`}
+                              </p>
+                              <h6>Average:</h6>
+                              <p>
+                                {`${stats.avgDuration?.hours} hours 
+                                ${stats.avgDuration?.minutes} minutes 
+                                ${Math.round(
+                                  stats.avgDuration?.seconds
+                                )} seconds`}
+                              </p>
+                            </Col>
+                            <Col>
+                              <Card.Title>
+                                <u>Pace</u>
+                              </Card.Title>
+                              <h6>Average:</h6>
+                              <p>
+                                {`${stats.avgPace?.minutes} minutes
+                                  ${Math.round(
+                                    stats.avgPace?.seconds
+                                  )} seconds`}
+                              </p>
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
                     </Col>
-                    <Col>
-                      <h5>Mileage</h5>
-                      <p>Total: {r?.totalMileage}</p>
-                      <p>Average: {r?.avgMileage}</p>
-                    </Col>
-                    <Col>
-                      <h5>Duration</h5>
-                      <p>
-                        Total:{" "}
-                        {`${r?.totalDuration?.hours} hours
-                      ${r?.totalDuration?.minutes} minutes
-                      ${r?.totalDuration?.seconds} seconds`}
-                      </p>
-                      <p>
-                        Average:{" "}
-                        {`${r?.avgDuration?.hours} hours
-                      ${r?.avgDuration?.minutes} minutes
-                      ${r?.avgDuration?.seconds} seconds`}
-                      </p>
-                    </Col>
-                    <Col>
-                      <h3>Pace</h3>
-                      <p>{`${r?.avgPace?.minutes} minutes
-                      ${r?.avgPace?.seconds} seconds`}</p>
-                    </Col>
-                  </>
+                  </Row>
                 );
               })}
             </Row>

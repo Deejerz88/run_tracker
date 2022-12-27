@@ -1,7 +1,34 @@
-#participant-table{
+#participant-table {
   border-radius: 5px;
-  border: 1px solid #ddd;
+  border: none;
+  box-shadow: 0 0 10px #555252;
+}
 
+#race-group {
+  filter: drop-shadow(0px 0px 5px #716e6e7d);
+  width: 98%;
+}
+
+/* .tabulator-row.tabulator-selectable.tabulator-row-odd {
+  background-color: #460000;
+  color: white
+}
+
+.tabulator-row.tabulator-selectable.tabulator-row-even {
+  background-color: #46000076;
+  color: white
+} */
+
+.tabulator-row.tabulator-selectable:hover {
+  /* background-color: #fd272757; */
+  background-color: #fd272764;
+
+  color: white;
+  font-weight: bold;
+}
+
+.tabulator-col-content {
+  color: #ED1C24;
 }
 
 /* .modal-body, .modal-header{
@@ -9,10 +36,33 @@
   background-size: cover;
 } */
 
-.stats-row{
+/* .stats-row{
   border: 1px solid #ddd;
   border-radius: 5px;
   margin: 10px auto;
   padding: 10px;
-  
+
+} */
+
+.check, .ex{
+  background-color: white;
+  border-radius: 50%;
 }
+
+.tabulator .tabulator-footer{
+  background-color: #ED1C24
+}
+
+.tabulator .tabulator-footer .tabulator-page.active{
+  background-color: #e16f73;
+  font-weight: bold;
+}
+
+#footer{
+  height: 25px;
+}
+/* .tabulator .tabulator-footer .tabulator-page{
+  background-color: #e16f73;
+  color: white;
+  font-weight: bold
+} */
