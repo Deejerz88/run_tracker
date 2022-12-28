@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Row, Col, Card } from "react-bootstrap";
-import Inputs from "./Inputs.js";
-import Stats from "./Stats.js";
+import { Modal, Tabs, Tab } from "react-bootstrap";
+import { Inputs, Stats, History } from "./components/index.js";
 import "./style.css";
 
 const CheckInOut = ({

@@ -28,6 +28,21 @@ router.get("/:user_id", async (req, res) => {
   res.json(participant);
 });
 
+// router.get("/:user_id/:race_id", async (req, res) => {
+//   const { user_id, race_id } = req.params;
+//   console.log("user_id", user_id);
+//   mongoose.connect(process.env.MONGO_URI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   });
+//   const participant = await Participant.findOne({
+//     user_id,
+//   });
+
+//   console.log("participant", participant);
+//   res.json(participant);
+// });
+
 router.get("/:type/:raceId", async (req, res) => {
   const { type, raceId } = req.params;
   const { eventIds } = req.query;
@@ -85,13 +100,12 @@ router.post("/", async (req, res) => {
       } else attendance.push({ ...attendanceUpdate });
     } else {
       race = raceUpdate;
-      races.push(race)
-      
+      races.push(race);
     }
   } else {
     doc = new Participant(update);
   }
-  const updatedDoc = await doc.save()
+  const updatedDoc = await doc.save();
   res.json(updatedDoc);
 });
 export default router;

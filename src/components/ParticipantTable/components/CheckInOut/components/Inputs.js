@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { DateTime } from "luxon";
 import { startCase } from "lodash";
-import { handleChange, handleSubmit } from "./utils/index.js";
+import { handleChange, handleSubmit } from "../utils/index.js";
 
 const Inputs = ({
   state,
@@ -30,8 +30,8 @@ const Inputs = ({
   }, [checkedIn]);
 
   useEffect(() => {
-    console.log('inputs state', state)
-  }, [state])
+    console.log("inputs state", state);
+  }, [state]);
 
   const handleClick = (e) => {
     if (e.target.type === "number") {
@@ -40,9 +40,7 @@ const Inputs = ({
   };
   return (
     <Form
-      onSubmit={(
-        e,
-      ) =>
+      onSubmit={(e) =>
         handleSubmit({
           e,
           state,
