@@ -116,6 +116,9 @@ const CheckInOut = ({
           <Tab eventKey="stats" title="Stats">
             <Stats participant={participant} race={race} />
           </Tab>
+          <Tab eventKey="history" title="History">
+            <History participant={participant} />
+          </Tab>
         </Tabs>
       </Modal.Body>
     </Modal>

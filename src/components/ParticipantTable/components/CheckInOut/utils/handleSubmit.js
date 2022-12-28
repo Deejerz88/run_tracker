@@ -64,7 +64,6 @@ const handleSubmit = async ({
       ],
     },
   ];
-  delete participant._id;
   console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;

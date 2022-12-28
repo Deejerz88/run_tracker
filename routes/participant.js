@@ -24,7 +24,7 @@ router.get("/:user_id", async (req, res) => {
     useUnifiedTopology: true,
   });
   const participant = await Participant.findOne({ user_id }).lean();
-  console.log("participant", participant);
+  // console.log("participant", participant);
   res.json(participant);
 });
 
@@ -77,10 +77,14 @@ router.post("/", async (req, res) => {
   const update = req.body;
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
+  console.log('raceUpdate', raceUpdate)
   let doc = await Participant.findOne({ user_id: update.user_id });
+  console.log('doc', doc)
   if (doc) {
     const { races } = doc;
-    let race = _.pickBy(races, (r) => r.id === raceUpdate.id)[0];
+    console.log('races', races)
+    let race = races.find((r) => r.id === raceUpdate.id);
+    console.log('race', race)
     if (race) {
       const { attendance } = race;
       let attendanceInd = _.findIndex(

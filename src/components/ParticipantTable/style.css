@@ -1,7 +1,12 @@
-#participant-table {
+#participant-table, #history-table {
   border-radius: 5px;
   border: none;
   box-shadow: 0 0 10px #555252;
+}
+
+#history-table {
+  /* margin-top: 10px; */
+  box-shadow: none;
 }
 
 #race-group {
@@ -29,8 +34,37 @@
   font-size: 1.2em;
 }
 
-.tabulator-col-content {
-  color: #ED1C24;
+#participant-table.tabulator .tabulator-header{
+   border-bottom: 3px solid black
+
+}
+
+#participant-table .tabulator-col-content {
+  color: white;
+  background-color: #de0202da;
+  -webkit-text-stroke: 0.15px white;
+  font-size: 1.2em;
+}
+
+#history-table .tabulator-row.tabulator-group {
+  background-color: #ED1C24;
+  color: white;
+  font-weight: bold;
+  -webkit-text-stroke: 0.25px black;
+  font-size: 1.2em;
+}
+
+#history-table.tabulator .tabulator-header{
+     border-bottom: 3px solid black
+
+}
+
+#history-table .tabulator-col-content {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.9);
+  -webkit-text-stroke: 0.15px white;
+  font-size: 1.2em;
+  height: 100%
 }
 
 /* .modal-body, .modal-header{
@@ -68,3 +102,8 @@
   color: white;
   font-weight: bold
 } */
+
+#history-table.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs{
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: white;
+}

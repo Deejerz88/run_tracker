@@ -29,8 +29,8 @@ const Stats = ({ participant, race }) => {
                 },
               };
         return (
-          <Container key={i} fluid className="stats-container">
-            <h2 id="stats-title">{title}</h2>
+          <Col className=''>
+            <h2 className="stats-title">{title}</h2>
             <Row className="w-100 justify-content-center">
               <Card id="attendance-card" className="stat-card">
                 <Card.Header>Attendance</Card.Header>
@@ -161,7 +161,7 @@ const Stats = ({ participant, race }) => {
                 </Card.Body>
               </Card>
             </Row>
-          </Container>
+          </Col>
         );
       })}
     </Row>

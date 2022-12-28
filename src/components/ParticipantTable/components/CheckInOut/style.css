@@ -43,7 +43,7 @@ form {
   word-break: keep-all;
 }
 .stats-row .card-header {
-  font-size: 2.25em;
+  font-size: 1.75em;
   line-height: 1;
   text-align: center;
   /* border: none; */
@@ -57,7 +57,7 @@ form {
   text-align: center;
 }
 .stats-row .card-title {
-  font-size: 3em;
+  font-size: 2.5em;
   line-height: 1;
   text-align: start;
 }
@@ -67,34 +67,34 @@ form {
 }
 
 .stats-row .card-text {
-  font-size: 2.75em;
+  font-size: 2.25em;
   line-height: 1;
 }
 
 #attendance-card, #pace-card, #duration-card, #mileage-card {
-  width: 335px;
+  width: 300px;
 }
 
 #attendance-card, #pace-card {
-  height: 150px;
+  height: 130px;
 }
 
 #duration-card, #mileage-card {
-  height: 225px;
+  height: 185px;
 }
 
 #attendance-card .card-body{
-  background: url('../../../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 100px;
+  background: url('../../../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 90px;
 }
 
 #attendance-title-col{
-  width: 245px;
+  width: 200px;
   flex: none;
 }
 
 
 #mileage-title-col {
-  width: 205px;
+  width: 155px;
   flex: none;
 }
 
@@ -106,15 +106,15 @@ form {
 
 
 #duration-card .card-body {
-  background: url('../../../../assets/images/duration.png') no-repeat 20% 50%;  background-size: 260px;
+  background: url('../../../../assets/images/duration.png') no-repeat 60% 60%;  background-size: 220px;
 }
 
 #pace-card .card-body {
-  background: url('../../../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 135px;
+  background: url('../../../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 120px;
 }
 
 #pace-title-col {
-  width: 175px;
+  width: 150px;
   flex: none;
 }
 
@@ -127,19 +127,23 @@ form {
 #duration-card .card-text,
 #pace-card .card-text {
   margin-top: 3px;
-  font-size: 2.25em;
+  font-size: 1.75em;
   line-height: 1.25;
 }
 
 
-#stats-title {
+.stats-title {
   text-shadow: 0px 3px 2px #275b3a59;
   color:rgb(99, 27, 27);
   font-weight: 1000;
   -webkit-text-stroke: 0.1px rgb(0, 0, 0);
   user-select: none;
   text-align: center;
-  font-size: 3.5em;
+  font-size: 3.0em;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 #stats-col-1,

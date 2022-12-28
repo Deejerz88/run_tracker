@@ -160,7 +160,7 @@ const ParticipantTable = () => {
         {
           title: "Checked In",
           field: "checkedIn",
-          maxWidth: 150,
+          maxWidth: 170,
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
@@ -170,7 +170,7 @@ const ParticipantTable = () => {
         {
           title: "Checked Out",
           field: "checkedOut",
-          maxWidth: 150,
+          maxWidth: 170,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: "boolean",
