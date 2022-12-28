@@ -75,10 +75,16 @@ form {
   line-height: 1;
 }
 
+#attendance-card, #pace-card, #duration-card, #mileage-card {
+  width: 325px;
+}
 
-#attendance-card {
-  width: 350px;
+#attendance-card, #pace-card {
   height: 150px;
+}
+
+#duration-card, #mileage-card {
+  height: 225px;
 }
 
 #attendance-card .card-body{
@@ -86,17 +92,13 @@ form {
 }
 
 #attendance-title-col{
-  width: 270px;
+  width: 245px;
   flex: none;
 }
 
-#mileage-card {
-  width: 350px;
-  height: 225px;
-}
 
 #mileage-title-col {
-  width: 230px;
+  width: 205px;
   flex: none;
 }
 
@@ -105,23 +107,10 @@ form {
   background: url('../../../../assets/images/mileage.png') no-repeat 60% 70%;  background-size: 175px;
 }
 
-#duration-card {
-  width: 350px;
-  height: 225px;
-}
+
 
 #duration-card .card-body {
-  background: url('../../../../assets/images/duration.png') no-repeat 30% 50%;  background-size: 250px;
-}
-
-#pace-col {
-  width: 300px;
-  flex: none;
-}
-
-#pace-card {
-  width: 350px;
-  height: 150px;
+  background: url('../../../../assets/images/duration.png') no-repeat 20% 50%;  background-size: 260px;
 }
 
 #pace-card .card-body {
@@ -129,7 +118,7 @@ form {
 }
 
 #pace-title-col {
-  width: 200px;
+  width: 175px;
   flex: none;
 }
 
@@ -146,14 +135,9 @@ form {
   line-height: 1.25;
 }
 
-#duration-title-col {
-  width: 150px;
-  flex: none;
-}
 
 #stats-title {
   text-shadow: 0px 3px 2px #275b3a59;
-  /* color: rgb(177, 3, 41); */
   color:rgb(99, 27, 27);
   font-weight: 1000;
   -webkit-text-stroke: 0.1px rgb(0, 0, 0);
@@ -174,7 +158,6 @@ form {
 }
 
 .modal-title.h4{
-  /* text-shadow: 0px 3px 2px #275b3a59; */
   color: #dc3545;
   font-weight: 700;
   -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
