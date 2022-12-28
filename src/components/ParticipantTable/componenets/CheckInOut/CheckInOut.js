@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Tabs, Tab, Row, Col, Card } from "react-bootstrap";
 import Inputs from "./Inputs.js";
+import Stats from "./Stats.js";
 import "./style.css";
 
 const CheckInOut = ({
@@ -114,97 +115,7 @@ const CheckInOut = ({
             />
           </Tab>
           <Tab eventKey="stats" title="Stats">
-            <Row className="stats-row m-3">
-              <h1>Stats</h1>
-              {["race", "Overall"].map((title, i) => {
-                title = title === "race" ? race.name : title;
-                const stats =
-                  title === "Overall" && participant.totalDuration
-                    ? participant
-                    : participant.races?.find((r) => r.name === title) || {
-                        totalAttendance: 0,
-                        totalMileage: 0,
-                        avgMileage: 0,
-                        totalDuration: {
-                          hours: 0,
-                          minutes: 0,
-                          seconds: 0,
-                        },
-                        avgDuration: {
-                          hours: 0,
-                          minutes: 0,
-                          seconds: 0,
-                        },
-                        avgPace: {
-                          minutes: 0,
-                          seconds: 0,
-                        },
-                      };
-                return (
-                  <Row key={i} className="mb-3">
-                    <Col>
-                      <Card>
-                        <Card.Header className="fs-4">{title}</Card.Header>
-                        <Card.Body>
-                          <Row>
-                            <Col>
-                              <Card.Title className="">
-                                <u>Attendance</u>
-                              </Card.Title>
-                              <h6 className="d-inline">Total: </h6>
-                              {stats.totalAttendance}
-                            </Col>
-                            <Col>
-                              <Card.Title>
-                                <u>Mileage</u>
-                              </Card.Title>
-                              <h6 className="d-inline">Total: </h6>{" "}
-                              {stats.totalMileage}
-                              <br />
-                              <h6 className="d-inline">Average: </h6>
-                              {stats.avgMileage?.toFixed(2)}
-                            </Col>
-                            <Col>
-                              <Card.Title>
-                                <u>Duration</u>
-                              </Card.Title>
-                              <h6>Total:</h6>
-                              <p>
-                                {`${stats.totalDuration?.hours} hours
-                                 ${stats.totalDuration?.minutes} minutes 
-                                 ${Math.round(
-                                   stats.totalDuration?.seconds
-                                 )} seconds`}
-                              </p>
-                              <h6>Average:</h6>
-                              <p>
-                                {`${stats.avgDuration?.hours} hours 
-                                ${stats.avgDuration?.minutes} minutes 
-                                ${Math.round(
-                                  stats.avgDuration?.seconds
-                                )} seconds`}
-                              </p>
-                            </Col>
-                            <Col>
-                              <Card.Title>
-                                <u>Pace</u>
-                              </Card.Title>
-                              <h6>Average:</h6>
-                              <p>
-                                {`${stats.avgPace?.minutes} minutes
-                                  ${Math.round(
-                                    stats.avgPace?.seconds
-                                  )} seconds`}
-                              </p>
-                            </Col>
-                          </Row>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
-                );
-              })}
-            </Row>
+            <Stats participant={participant} race={race} />
           </Tab>
         </Tabs>
       </Modal.Body>

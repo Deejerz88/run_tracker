@@ -23,6 +23,21 @@
   box-shadow: 0 0 8px 0.25rem rgba(202, 11, 1, 0.415);
 }
 
+.styled-hr{
+  margin: 0 auto;
+  opacity: 1;
+  border: none;
+  height: 7px;
+  background-image: radial-gradient(
+    100% 100% at 100% 0,
+    #7d5151ed 15%,
+    rgba(108, 42, 42, 0.819) 75%
+  );
+  border-radius: 1rem;
+  box-shadow: inset rgba(64, 26, 26, 0.25) 0 -3px 0, -0px 0px 5px #575656d0;
+  transition: all 0.2s ease-in-out;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

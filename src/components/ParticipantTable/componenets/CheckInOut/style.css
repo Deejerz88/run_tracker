@@ -1,32 +1,183 @@
-#checkInOut{
+#checkInOut {
   margin: 10px;
 }
 
-form{
+form {
   border: none;
 }
 
-#checkInOut .form-control{
+#checkInOut .form-control {
   box-shadow: inset 0 0 5px #d4d1d1;
 
-  border: 1px solid #ddd
+  border: 1px solid #ddd;
 }
 
-.nav-item>button{
-  color: red
-}
-
-.nav-item>button:hover{
+.nav-item > button {
   color: red;
-  font-weight: bold
 }
 
-.nav-item>button.active{
+.nav-item > button:hover {
+  color: red;
+  font-weight: bold;
+}
+
+.nav-item > button.active {
   color: red !important;
-  font-weight: bolder
+  font-weight: bolder;
 }
 
-.tab-pane.active{
+.tab-pane.active {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+
+.stats-row .card {
+  border: none;
+  box-shadow: 0 0 6px var(--shadow);
+  margin: 15px;
+  background-image: linear-gradient(to right, #6f3333, #f13333);
+  color: white;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  -webkit-text-stroke: 0.25px rgb(66, 22, 22);
+  text-shadow: 0 0 5px black;
+  cursor: default;
+  user-select: none;
+  transition: 0.2s all ease-in-out;
+  word-wrap: normal;
+  word-break: keep-all;
+}
+.stats-row .card-header {
+  font-size: 2.25em;
+  line-height: 1;
+  text-align: center;
+  /* border: none; */
+  background-color: transparent;
+  z-index: 1;
+}
+
+
+.stats-row .card-body {
+  padding: 1.1em;
+  text-align: center;
+}
+.stats-row .card-title {
+  font-size: 3em;
+  line-height: 1;
+  text-align: start;
+}
+
+#duration-card .card-title {
+  line-height: 1.25;
+}
+
+.stats-row .card-text {
+  font-size: 2.75em;
+  line-height: 1;
+}
+
+
+#attendance-card {
+  width: 350px;
+  height: 150px;
+}
+
+#attendance-card .card-body{
+  background: url('../../../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 100px;
+}
+
+#attendance-title-col{
+  width: 270px;
+  flex: none;
+}
+
+#mileage-card {
+  width: 350px;
+  height: 225px;
+}
+
+#mileage-title-col {
+  width: 230px;
+  flex: none;
+}
+
+#mileage-card .card-body {
+  padding-top: 30px;
+  background: url('../../../../assets/images/mileage.png') no-repeat 60% 70%;  background-size: 175px;
+}
+
+#duration-card {
+  width: 350px;
+  height: 225px;
+}
+
+#duration-card .card-body {
+  background: url('../../../../assets/images/duration.png') no-repeat 30% 50%;  background-size: 250px;
+}
+
+#pace-col {
+  width: 300px;
+  flex: none;
+}
+
+#pace-card {
+  width: 350px;
+  height: 150px;
+}
+
+#pace-card .card-body {
+  background: url('../../../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 135px;
+}
+
+#pace-title-col {
+  width: 200px;
+  flex: none;
+}
+
+#duration-card p,
+#pace-card p {
+  line-height: 1;
+  margin-bottom: 0;
+}
+
+#duration-card .card-text,
+#pace-card .card-text {
+  margin-top: 3px;
+  font-size: 2.25em;
+  line-height: 1.25;
+}
+
+#duration-title-col {
+  width: 150px;
+  flex: none;
+}
+
+#stats-title {
+  text-shadow: 0px 3px 2px #275b3a59;
+  /* color: rgb(177, 3, 41); */
+  color:rgb(99, 27, 27);
+  font-weight: 1000;
+  -webkit-text-stroke: 0.1px rgb(0, 0, 0);
+  user-select: none;
+  text-align: center;
+  font-size: 3.5em;
+}
+
+#stats-col-1,
+#stats-col-2 {
+  width: 450px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  
+}
+
+.modal-title.h4{
+  /* text-shadow: 0px 3px 2px #275b3a59; */
+  color: #dc3545;
+  font-weight: 700;
+  -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
+  user-select: none;
+}
+
