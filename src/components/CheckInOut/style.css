@@ -84,7 +84,7 @@ form {
 }
 
 #attendance-card .card-body{
-  background: url('../../../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 90px;
+  background: url('../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 90px;
 }
 
 #attendance-title-col{
@@ -100,17 +100,17 @@ form {
 
 #mileage-card .card-body {
   padding-top: 30px;
-  background: url('../../../../assets/images/mileage.png') no-repeat 60% 70%;  background-size: 175px;
+  background: url('../../assets/images/mileage.png') no-repeat 60% 70%;  background-size: 175px;
 }
 
 
 
 #duration-card .card-body {
-  background: url('../../../../assets/images/duration.png') no-repeat 60% 60%;  background-size: 220px;
+  background: url('../../assets/images/duration.png') no-repeat 60% 60%;  background-size: 220px;
 }
 
 #pace-card .card-body {
-  background: url('../../../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 120px;
+  background: url('../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 120px;
 }
 
 #pace-title-col {
