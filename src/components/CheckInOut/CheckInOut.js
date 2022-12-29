@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab } from "react-bootstrap";
+import { Modal, Tabs, Tab, Card, Row, Col } from "react-bootstrap";
 import { Inputs, Stats, History } from "./components/index.js";
-import {BsXSquareFill} from "react-icons/bs/index.esm.js";
+import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
+import { startCase } from "lodash";
 
 const CheckInOut = ({
   show,
@@ -46,6 +47,23 @@ const CheckInOut = ({
     });
     setTimeout(() => setParticipant({}), 100);
   };
+
+  const handleClick = (e) => {
+    const card = e.target.closest(".card");
+    console.log('card', card)
+    const { id } = card;
+    if (id === 'phone-card') {
+      const phone = participant.phone;
+      if (phone) {
+        window.open(`tel:${phone}`, '_blank');
+      }
+    } else if (id === 'email-card') {
+      const email = participant.email;
+      if (email) {
+        window.open(`mailto:${email}`, '_blank');
+      }
+    }
+   }
 
   useEffect(() => {
     if (!participant.user_id || !race.id || !table) return;
@@ -96,13 +114,13 @@ const CheckInOut = ({
   }, [state]);
 
   return (
-    <Modal size="xl" fullscreen={true} show={show} onHide={handleClose}>
-      <Modal.Header className='d-flex justify-content-between'>
+    <Modal fullscreen={true} show={show} onHide={handleClose}>
+      <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
-        <BsXSquareFill id='close-modal' onClick={handleClose} />
+        <BsXSquareFill id="close-modal" onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
-        <Tabs justify defaultActiveKey="checkIn"  >
+        <Tabs justify defaultActiveKey="checkIn">
           <Tab eventKey="checkIn" title="Check In / Out">
             <Inputs
               state={state}
@@ -115,11 +133,27 @@ const CheckInOut = ({
               date={date}
             />
           </Tab>
-          <Tab eventKey="stats" title="Stats" className='stats-tab'>
+          <Tab eventKey="stats" title="Stats" className="stats-tab">
             <Stats participant={participant} race={race} />
           </Tab>
           <Tab eventKey="history" title="History">
             <History participant={participant} />
+          </Tab>
+          <Tab eventKey="contact" title="Contact Info" className="contact-tab">
+            <Row id="contact-row" className="justify-content-center w-100">
+              {
+                ["phone", "email"].map((key) => {
+                  return (
+                    <Card id={`${key}-card`} className="contact-card" onClick={handleClick}>
+                      <Card.Body className={`${key}-body`}>
+                        <Card.Header>{startCase(key)}</Card.Header>
+                        <Card.Text id={`${key}-body`}>{participant[key]}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  );
+                })
+              }
+            </Row>
           </Tab>
         </Tabs>
       </Modal.Body>

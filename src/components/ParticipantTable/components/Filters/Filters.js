@@ -70,9 +70,10 @@ const Filters = () => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
     console.log("tableFilters", table.getFilters());
-    checkedIn
-      ? table.addFilter("checkedIn", "=", true)
-      : table.removeFilter("checkedIn", "=", true);
+    if (checkedIn) {
+      table.addFilter("checkedIn", "=", true);
+      setCheckedOut(false);
+    } else table.removeFilter("checkedIn", "=", true);
     console.log("tableFilters", table.getFilters());
   }, [checkedIn]);
 
@@ -80,9 +81,10 @@ const Filters = () => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
     console.log("tableFilters", table.getFilters());
-    checkedOut
-      ? table.addFilter("checkedOut", "=", true)
-      : table.removeFilter("checkedOut", "=", true);
+    if (checkedOut) {
+      table.addFilter("checkedOut", "=", true);
+      setCheckedIn(false);
+    } else table.removeFilter("checkedOut", "=", true);
     console.log("tableFilters", table.getFilters());
   }, [checkedOut]);
 
@@ -100,11 +102,7 @@ const Filters = () => {
                 onChange={handleChange}
               />
             </FloatingLabel>
-            <Button
-              id="clear-name"
-              variant="light"
-              onClick={() => setName("")}
-            >
+            <Button id="clear-name" variant="light" onClick={() => setName("")}>
               <MdOutlineClear id="name-x" />
             </Button>
           </InputGroup>
@@ -113,7 +111,11 @@ const Filters = () => {
           xs={6}
           className="d-flex justify-content-center align-items-center"
         >
-          <ButtonGroup id='checkin-group' className="h-50" onClick={handleChange}>
+          <ButtonGroup
+            id="checkin-group"
+            className="h-50"
+            onClick={handleChange}
+          >
             <Button
               id="checked-in"
               name="checkedIn"

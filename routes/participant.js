@@ -54,16 +54,19 @@ router.get("/:type/:raceId", async (req, res) => {
   // console.log("data", data);
   mp = type === "race" ? mp : "club_members";
   let participants = [];
-  if (type === "race") {
-    data.forEach((event) => participants.push(...(event.participants || [])));
-  } else participants = data.club_members;
+  type === "race"
+    ? data.forEach((event) => participants.push(...(event.participants || [])))
+    : (participants = data.club_members);
   if (!participants.length) return res.json([]);
+  console.log(participants[0]);
   participants = participants.map((participant) => {
-    const { user_id, first_name, last_name } = participant.user;
+    const { user_id, first_name, last_name, email, phone } = participant.user;
     return {
       user_id,
       first_name,
       last_name,
+      email,
+      phone,
     };
   });
   res.json(participants);
@@ -77,14 +80,14 @@ router.post("/", async (req, res) => {
   const update = req.body;
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
-  console.log('raceUpdate', raceUpdate)
+  console.log("raceUpdate", raceUpdate);
   let doc = await Participant.findOne({ user_id: update.user_id });
-  console.log('doc', doc)
+  console.log("doc", doc);
   if (doc) {
     const { races } = doc;
-    console.log('races', races)
+    console.log("races", races);
     let race = races.find((r) => r.id === raceUpdate.id);
-    console.log('race', race)
+    console.log("race", race);
     if (race) {
       const { attendance } = race;
       let attendanceInd = _.findIndex(

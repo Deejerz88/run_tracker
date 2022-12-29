@@ -29,7 +29,7 @@ const Stats = ({ participant, race }) => {
                 },
               };
         return (
-          <Col className=''>
+          <Col>
             <h2 className="stats-title">{title}</h2>
             <Row className="w-100 justify-content-center">
               <Card id="attendance-card" className="stat-card">
