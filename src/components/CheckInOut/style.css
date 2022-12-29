@@ -1,4 +1,3 @@
-
 form {
   border: none;
 }
@@ -8,24 +7,61 @@ form {
   border: 1px solid #ddd;
 }
 
+
 .nav-item > button {
-  color: red;
+  color: #ed1c24;
+  border: none;
+  transition: 0.1s all ease-out;
 }
 
 .nav-item > button:hover {
-  color: red;
+  color: white;
   font-weight: bold;
+  background: #b50101 !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .nav-item > button.active {
-  color: red !important;
+  color: white !important;
   font-weight: bolder;
+  border: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  transition: 0.1s all ease-out;
 }
 
-.tab-pane.active {
+.nav-item > button.active:hover {
+  color: #ed1c24;
+  color: white !important;
+  font-weight: bolder;
+  border: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.nav-link.active {
+  background: #ed1c24 !important;
+  transition: 0.1s all ease-out;
+}
+
+.nav-item {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  /* margin: 0 1px; */
+  transition: 0.1s all ease-out;
+}
+
+.stats-tab .stats-row {
+  background-color: whitesmoke;
+  border-radius: 0 0 10px 10px;
+}
+
+/* .tab-pane.active {
   border: 1px solid #ddd;
   border-radius: 5px;
-}
+} */
 
 .stats-row .card {
   border: none;
@@ -51,7 +87,6 @@ form {
   z-index: 1;
 }
 
-
 .stats-row .card-body {
   padding: 1.1em;
   text-align: center;
@@ -71,27 +106,32 @@ form {
   line-height: 1;
 }
 
-#attendance-card, #pace-card, #duration-card, #mileage-card {
+#attendance-card,
+#pace-card,
+#duration-card,
+#mileage-card {
   width: 300px;
 }
 
-#attendance-card, #pace-card {
+#attendance-card,
+#pace-card {
   height: 130px;
 }
 
-#duration-card, #mileage-card {
+#duration-card,
+#mileage-card {
   height: 185px;
 }
 
-#attendance-card .card-body{
-  background: url('../../assets/images/attendance2.png') no-repeat 65% 50%;  background-size: 90px;
+#attendance-card .card-body {
+  background: url("../../assets/images/attendance2.png") no-repeat 65% 50%;
+  background-size: 90px;
 }
 
-#attendance-title-col{
+#attendance-title-col {
   width: 200px;
   flex: none;
 }
-
 
 #mileage-title-col {
   width: 155px;
@@ -100,17 +140,18 @@ form {
 
 #mileage-card .card-body {
   padding-top: 30px;
-  background: url('../../assets/images/mileage.png') no-repeat 60% 70%;  background-size: 175px;
+  background: url("../../assets/images/mileage.png") no-repeat 60% 70%;
+  background-size: 175px;
 }
 
-
-
 #duration-card .card-body {
-  background: url('../../assets/images/duration.png') no-repeat 60% 60%;  background-size: 220px;
+  background: url("../../assets/images/duration.png") no-repeat 60% 60%;
+  background-size: 220px;
 }
 
 #pace-card .card-body {
-  background: url('../../assets/images/pace.png') no-repeat 45% 50%;  background-size: 120px;
+  background: url("../../assets/images/pace.png") no-repeat 45% 50%;
+  background-size: 120px;
 }
 
 #pace-title-col {
@@ -131,15 +172,14 @@ form {
   line-height: 1.25;
 }
 
-
 .stats-title {
   text-shadow: 0px 3px 2px #275b3a59;
-  color:rgb(99, 27, 27);
+  color: rgb(99, 27, 27);
   font-weight: 1000;
   -webkit-text-stroke: 0.1px rgb(0, 0, 0);
   user-select: none;
   text-align: center;
-  font-size: 3.0em;
+  font-size: 3em;
   height: 120px;
   display: flex;
   align-items: flex-end;
@@ -153,14 +193,51 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
-  
 }
 
-.modal-title.h4{
-  color: #dc3545;
+.modal-header {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.modal-title.h4 {
+  color: white;
   font-weight: 700;
   -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
   user-select: none;
+  /* background:  */
 }
 
+.modal-body {
+  background: url("/public/assets/images/background.jpg") no-repeat 65% 50%;
+  background-size: cover;
+  padding: 3em 0.0em;
+}
+
+#close-modal {
+  color: #dc3545;
+  font-size: 1.5em;
+  /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
+  user-select: none;
+  margin: 0 20px;
+  transition: 0.1s all ease-out;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
+  background-color: white;
+  border-radius: 15%;
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.989); */
+}
+
+#close-modal:hover {
+  color: #ff3b4f;
+  /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.65));
+
+  user-select: none;
+  margin: 0 20px;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+#close-modal:active {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.809));
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Tabs, Tab } from "react-bootstrap";
 import { Inputs, Stats, History } from "./components/index.js";
+import {BsXSquareFill} from "react-icons/bs/index.esm.js";
 import "./style.css";
 
 const CheckInOut = ({
@@ -96,11 +97,12 @@ const CheckInOut = ({
 
   return (
     <Modal size="xl" fullscreen={true} show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
+      <Modal.Header className='d-flex justify-content-between'>
         <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
+        <BsXSquareFill id='close-modal' onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
-        <Tabs justify defaultActiveKey="checkIn">
+        <Tabs justify defaultActiveKey="checkIn"  >
           <Tab eventKey="checkIn" title="Check In / Out">
             <Inputs
               state={state}
@@ -113,7 +115,7 @@ const CheckInOut = ({
               date={date}
             />
           </Tab>
-          <Tab eventKey="stats" title="Stats">
+          <Tab eventKey="stats" title="Stats" className='stats-tab'>
             <Stats participant={participant} race={race} />
           </Tab>
           <Tab eventKey="history" title="History">

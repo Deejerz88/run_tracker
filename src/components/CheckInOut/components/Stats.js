@@ -3,7 +3,7 @@ import { Row, Col, Card, Container } from "react-bootstrap";
 
 const Stats = ({ participant, race }) => {
   return (
-    <Row className="stats-row m-3">
+    <Row className="stats-row">
       {["race", "Overall"].map((title, i) => {
         title = title === "race" ? race.name : title;
         const stats =

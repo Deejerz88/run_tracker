@@ -156,8 +156,8 @@ const ParticipantTable = () => {
       index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: false },
-        { title: "First Name", field: "first_name" },
-        { title: "Last Name", field: "last_name" },
+        { title: "First Name", field: "first_name", formatter: (cell) => `<b>${cell.getValue()}</b>` },
+        { title: "Last Name", field: "last_name", formatter: (cell) => `<b>${cell.getValue()}</b>`  },
         {
           title: "Checked In",
           field: "checkedIn",
@@ -181,7 +181,7 @@ const ParticipantTable = () => {
         {
           title: "Start",
           field: "start",
-          maxWidth: 120,
+          maxWidth: 140,
           hozAlign: "center",
           sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {
             return (
@@ -196,7 +196,7 @@ const ParticipantTable = () => {
         {
           title: "Finish",
           field: "finish",
-          maxWidth: 120,
+          maxWidth: 140,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {

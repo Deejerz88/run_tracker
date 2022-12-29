@@ -94,9 +94,9 @@ const handleSubmit = async ({
       [`checked${startCase(activeKey)}`]: true,
     },
   ]);
-  table.redraw(true);
-  table.setSort()
+  // table.redraw(true);
   handleClose();
+  window.scrollTo(0, 0);
   toast.success(`${participant.name} checked ${activeKey}`, {
     position: toast.POSITION.TOP_CENTER,
     autoClose: 1500,

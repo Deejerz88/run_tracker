@@ -15,24 +15,18 @@
 }
 
 /* .tabulator-row.tabulator-selectable.tabulator-row-odd {
-  background-color: #460000;
-  color: white
 }
 
 .tabulator-row.tabulator-selectable.tabulator-row-even {
-  background-color: #46000076;
-  color: white
 } */
 
 .tabulator-row.tabulator-selectable:hover {
-  /* background-color: #fd272757; */
   background-color: #ef000068;
 
   color: white;
   font-weight: bold;
   -webkit-text-stroke: 0.10px black;
-  /* filter: drop-shadow(0px 0px 0px #0000007d); */
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 #participant-table.tabulator .tabulator-header{
@@ -57,7 +51,6 @@
 
 #history-table.tabulator .tabulator-header{
      border-bottom: 3px solid black
-
 }
 
 #history-table .tabulator-col-content {
@@ -67,19 +60,6 @@
   font-size: 1.2em;
   height: 100%
 }
-
-/* .modal-body, .modal-header{
-  background: url('/public/assets/images/background2.jpg') ;
-  background-size: cover;
-} */
-
-/* .stats-row{
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin: 10px auto;
-  padding: 10px;
-
-} */
 
 .check, .ex{
   background-color: white;
@@ -98,11 +78,6 @@
 #footer{
   height: 25px;
 }
-/* .tabulator .tabulator-footer .tabulator-page{
-  background-color: #e16f73;
-  color: white;
-  font-weight: bold
-} */
 
 #history-table.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs{
   background: rgba(0, 0, 0, 0.9) !important;
