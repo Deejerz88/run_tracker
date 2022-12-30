@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Container } from "react-bootstrap";
+import React, { useEffect } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { DateTime, Duration } from "luxon";
 import axios from "axios";
@@ -139,6 +138,7 @@ const History = ({ participant }) => {
     table.on("tableBuilt", () => {
       getHistory(table);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div id="history-table"></div>;

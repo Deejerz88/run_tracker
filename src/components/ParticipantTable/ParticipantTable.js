@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { renderToString } from "react-dom/server";
-import { Form, FloatingLabel, InputGroup } from "react-bootstrap";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
 import { Filters } from "./index.js";
@@ -23,7 +22,6 @@ const ParticipantTable = () => {
   const [race, setRace] = useState({});
   const [date, setDate] = useState(DateTime.local().toISODate());
   const [table, setTable] = useState(null);
-  const [mobile, setMobile] = useState(false);
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Card, Row, Col } from "react-bootstrap";
+import { Modal, Tabs, Tab, Card, Row } from "react-bootstrap";
 import { Inputs, Stats, History } from "./components/index.js";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
