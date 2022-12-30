@@ -2,13 +2,15 @@ import express, { urlencoded } from "express";
 import routes from "./routes/index.js";
 import path from "path";
 import cors from "cors";
+import compression from "compression";
+
 
 const port = process.env.PORT || 5000;
 const directory =
   process.env.NODE_ENV === "production" ? "./build" : "./public";
 
 const app = express();
-
+app.use(compression())
 app.use(urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
