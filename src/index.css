@@ -22,4 +22,22 @@ code {
   .checkIn-row{
     flex-direction: column;
   }
+
+}
+
+@media screen and (max-width: 700px){
+  #pace-title-col {
+    width: 105px !important;
+  }
+  #attendance-title-col{
+    width: 175px !important;
+  }
+  #mileage-title-col{
+    width: 140px !important;
+  }
+
+  #duration-card .card-text{
+    font-size: 1.2em !important;
+    line-height: 1.75 !important;
+  }
 }

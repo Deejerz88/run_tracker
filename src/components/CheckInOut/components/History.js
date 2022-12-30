@@ -44,7 +44,6 @@ const History = ({ participant }) => {
       });
       console.log("history", history);
       table.setData(history);
-      table.redraw(true);
     };
     const table = new Tabulator("#history-table", {
       layout: "fitColumns",
