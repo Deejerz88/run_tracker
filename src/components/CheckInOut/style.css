@@ -272,22 +272,22 @@ form {
 
 #close-modal {
   color: #dc3545;
-  font-size: 1.5em;
+  font-size: 2em;
   /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
   user-select: none;
   margin: 0 20px;
   transition: 0.1s all ease-out;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
-  background-color: white;
-  border-radius: 15%;
-  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.989); */
+  /* filter: drop-shadow(0 0 2px rgba(255, 254, 254, 0.752)); */
+  /* background-color: white; */
+  /* border-radius: 15%; */
+  /* box-shadow: 0 0 3px rgba(165, 165, 165, 0.989); */
 }
 
 #close-modal:hover {
   color: #ff3b4f;
   /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.65));
-
+  
   user-select: none;
   margin: 0 20px;
   cursor: pointer;
