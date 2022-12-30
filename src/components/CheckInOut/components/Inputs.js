@@ -192,7 +192,7 @@ const Inputs = ({
                 </FloatingLabel>
               </Col>
             </Row>
-            <Row>
+            <Row className='checkIn-row'>
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
                   <FormLabel>{startCase(group)}</FormLabel>
