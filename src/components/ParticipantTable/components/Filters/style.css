@@ -69,3 +69,8 @@
   color: white;
   font-weight: bold;
 }
+
+#race-group {
+  filter: drop-shadow(0px 0px 5px #716e6e7d);
+  /* width: 98%; */
+}

@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* Media Queries */
+
+@media screen  and (max-width: 600px) {
+  #filter-row-2{
+    flex-direction: column;
+  }
+  .checkIn-row{
+    flex-direction: column;
+  }
+}

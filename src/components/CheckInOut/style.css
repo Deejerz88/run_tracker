@@ -12,6 +12,7 @@ form {
   color: #ed1c24;
   border: none;
   transition: 0.1s all ease-out;
+  height: 100%;
 }
 
 .nav-item > button:hover {

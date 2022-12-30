@@ -9,16 +9,7 @@
   box-shadow: none;
 }
 
-#race-group {
-  filter: drop-shadow(0px 0px 5px #716e6e7d);
-  width: 98%;
-}
 
-/* .tabulator-row.tabulator-selectable.tabulator-row-odd {
-}
-
-.tabulator-row.tabulator-selectable.tabulator-row-even {
-} */
 
 .tabulator-row.tabulator-selectable:hover {
   background-color: #ef000068;

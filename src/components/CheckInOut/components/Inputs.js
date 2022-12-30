@@ -97,7 +97,7 @@ const Inputs = ({
                 </InputGroup>
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row className="mb-3 checkIn-row">
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
                   <FormLabel>{startCase(group)}</FormLabel>
