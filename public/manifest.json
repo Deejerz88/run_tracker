@@ -47,7 +47,7 @@
       "purpose": "maskable"
     }
   ],
-  "orientation": "landscape",
+  "orientation": "portrait",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",

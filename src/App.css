@@ -43,6 +43,10 @@
   transition: 0.2s all ease-out;
 }
 
+#logo{
+  margin: 30px auto;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

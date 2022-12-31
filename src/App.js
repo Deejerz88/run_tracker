@@ -16,7 +16,7 @@ function App() {
           id="logo"
           fluid
           src="./assets/images/logo.png"
-          className="mx-auto my-3"
+          className="mx-auto"
         />
       </Row>
 
