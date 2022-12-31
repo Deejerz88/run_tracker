@@ -1,20 +1,17 @@
-
 .form-check-input:checked {
   background-color: rgba(241, 12, 0, 0.25);
   border-color: rgba(241, 12, 0, 0.25);
 }
 
-#logo{
-  width: 450px
+#logo {
+  width: 450px;
 }
 
 .form-select,
 .form-control {
   border: none;
-  box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797)
+  box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
 }
-
-
 
 .form-check-input:focus,
 .form-control:focus,
@@ -23,7 +20,7 @@
   box-shadow: 0 0 8px 0.25rem rgba(202, 11, 1, 0.415);
 }
 
-.styled-hr{
+.styled-hr {
   margin: 0 auto;
   opacity: 1;
   border: none;
@@ -36,6 +33,14 @@
   border-radius: 1rem;
   box-shadow: inset rgba(64, 26, 26, 0.25) 0 -3px 0, -0px 0px 5px #575656d0;
   transition: all 0.2s ease-in-out;
+}
+
+#install-app {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: none;
+  transition: 0.2s all ease-out;
 }
 
 @media (prefers-reduced-motion: no-preference) {
