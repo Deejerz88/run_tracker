@@ -7,7 +7,6 @@ form {
   border: 1px solid #ddd;
 }
 
-
 .nav-item > button {
   color: #ed1c24;
   border: none;
@@ -54,17 +53,25 @@ form {
   transition: 0.1s all ease-out;
 }
 
-.stats-row{
+.stats-row {
   margin: 0 0.1em;
   padding: 0;
 }
 
-#contact-row{
+#contact-row {
   margin: 0 0.1em;
   padding: 60px 0;
+  /* transition: 0.2s all ease-out; */
 }
 
-.stats-title, .contact-title {
+#pin-row {
+  background-color: whitesmoke;
+  margin: 0 0.1em;
+  padding: 30px 0;
+}
+
+.stats-title,
+.contact-title {
   text-shadow: 0px 3px 2px #275b3a59;
   color: rgb(99, 27, 27);
   font-weight: 1000;
@@ -78,19 +85,19 @@ form {
   justify-content: center;
 }
 
-.stats-tab .stats-row, #contact-row {
+.stats-tab .stats-row,
+#contact-row {
   background-color: whitesmoke;
   border-radius: 0 0 10px 10px;
 }
-
-
 
 /* .tab-pane.active {
   border: 1px solid #ddd;
   border-radius: 5px;
 } */
 
-.stats-row .card, #contact-row .card {
+.stats-row .card,
+#contact-row .card {
   border: none;
   box-shadow: 0 0 6px var(--shadow);
   margin: 15px;
@@ -124,15 +131,15 @@ form {
   text-align: start;
 }
 
-#phone-card, #email-card {
+#phone-card,
+#email-card {
   width: 300px;
   height: 150px;
 }
 
-#contact-row .card-text{
+#contact-row .card-text {
   font-size: 1.5em;
   /* line-height: 1; */
-
 }
 
 #duration-card .card-title {
@@ -161,23 +168,22 @@ form {
   height: 185px;
 }
 
-
-#email-card .card-body{
-  background: url('/public/assets/images/email2.png') no-repeat 50% 45%;
+#email-card .card-body {
+  background: url("/public/assets/images/email2.png") no-repeat 50% 45%;
   background-size: 300px;
 }
 
-#phone-card .card-body{
-  background: url('/public/assets/images/phone.png') no-repeat 30% 120%;
+#phone-card .card-body {
+  background: url("/public/assets/images/phone.png") no-repeat 30% 120%;
   background-size: 130px;
 }
 
-#phone-card .card-header{
+#phone-card .card-header {
   background-image: linear-gradient(to right, #6f3333, #f13333);
 }
 
 #attendance-card .card-body {
-  background: url("../../assets/images/attendance2.png") no-repeat 65% 50%;
+  background: url("/public/assets/images/attendance2.png") no-repeat 65% 50%;
   background-size: 90px;
 }
 
@@ -193,17 +199,17 @@ form {
 
 #mileage-card .card-body {
   padding-top: 30px;
-  background: url("../../assets/images/mileage.png") no-repeat 60% 70%;
+  background: url("/public/assets/images/mileage.png") no-repeat 60% 70%;
   background-size: 175px;
 }
 
 #duration-card .card-body {
-  background: url("../../assets/images/duration.png") no-repeat 60% 60%;
+  background: url("/public/assets/images/duration.png") no-repeat 60% 60%;
   background-size: 220px;
 }
 
 #pace-card .card-body {
-  background: url("../../assets/images/pace.png") no-repeat 45% 50%;
+  background: url("/public/assets/images/pace.png") no-repeat 45% 50%;
   background-size: 120px;
 }
 
@@ -225,8 +231,6 @@ form {
   line-height: 1.25;
 }
 
-
-
 #stats-col-1,
 #stats-col-2 {
   width: 450px;
@@ -236,20 +240,23 @@ form {
   align-items: center;
 }
 
+#contact-row .card {
+  transition: 0.2s all ease-out;
+}
 
-#contact-row .card-body{
+#contact-row .card-body {
   text-align: center;
-  padding: 0
+  padding: 0;
 }
 
-#contact-row .card-text{
+#contact-row .card-text {
   line-height: 3;
-  transition: all .2s ease-out
+  transition: all 0.2s ease-out;
 }
 
-#contact-row .card:hover{
+#contact-row .card:hover {
   cursor: pointer;
-  transform: scale(1.1)
+  transform: scale(1.1);
 }
 
 .modal-header {
@@ -287,7 +294,7 @@ form {
   color: #ff3b4f;
   /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.65));
-  
+
   user-select: none;
   margin: 0 20px;
   cursor: pointer;

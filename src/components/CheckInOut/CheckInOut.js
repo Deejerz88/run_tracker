@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Card, Row } from "react-bootstrap";
-import { Inputs, Stats, History } from "./components/index.js";
+import { Modal, Tabs, Tab } from "react-bootstrap";
+import { Inputs, Stats, History, Contact } from "./components/index.js";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
-import { startCase } from "lodash";
 
 const CheckInOut = ({
   show,
@@ -50,20 +49,20 @@ const CheckInOut = ({
 
   const handleClick = (e) => {
     const card = e.target.closest(".card");
-    console.log('card', card)
+    console.log("card", card);
     const { id } = card;
-    if (id === 'phone-card') {
+    if (id === "phone-card") {
       const phone = participant.phone;
       if (phone) {
-        window.open(`tel:${phone}`, '_blank');
+        window.open(`tel:${phone}`, "_blank");
       }
-    } else if (id === 'email-card') {
+    } else if (id === "email-card") {
       const email = participant.email;
       if (email) {
-        window.open(`mailto:${email}`, '_blank');
+        window.open(`mailto:${email}`, "_blank");
       }
     }
-   }
+  };
 
   useEffect(() => {
     if (!participant.user_id || !race.id || !table) return;
@@ -140,20 +139,7 @@ const CheckInOut = ({
             <History participant={participant} />
           </Tab>
           <Tab eventKey="contact" title="Contact Info" className="contact-tab">
-            <Row id="contact-row" className="justify-content-center w-100">
-              {
-                ["phone", "email"].map((key) => {
-                  return (
-                    <Card id={`${key}-card`} className="contact-card" onClick={handleClick}>
-                      <Card.Body className={`${key}-body`}>
-                        <Card.Header>{startCase(key)}</Card.Header>
-                        <Card.Text id={`${key}-body`}>{participant[key]}</Card.Text>
-                      </Card.Body>
-                    </Card>
-                  );
-                })
-              }
-            </Row>
+            <Contact participant={participant} handleClick={handleClick} />
           </Tab>
         </Tabs>
       </Modal.Body>

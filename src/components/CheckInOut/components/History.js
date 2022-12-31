@@ -4,6 +4,7 @@ import { DateTime, Duration } from "luxon";
 import axios from "axios";
 
 const History = ({ participant }) => {
+
   useEffect(() => {
     const getHistory = async (table) => {
       if (!participant) return;
@@ -138,7 +139,7 @@ const History = ({ participant }) => {
     table.on("tableBuilt", () => {
       getHistory(table);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div id="history-table"></div>;

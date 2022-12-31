@@ -202,7 +202,7 @@ const Inputs = ({
                       return (
                         <FloatingLabel key={type} label={type}>
                           <Form.Control
-                            id={`${group}-${type}`}
+                            id={`${group}-${type}-out`}
                             type="number"
                             step={type === "seconds" ? 5 : 1}
                             value={
