@@ -20,7 +20,7 @@ const Contact = ({ participant, handleClick }) => {
     else if (pin.length < pw.length) {
       $("#contact-row").hide(250);
     } else if (pin.length === pw.length) {
-      toast.error("Incorrect pin", { position: "top-center" });
+      toast.error("Incorrect pin", { position: "top-center", autoClose: 1000 });
       setPin("");
     }
   }, [pin]);

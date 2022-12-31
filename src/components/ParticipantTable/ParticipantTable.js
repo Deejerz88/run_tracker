@@ -70,7 +70,6 @@ const ParticipantTable = () => {
     return DateTime.fromMillis(update[field]).toFormat("hh:mm a");
   };
 
-
   useEffect(() => {
     if (!race.name) return;
     const table = Tabulator.findTable("#participant-table")[0];
@@ -201,7 +200,22 @@ const ParticipantTable = () => {
 
     table.on("tableBuilt", () => {
       setTable(table);
-      
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", (e) => {
+        deferredPrompt = e;
+        $("#install-app").show();
+      });
+
+      const installApp = document.getElementById("install-app");
+      installApp?.addEventListener("click", async () => {
+        if (deferredPrompt !== null) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === "accepted") {
+            deferredPrompt = null;
+          }
+        }
+      });
     });
     table.on("renderComplete", () => {
       //check if on mobile deice

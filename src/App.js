@@ -2,25 +2,9 @@ import "./App.css";
 import { ParticipantTable } from "./components/index.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Image, Row, Col, Button } from "react-bootstrap";
-import $ from "jquery";
+import { Image, Row,  Button } from "react-bootstrap";
 function App() {
-  let deferredPrompt;
-  window.addEventListener("beforeinstallprompt", (e) => {
-    deferredPrompt = e;
-    $("#install-app").show();
-  });
-
-  const installApp = document.getElementById("install-app");
-  installApp?.addEventListener("click", async () => {
-    if (deferredPrompt !== null) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        deferredPrompt = null;
-      }
-    }
-  });
+ 
   return (
     <>
       <ToastContainer />
