@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
       eventIds: events.map((event) => event.event_id),
     };
   });
-  races.unshift({ id: 1127, name: "Team Playmakers", type: "club" });
+  races.unshift({ id: 2190, name: "Team Playmakers", type: "club" });
   res.json(races);
 });
 

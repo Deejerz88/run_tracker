@@ -47,6 +47,8 @@ const History = ({ participant }) => {
     };
     const table = new Tabulator("#history-table", {
       layout: "fitColumns",
+      placeholder: "No Events... yet!",
+      height: '100%',
       groupBy: (data) => data.race,
       groupHeader: (value, count, data, group) => {
         return value + " (" + count + " attended)";
