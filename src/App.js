@@ -11,6 +11,9 @@ function App() {
       <Button id="install-app" variant="outline-danger">
         Install App
       </Button>
+      <Button id="login" variant="danger">
+        Login
+      </Button>
       <Row>
         <Image
           id="logo"

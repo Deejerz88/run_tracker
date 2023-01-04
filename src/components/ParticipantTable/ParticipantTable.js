@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
 import { Filters } from "./index.js";
-import { CheckInOut } from "../index.js";
+import { CheckInOut, Login } from "../index.js";
 import axios from "axios";
 import _ from "lodash";
 import { DateTime } from "luxon";
@@ -22,6 +22,7 @@ const ParticipantTable = () => {
   const [race, setRace] = useState({});
   const [date, setDate] = useState(DateTime.local().toISODate());
   const [table, setTable] = useState(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
@@ -216,6 +217,9 @@ const ParticipantTable = () => {
           }
         }
       });
+      $("#login").on("click", () => {
+        setShowLogin(true);
+      });
     });
     table.on("renderComplete", () => {
       //check if on mobile deice
@@ -256,7 +260,12 @@ const ParticipantTable = () => {
         setRace={setRace}
         date={date}
       />
-
+      <Login
+        show={showLogin}
+        setShow={setShowLogin}
+        participant={participant}
+        setParticipant={setParticipant}
+      />
       <Filters
         setRace={setRace}
         races={races}

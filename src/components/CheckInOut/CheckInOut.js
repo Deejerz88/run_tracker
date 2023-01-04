@@ -116,7 +116,7 @@ const CheckInOut = ({
     <Modal fullscreen={true} show={show} onHide={handleClose}>
       <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
-        <BsXSquareFill id="close-modal" onClick={handleClose} />
+        <BsXSquareFill className="close-modal" onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
         <Tabs justify defaultActiveKey="checkIn">
