@@ -15,7 +15,7 @@ import {
 
 import "./style.css";
 
-const ParticipantTable = () => {
+const ParticipantTable = ({ loggedIn, setLoggedIn }) => {
   const [showCheck, setShowCheck] = useState(false);
   const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
@@ -226,7 +226,7 @@ const ParticipantTable = () => {
       const windowWidth = window.innerWidth;
       const mobileCols = ["first_name", "last_name", "checkedOut", "checkedIn"];
       const nonMobileCols = [
-        'user_id',
+        "user_id",
         "first_name",
         "last_name",
         "checkedOut",
@@ -260,6 +260,8 @@ const ParticipantTable = () => {
         race={race}
         setRace={setRace}
         date={date}
+        loggedIn={loggedIn}
+        setLoggedIn={setLoggedIn}
       />
       <Login
         show={showLogin}
