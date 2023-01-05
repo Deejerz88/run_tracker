@@ -10,7 +10,34 @@
   border: 1px solid #ddd;
 }
 
-#email-group {
+#email-row {
   display: none;
   transition: 0.2 all ease-out;
+}
+
+#reset{
+  color: #ed1c24;
+  font-size: 0.8em;
+  margin-left: 8px;
+}
+
+#reset-back{
+}
+
+#reset-back .back-arrow{
+  display: none;
+  margin: 16px;
+}
+
+#reset-back:hover  .back-arrow{
+  color: #fd0008;
+  cursor: pointer;
+  transform: scale(1.1);
+    filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.829));
+
+}
+
+#reset-back:active  .back-arrow{
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 1.25px rgba(0, 0, 0, 0.829));
 }

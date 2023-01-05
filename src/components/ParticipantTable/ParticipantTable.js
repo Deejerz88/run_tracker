@@ -122,19 +122,19 @@ const ParticipantTable = () => {
       ],
       index: "user_id",
       columns: [
-        { title: "ID", field: "user_id", visible: false },
+        { title: "ID", field: "user_id", visible: true },
         {
-          title: "First Name",
+          title: "First",
           field: "first_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
         },
         {
-          title: "Last Name",
+          title: "Last",
           field: "last_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
         },
         {
-          title: "Checked In",
+          title: "In",
           field: "checkedIn",
           maxWidth: 170,
           hozAlign: "center",
@@ -144,7 +144,7 @@ const ParticipantTable = () => {
           mutatorData: checkInOutMutator,
         },
         {
-          title: "Checked Out",
+          title: "Out",
           field: "checkedOut",
           maxWidth: 170,
           hozAlign: "center",
@@ -224,8 +224,9 @@ const ParticipantTable = () => {
     table.on("renderComplete", () => {
       //check if on mobile deice
       const windowWidth = window.innerWidth;
-      const mobileCols = ["first_name", "last_name"];
+      const mobileCols = ["first_name", "last_name", "checkedOut", "checkedIn"];
       const nonMobileCols = [
+        'user_id',
         "first_name",
         "last_name",
         "checkedOut",

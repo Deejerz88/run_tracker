@@ -92,6 +92,17 @@
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.809));
 }
 
+.back-arrow{
+  color: #ed1c24;
+  font-size: 2em;
+  user-select: none;
+  transition: 0.1s all ease-out;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.829));
+  /* background-color: white; */
+  /* border-radius: 15%; */
+  /* box-shadow: 0 0 3px rgba(165, 165, 165, 0.989); */
+}
+
 @media screen and (max-width: 768px) {
   #logo {
     margin: 70px auto 20px auto;

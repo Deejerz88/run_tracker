@@ -41,6 +41,11 @@ router.get("/:user_id", async (req, res) => {
   res.json(participant);
 });
 
+// router.get('/rsu/:user_id', async (req, res) => {
+//   const { user_id } = req.params;
+//   const { data } = await axios.get('https://runsignup.com/rest/user/', {
+
+
 
 // router.get("/:user_id/:race_id", async (req, res) => {
 //   const { user_id, race_id } = req.params;
