@@ -3,6 +3,7 @@ import express from "express";
 import { Participant } from "../../schemas/index.js";
 import sgMail from "@sendgrid/mail";
 import Pusher from "pusher";
+import "dotenv/config";
 
 const pusher = new Pusher({
   appId: process.env.REACT_APP_PUSHER_ID,
@@ -14,7 +15,6 @@ const pusher = new Pusher({
 
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-import "dotenv/config";
 
 const router = express.Router();
 
@@ -114,18 +114,6 @@ router.post("/reset", async (req, res) => {
 
   console.log("tempPW", tempPW);
 
-  const personalizations = [
-    {
-      to: [
-        {
-          email,
-          name: `${user.first_name || user.username} ${user.last_name || null}`,
-        },
-      ],
-      subject: "Account Recovery",
-    },
-  ];
-
   const msg = {
     to: email,
     from: "wecare@playmakers.com",
@@ -136,7 +124,7 @@ router.post("/reset", async (req, res) => {
   };
 
   try {
-    // await sgMail.send(msg);
+    await sgMail.send(msg);
     console.log("email sent");
     user.password = tempPW;
     pusher.trigger("checkin", "logged-in", true);

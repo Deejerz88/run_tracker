@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Row,
   Col,
@@ -24,6 +24,7 @@ const Inputs = ({
   date,
 }) => {
   const [activeKey, setActiveKey] = useState("in");
+
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");

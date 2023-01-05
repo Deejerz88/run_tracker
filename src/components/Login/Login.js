@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Modal,
   Form,
@@ -12,6 +12,7 @@ import axios from "axios";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import { TiArrowBackOutline } from "react-icons/ti/index.esm.js";
 import { toast, Flip } from "react-toastify";
+import { UserContext } from "../../App.js";
 import "./style.css";
 import $ from "jquery";
 
@@ -22,6 +23,8 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
     password: "",
     action: "Log In",
   });
+
+  const User = useContext(UserContext);
 
   const handleClick = (e) => {
     const { id, nodeName } = e.target;
@@ -146,6 +149,8 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       }
       console.log("res", res);
       const { user } = res.data;
+      User.user = user;
+      User.loggedIn = "true";
       setParticipant(user);
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`

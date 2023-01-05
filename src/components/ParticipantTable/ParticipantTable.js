@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { renderToString } from "react-dom/server";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
@@ -12,10 +12,11 @@ import {
   BsFillCheckCircleFill,
   BsXCircleFill,
 } from "react-icons/bs/index.esm.js";
-
+import { Button } from "react-bootstrap";
+import { UserContext } from "../../App.js";
 import "./style.css";
 
-const ParticipantTable = ({ loggedIn, setLoggedIn }) => {
+const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
   const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
@@ -23,6 +24,8 @@ const ParticipantTable = ({ loggedIn, setLoggedIn }) => {
   const [date, setDate] = useState(DateTime.local().toISODate());
   const [table, setTable] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
+
+  const User = useContext(UserContext);
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
@@ -251,6 +254,9 @@ const ParticipantTable = ({ loggedIn, setLoggedIn }) => {
 
   return (
     <>
+      <Button id="login" variant="danger" name={User.loggedIn}>
+        {User.loggedIn === "true" ? "Log Out" : "Log In"}
+      </Button>
       <CheckInOut
         show={showCheck}
         setShow={setShowCheck}
@@ -260,8 +266,6 @@ const ParticipantTable = ({ loggedIn, setLoggedIn }) => {
         race={race}
         setRace={setRace}
         date={date}
-        loggedIn={loggedIn}
-        setLoggedIn={setLoggedIn}
       />
       <Login
         show={showLogin}
