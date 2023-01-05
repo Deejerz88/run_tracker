@@ -69,7 +69,7 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       console.log("err", err);
       const message =
         err.response.status === 409
-          ? "User with email already exists"
+          ? "User with email or username already exists"
           : "Invalid username or password";
       toast.error(message, {
         position: "top-center",
@@ -87,7 +87,7 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
     toast.success(message, {
       position: "top-center",
       autoClose: 3000,
-      transition: Flip,
+      transition: Flip, 
     });
     handleClose();
   }; 

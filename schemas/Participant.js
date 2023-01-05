@@ -61,7 +61,7 @@ const participantSchema = new Schema(
         console.log("password", password, "hash", hash);
         return bcrypt.compareSync(password, hash);
       },
-    },
+    }, 
   }
 );
 

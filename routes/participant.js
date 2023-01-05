@@ -17,6 +17,19 @@ router.get("/", async (req, res) => {
   res.json(participants);
 });
 
+router.get('/all', async (req, res) => {
+  const participants = await axios.get('https://runsignup.com/rest/users', {
+    params: {
+      api_key: process.env.RSU_KEY,
+      api_secret: process.env.RSU_SECRET,
+      format: 'json',
+      results_per_page: 2500
+    }
+  })
+  console.log('participants', participants.data)
+  res.json(participants.data)
+})
+
 router.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
   mongoose.connect(process.env.MONGO_URI, {
@@ -27,6 +40,7 @@ router.get("/:user_id", async (req, res) => {
   // console.log("participant", participant);
   res.json(participant);
 });
+
 
 // router.get("/:user_id/:race_id", async (req, res) => {
 //   const { user_id, race_id } = req.params;
@@ -58,7 +72,7 @@ router.get("/:type/:raceId", async (req, res) => {
     ? data.forEach((event) => participants.push(...(event.participants || [])))
     : (participants = data.club_members);
   if (!participants.length) return res.json([]);
-  // console.log(participants[0]);
+  console.log(participants[0]);
   participants = participants.map((participant) => {
     const { user_id, first_name, last_name, email, phone } = participant.user;
     return {

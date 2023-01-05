@@ -1,3 +1,4 @@
+import axios from "axios";
 import express from "express";
 import { Participant } from "../schemas/index.js";
 
@@ -12,14 +13,31 @@ router.post("/signup", async (req, res) => {
 
   if (user) return res.status(409).json({ error: "User already exists" });
 
-  
-
-  let newUser;
+  const { data } = await axios.get("https://runsignup.com/rest/users", {
+    params: {
+      api_key: process.env.RSU_KEY,
+      api_secret: process.env.RSU_SECRET,
+      format: "json",
+      results_per_page: 2500,
+    },
+  });
+  console.log("participants", data);
+  const participant =
+    data.users.find((participant) => participant.user.email === email) || {};
+  if (!participant.user_id)
+    participant.user_id = Math.floor(Math.random() * 1000000);
+  console.log("participant", participant);
+  let newUser = {};
   try {
-    newUser = await Participant.create({ username, email, password });
+    newUser = await Participant.create({
+      ...participant.user,
+      username,
+      email,
+      password,
+    });
   } catch (err) {
     console.log("err", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(409).json({ error: "Username already in use" });
   }
   console.log("newUser", newUser);
 
@@ -58,10 +76,10 @@ router.post("/login", async (req, res) => {
 
 router.post("/logout", (req, res) => {
   if (req.session.loggedIn) {
-    req.session.destroy(() => { 
+    req.session.destroy(() => {
       res.status(204).end();
     });
-  } else { 
+  } else {
     res.status(404).end();
   }
 });
