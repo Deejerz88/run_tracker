@@ -121,6 +121,7 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       }
     } else {
       const signup = $("#signup-switch").prop("checked");
+      const stayLoggedIn = $("#stay-logged-in").prop("checked");
       console.log("signup", signup);
       let res;
       try {
@@ -151,8 +152,13 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       const { user } = res.data;
       User.user = user;
       User.loggedIn = "true";
-      sessionStorage.setItem("user", JSON.stringify(user));
-      sessionStorage.setItem("loggedIn", "true");
+      if (stayLoggedIn) {
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("loggedIn", "true");
+      } else {
+        sessionStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("loggedIn", "true");
+      }
       setParticipant(user);
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`
@@ -215,9 +221,9 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
                 />
               </FloatingLabel>
             </InputGroup>
-            <a id="reset" href="#" onClick={handleClick}>
+            <button className="link" id="reset" href="#" onClick={handleClick}>
               Forgot Username or Password?
-            </a>
+            </button>
           </Row>
           <Row id="password-row" className="px-3">
             <InputGroup className="my-3">
@@ -238,7 +244,15 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
               <Button className="m-3" variant="danger" type="submit">
                 {state.action}
               </Button>
+              <Form.Check
+                id="stay-logged-in"
+                type="checkbox"
+                label="Keep me logged in"
+                className=""
+                inline
+              />
             </Col>
+            {/* <Col className="d-flex align-items-center"></Col> */}
           </Row>
         </Form>
       </Modal.Body>

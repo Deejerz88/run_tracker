@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Modal, Tabs, Tab } from "react-bootstrap";
-import { Inputs, Stats, History, Contact } from "./components/index.js";
+import {
+  Inputs,
+  Stats,
+  History,
+  Contact,
+  Account,
+} from "./components/index.js";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
+import { UserContext } from "../../App.js";
 
 const CheckInOut = ({
   show,
@@ -27,6 +34,7 @@ const CheckInOut = ({
     start: null,
     finish: null,
   });
+  const { user } = useContext(UserContext);
 
   const handleClose = () => {
     setShow(false);
@@ -138,9 +146,19 @@ const CheckInOut = ({
           <Tab eventKey="history" title="History">
             <History participant={participant} />
           </Tab>
-          <Tab eventKey="contact" title="Contact Info" className="contact-tab">
-            <Contact participant={participant} handleClick={handleClick} />
-          </Tab>
+          {user?.user_id === participant.user_id ? (
+            <Tab eventKey="Account" title="Account">
+              <Account participant={participant} />
+            </Tab>
+          ) : (
+            <Tab
+              eventKey="contact"
+              title="Contact Info"
+              className="contact-tab"
+            >
+              <Contact participant={participant} handleClick={handleClick} />
+            </Tab>
+          )}
         </Tabs>
       </Modal.Body>
     </Modal>

@@ -42,9 +42,6 @@ const handleSubmit = async ({
         ? DateTime.fromFormat(value, "HH:mm").toMillis()
         : Number(value);
   });
-  // table.updateData([{ user_id, [`checked${startCase(activeKey)}`]: true }]);
-  console.log("participant", participant);
-  console.log("data", data);
   const { pace, duration, start, finish, mileage } = data;
   participant.races = [
     {
@@ -64,23 +61,9 @@ const handleSubmit = async ({
       ],
     },
   ];
-  console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
-  console.log("newParticipant", newParticipant);
-  // console.log("res", res);
-  // if (res.statusText === "OK") {
-  // console.log("updated", res.data);
   const { user_id } = newParticipant;
-  const { checkedIn, checkedOut } = state;
-  console.log("update", {
-    user_id,
-    ...newParticipant,
-    checkedIn,
-    checkedOut,
-    [`checked${startCase(activeKey)}`]: true,
-  });
-  console.log("start", start.time, state.start, newParticipant.start);
   table.updateData([
     {
       user_id,

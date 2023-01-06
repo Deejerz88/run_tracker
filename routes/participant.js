@@ -77,7 +77,7 @@ router.get("/:type/:raceId", async (req, res) => {
     ? data.forEach((event) => participants.push(...(event.participants || [])))
     : (participants = data.club_members);
   if (!participants.length) return res.json([]);
-  console.log(participants[0]);
+  // console.log(participants[0]);
   participants = participants.map((participant) => {
     const { user_id, first_name, last_name, email, phone } = participant.user;
     return {

@@ -15,7 +15,7 @@ import {
 import { Button } from "react-bootstrap";
 import { UserContext } from "../../App.js";
 import "./style.css";
-import { toast } from "react-toastify";
+import { toast, Flip } from "react-toastify";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
@@ -260,10 +260,16 @@ const ParticipantTable = () => {
           if (User.loggedIn === "true") {
             User.loggedIn = "false";
             User.user = {};
+            localStorage.setItem("loggedIn", null);
+            localStorage.setItem("user", JSON.stringify({}));
             sessionStorage.setItem("loggedIn", "false");
             sessionStorage.setItem("user", JSON.stringify({}));
             setParticipant({});
-            toast.error("Logged Out");
+            toast.error("Logged Out", {
+              position: 'top-center',
+              transition: Flip,
+              autoClose: 2000,
+            });
           } else {
             setShowLogin(true);
           }

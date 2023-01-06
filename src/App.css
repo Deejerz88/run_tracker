@@ -13,11 +13,14 @@
   box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
 }
 
-.form-check-input:focus,
 .form-control:focus,
 .form-select:focus {
   border-color: rgba(241, 1, 1, 0.377);
   box-shadow: 0 0 8px 0.25rem rgba(202, 11, 1, 0.415);
+}
+.form-check-input:focus {
+  border-color: rgba(241, 1, 1, 0.377);
+  box-shadow: 0 0 4px 0.25rem rgba(202, 11, 1, 0.415);
 }
 
 .styled-hr {
@@ -54,13 +57,13 @@
 #login:hover {
   background-color: #ed1c24;
   transform: scale(1.1);
-  box-shadow:   0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
+  box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
 }
 
 #login:active {
   background-color: #ed1c24;
   transform: scale(1.05);
-  box-shadow:   0px 0px 3px #545353, inset 0 0 3px hsla(0, 2%, 78%, 0.503);
+  box-shadow: 0px 0px 3px #545353, inset 0 0 3px hsla(0, 2%, 78%, 0.503);
 }
 
 .close-modal {
@@ -92,7 +95,7 @@
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.809));
 }
 
-.back-arrow{
+.back-arrow {
   color: #ed1c24;
   font-size: 2em;
   user-select: none;
@@ -101,6 +104,12 @@
   /* background-color: white; */
   /* border-radius: 15%; */
   /* box-shadow: 0 0 3px rgba(165, 165, 165, 0.989); */
+}
+
+.link {
+  border: none;
+  background: transparent;
+  width: auto
 }
 
 @media screen and (max-width: 768px) {
