@@ -15,6 +15,7 @@ import {
 import { Button } from "react-bootstrap";
 import { UserContext } from "../../App.js";
 import "./style.css";
+import { toast } from "react-toastify";
 
 const ParticipantTable = () => {
   const [showCheck, setShowCheck] = useState(false);
@@ -220,9 +221,6 @@ const ParticipantTable = () => {
           }
         }
       });
-      $("#login").on("click", () => {
-        setShowLogin(true);
-      });
     });
     table.on("renderComplete", () => {
       //check if on mobile deice
@@ -254,7 +252,23 @@ const ParticipantTable = () => {
 
   return (
     <>
-      <Button id="login" variant="danger" name={User.loggedIn}>
+      <Button
+        id="login"
+        variant="danger"
+        name={User.loggedIn}
+        onClick={() => {
+          if (User.loggedIn === "true") {
+            User.loggedIn = "false";
+            User.user = {};
+            sessionStorage.setItem("loggedIn", "false");
+            sessionStorage.setItem("user", JSON.stringify({}));
+            setParticipant({});
+            toast.error("Logged Out");
+          } else {
+            setShowLogin(true);
+          }
+        }}
+      >
         {User.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
       <CheckInOut
