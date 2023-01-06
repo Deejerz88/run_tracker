@@ -15,7 +15,6 @@ const pusher = new Pusher({
 
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
@@ -56,7 +55,7 @@ router.post("/signup", async (req, res) => {
   console.log("newUser", newUser);
 
   req.session.save(() => {
-    req.session.user_id = newUser.user_id;
+    req.session.user = newUser;
     req.session.loggedIn = true;
     res.json({ user: newUser, message: "You are now logged in!" });
   });
@@ -82,7 +81,7 @@ router.post("/login", async (req, res) => {
       .json({ error: "Incorrect username or password. Please try again!" });
 
   req.session.save(() => {
-    req.session.user_id = user.user_id;
+    req.session.user = user;
     req.session.loggedIn = true;
     res.json({ user, message: "You are now logged in!" });
   });

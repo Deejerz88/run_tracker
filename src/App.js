@@ -5,6 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { Image, Row, Button } from "react-bootstrap";
 import { createContext } from "react";
 
+const user = JSON.parse(sessionStorage.getItem("user")) || {};
+const loggedIn =
+  JSON.parse(sessionStorage.getItem("loggedIn"))?.toString() || "false";
+
 export const UserContext = createContext();
 
 function App() {
@@ -24,8 +28,8 @@ function App() {
       </Button>
       <UserContext.Provider
         value={{
-          user: {},
-          loggedIn: "false",
+          user,
+          loggedIn,
         }}
       >
         <ParticipantTable />

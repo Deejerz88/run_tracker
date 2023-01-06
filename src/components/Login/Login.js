@@ -151,6 +151,8 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       const { user } = res.data;
       User.user = user;
       User.loggedIn = "true";
+      sessionStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("loggedIn", "true");
       setParticipant(user);
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`
