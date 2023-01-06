@@ -4,6 +4,7 @@ import { Participant } from "../../schemas/index.js";
 import sgMail from "@sendgrid/mail";
 import Pusher from "pusher";
 import "dotenv/config";
+import mongoose from "mongoose";
 
 const pusher = new Pusher({
   appId: process.env.REACT_APP_PUSHER_ID,
@@ -32,28 +33,59 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  let { username, email, password } = req.body;
   console.log("email", email, "password", password, "username", username);
-  
-  const user = await Participant.findOne({ email });
+  let user;
+  user = await Participant.findOne({ email});
   console.log("user", user);
-
   if (user) return res.status(409).json({ error: "User already exists" });
 
-  const { data } = await axios.get("https://runsignup.com/rest/users", {
-    params: {
-      api_key: process.env.RSU_KEY,
-      api_secret: process.env.RSU_SECRET,
-      format: "json",
-      results_per_page: 2500,
-    },
-  });
-  console.log("participants", data);
-  const participant =
-    data.users.find((participant) => participant.user.email === email) || {};
-  if (!participant.user_id)
-    participant.user_id = Math.floor(Math.random() * 1000000);
-  console.log("participant", participant);
+  let { data: participants } = await axios.get(
+    "https://runsignup.com/rest/club/2190/members",
+    {
+      params: {
+        api_key: process.env.RSU_KEY,
+        api_secret: process.env.RSU_SECRET,
+        format: "json",
+        results_per_page: 2500,
+      },
+    }
+  );
+
+  console.log("participants", participants.club_members[0]);
+  // return res.json(participants.club_members[0]);
+  let participant =
+    participants.club_members.find(
+      (participant) => participant.user.email === email
+    ) || {};
+  console.log("participant", participant)
+  if (!participant.user) {
+    const { data: partnerParticipants } = await axios.get(
+      "https://runsignup.com/rest/users",
+      {
+        params: {
+          api_key: process.env.RSU_KEY,
+          api_secret: process.env.RSU_SECRET,
+          format: "json",
+          results_per_page: 2500,
+        },
+      }
+    );
+    console.log("partnerParticipants", partnerParticipants);
+
+    participant =
+      participants.users.find(
+        (participant) => participant.user.email === email
+      ) || {};
+    console.log("participant1", participant);
+  }
+  if (!participant.user)
+    participant.user = { user_id: Math.floor(Math.random() * 1000000) };
+  console.log("participant2", participant);
   let newUser = {};
   try {
     newUser = await Participant.create({

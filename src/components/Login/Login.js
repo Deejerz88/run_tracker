@@ -167,17 +167,17 @@ const Login = ({ show, setShow}) => {
         transition: Flip,
       });
     }
-    handleClose();
+    handleClose(); 
   };
 
-  return (
+  return ( 
     <Modal size="lg" show={show} onHide={handleClose} centered>
       <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>Log In</Modal.Title>
         <BsXSquareFill className="close-modal" onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
-        <Form id="login-form" onSubmit={handleSubmit}>
+        <Form id="login-form" onSubmit={handleSubmit}> 
           <Row className="">
             <Col xs={2} id="reset-back" onClick={handleClick} F>
               <TiArrowBackOutline className="back-arrow" />

@@ -230,7 +230,6 @@ const ParticipantTable = () => {
       const windowWidth = window.innerWidth;
       const mobileCols = ["first_name", "last_name", "checkedOut", "checkedIn"];
       const nonMobileCols = [
-        "user_id",
         "first_name",
         "last_name",
         "checkedOut",
