@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
   console.log("email", email, "password", password, "username", username);
-
+  
   const user = await Participant.findOne({ email });
   console.log("user", user);
 

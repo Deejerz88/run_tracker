@@ -16,7 +16,7 @@ import { UserContext } from "../../App.js";
 import "./style.css";
 import $ from "jquery";
 
-const Login = ({ show, setShow, setParticipant, participant }) => {
+const Login = ({ show, setShow}) => {
   const [state, setState] = useState({
     email: "",
     username: "",
@@ -86,7 +86,6 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
       password: "",
       action: "Log In",
     });
-    setTimeout(() => setParticipant({}), 100);
   };
 
   const handleChange = (e) => {
@@ -159,7 +158,6 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
         sessionStorage.setItem("user", JSON.stringify(user));
         sessionStorage.setItem("loggedIn", "true");
       }
-      setParticipant(user);
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`
         : `${user.username} logged in`;
@@ -221,9 +219,9 @@ const Login = ({ show, setShow, setParticipant, participant }) => {
                 />
               </FloatingLabel>
             </InputGroup>
-            <button className="link" id="reset" href="#" onClick={handleClick}>
+            <p className="link" id="reset" onClick={handleClick}>
               Forgot Username or Password?
-            </button>
+            </p>
           </Row>
           <Row id="password-row" className="px-3">
             <InputGroup className="my-3">

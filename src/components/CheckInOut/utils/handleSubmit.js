@@ -12,6 +12,7 @@ const handleSubmit = async ({
   race,
   handleClose,
   date,
+  User
 }) => {
   e.preventDefault();
   e.stopPropagation();
@@ -78,6 +79,8 @@ const handleSubmit = async ({
     },
   ]);
   // table.redraw(true);
+  User.user = newParticipant;
+  
   handleClose();
   window.scrollTo(0, 0);
   toast.success(`${participant.name} checked ${activeKey}`, {

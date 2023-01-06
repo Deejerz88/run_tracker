@@ -13,6 +13,10 @@ const loggedIn =
   JSON.parse(localStorage.getItem("loggedIn"))?.toString() ||
   JSON.parse(sessionStorage.getItem("loggedIn"))?.toString() ||
   "false";
+const checkedIn =
+  JSON.parse(localStorage.getItem("checkedIn"))?.toString() ||
+  JSON.parse(sessionStorage.getItem("checkedIn"))?.toString() ||
+  "false";
 
 export const UserContext = createContext();
 
@@ -35,6 +39,7 @@ function App() {
         value={{
           user,
           loggedIn,
+          checkedIn,
         }}
       >
         <ParticipantTable />

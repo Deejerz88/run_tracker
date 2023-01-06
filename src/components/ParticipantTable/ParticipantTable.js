@@ -27,6 +27,9 @@ const ParticipantTable = () => {
   const [showLogin, setShowLogin] = useState(false);
 
   const User = useContext(UserContext);
+  const { user } = User;
+
+  console.log("User", User);
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
@@ -126,7 +129,7 @@ const ParticipantTable = () => {
       ],
       index: "user_id",
       columns: [
-        { title: "ID", field: "user_id", visible: true },
+        { title: "ID", field: "user_id", visible: false },
         {
           title: "First",
           field: "first_name",
@@ -140,7 +143,7 @@ const ParticipantTable = () => {
         {
           title: "In",
           field: "checkedIn",
-          maxWidth: 170,
+          maxWidth: 100,
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
@@ -150,7 +153,7 @@ const ParticipantTable = () => {
         {
           title: "Out",
           field: "checkedOut",
-          maxWidth: 170,
+          maxWidth: 100,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: "boolean",
@@ -253,6 +256,19 @@ const ParticipantTable = () => {
   return (
     <>
       <Button
+        id="check-in"
+        variant="danger"
+        onClick={() => {
+          setParticipant(User.user);
+          setShowCheck(true);
+        }}
+        className={User.loggedIn === "true" ? "" : "d-none"}
+      >
+        {user.first_name
+          ? `${user.first_name} ${user.last_name}`
+          : user.username}
+      </Button>
+      <Button
         id="login"
         variant="danger"
         name={User.loggedIn}
@@ -261,12 +277,12 @@ const ParticipantTable = () => {
             User.loggedIn = "false";
             User.user = {};
             localStorage.setItem("loggedIn", null);
-            localStorage.setItem("user", JSON.stringify({}));
-            sessionStorage.setItem("loggedIn", "false");
-            sessionStorage.setItem("user", JSON.stringify({}));
+            localStorage.setItem("user", JSON.stringify(null));
+            sessionStorage.setItem("loggedIn", null);
+            sessionStorage.setItem("user", JSON.stringify(null));
             setParticipant({});
             toast.error("Logged Out", {
-              position: 'top-center',
+              position: "top-center",
               transition: Flip,
               autoClose: 2000,
             });
@@ -287,12 +303,7 @@ const ParticipantTable = () => {
         setRace={setRace}
         date={date}
       />
-      <Login
-        show={showLogin}
-        setShow={setShowLogin}
-        participant={participant}
-        setParticipant={setParticipant}
-      />
+      <Login show={showLogin} setShow={setShowLogin} />
       <Filters
         setRace={setRace}
         races={races}

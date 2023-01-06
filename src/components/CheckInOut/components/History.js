@@ -12,6 +12,7 @@ const History = ({ participant }) => {
       const { user_id } = participant;
       const { data } = await axios.get(`/participant/${user_id}`);
       console.log("data", data);
+      if (!data) return;
       const { races } = data;
       if (!data.user_id || !races.length) return;
       const history = [];

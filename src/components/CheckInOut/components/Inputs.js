@@ -12,6 +12,7 @@ import {
 import { DateTime } from "luxon";
 import { startCase } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
+import { UserContext } from "../../../App.js";
 
 const Inputs = ({
   state,
@@ -25,6 +26,7 @@ const Inputs = ({
 }) => {
   const [activeKey, setActiveKey] = useState("in");
 
+  const User = useContext(UserContext);
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
@@ -41,7 +43,7 @@ const Inputs = ({
   };
   return (
     <Form
-      id='checkInOut-form'
+      id="checkInOut-form"
       onSubmit={(e) =>
         handleSubmit({
           e,
@@ -52,6 +54,7 @@ const Inputs = ({
           table,
           handleClose,
           date,
+          User,
         })
       }
       onClick={handleClick}
@@ -194,7 +197,7 @@ const Inputs = ({
                 </FloatingLabel>
               </Col>
             </Row>
-            <Row className='checkIn-row'>
+            <Row className="checkIn-row">
               {["pace", "duration"].map((group, i) => (
                 <Col key={group}>
                   <FormLabel>{startCase(group)}</FormLabel>

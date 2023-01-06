@@ -4,6 +4,7 @@
 }
 
 #logo {
+  margin-top: 20px;
   width: 450px;
 }
 
@@ -41,8 +42,15 @@
 #install-app {
   position: absolute;
   top: 10px;
-  right: 115px;
-  /* display: none; */
+  left: 20px;
+  display: none;
+  transition: 0.2s all ease-out;
+}
+
+#check-in{
+  position: absolute;
+  top: 10px;
+  right: 120px;
   transition: 0.2s all ease-out;
 }
 
@@ -112,7 +120,7 @@
   width: auto
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 850px) {
   #logo {
     margin: 70px auto 20px auto;
   }

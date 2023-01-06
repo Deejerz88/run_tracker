@@ -127,19 +127,26 @@ const CheckInOut = ({
         <BsXSquareFill className="close-modal" onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
-        <Tabs justify defaultActiveKey="checkIn">
-          <Tab eventKey="checkIn" title="Check In / Out">
-            <Inputs
-              state={state}
-              setState={setState}
-              checkedIn={participant.checkedIn}
-              participant={participant}
-              race={race}
-              table={table}
-              handleClose={handleClose}
-              date={date}
-            />
-          </Tab>
+        <Tabs
+          justify
+          defaultActiveKey={
+            user?.user_id === participant.user_id ? "checkIn" : "stats"
+          }
+        >
+          {user?.user_id === participant.user_id && (
+            <Tab eventKey="checkIn" title="Check In / Out">
+              <Inputs
+                state={state}
+                setState={setState}
+                checkedIn={participant.checkedIn}
+                participant={participant}
+                race={race}
+                table={table}
+                handleClose={handleClose}
+                date={date}
+              />
+            </Tab>
+          )}
           <Tab eventKey="stats" title="Stats" className="stats-tab">
             <Stats participant={participant} race={race} />
           </Tab>

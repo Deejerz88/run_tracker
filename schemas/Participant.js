@@ -44,6 +44,7 @@ const participantSchema = new Schema(
     user_id: { type: Number, index: true, unique: true },
     username: { type: String, index: true, unique: true },
     email: { type: String, index: true, unique: true },
+    phone: String,
     password: String,
     first_name: String,
     last_name: String,
@@ -61,7 +62,7 @@ const participantSchema = new Schema(
         console.log("password", password, "hash", hash);
         return bcrypt.compareSync(password, hash);
       },
-    }, 
+    },
   }
 );
 

@@ -6,6 +6,8 @@ import axios from "axios";
 import $ from "jquery";
 
 const Account = ({ participant }) => {
+  console.log('participant', participant)
+
   const [originalData, setOriginalData] = useState({
     first_name: participant.first_name,
     last_name: participant.last_name,
@@ -113,7 +115,7 @@ const Account = ({ participant }) => {
                 id={field}
                 type={type}
                 defaultValue={
-                  field === "phone"
+                  participant.user_id && field === "phone"
                     ? participant[field]
                         .replace(/(\D|-|\(|\))/g, "")
                         .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3")
