@@ -26,7 +26,7 @@ const ParticipantTable = () => {
   const [table, setTable] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
-  const [User, setUser] = useContext(UserContext);
+  const [User] = useContext(UserContext);
   const { user } = User;
 
   console.log("User", User);

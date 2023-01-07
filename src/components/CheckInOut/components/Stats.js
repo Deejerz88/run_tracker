@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Card, Container } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 
 const Stats = ({ participant, race }) => {
   return (

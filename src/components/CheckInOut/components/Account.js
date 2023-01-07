@@ -10,7 +10,7 @@ import { Tabulator } from "tabulator-tables";
 const Account = ({ participant }) => {
   console.log("participant", participant);
 
-  const [User, setUser] = useContext(UserContext);
+  const [, setUser] = useContext(UserContext);
   const [originalData, setOriginalData] = useState({
     ...participant,
     change_password: "",
