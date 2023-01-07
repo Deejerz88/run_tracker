@@ -30,7 +30,7 @@ const Stats = ({ participant, race }) => {
               };
         return (
           <Col key={title}>
-            <h2 className="stats-title">{title}</h2>
+            <h2 className="stats-title mt-5">{title}</h2>
             <Row className="w-100 justify-content-center">
               <Card id="attendance-card" className="stat-card">
                 <Card.Header>Attendance</Card.Header>

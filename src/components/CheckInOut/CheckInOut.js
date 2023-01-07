@@ -156,7 +156,7 @@ const CheckInOut = ({
           </Tab>
           {user?.user_id === participant.user_id ? (
             <Tab eventKey="Account" title="Account">
-              <Account participant={participant} />
+              <Account participant={participant} race={race} />
             </Tab>
           ) : (
             <Tab

@@ -32,11 +32,13 @@
   background-image: radial-gradient(
     100% 100% at 100% 0,
     #7d5151ed 15%,
-    rgba(108, 42, 42, 0.819) 75%
+    rgba(76, 29, 29, 0.819) 75%
   );
   border-radius: 1rem;
-  box-shadow: inset rgba(64, 26, 26, 0.25) 0 -3px 0, -0px 0px 5px #575656d0;
+  box-shadow: inset rgba(65, 31, 31, 0.233) 0 -3px 0, -0px 0px 3px #575656d0;
   transition: all 0.2s ease-in-out;
+  min-width: 300px !important
+
 }
 
 #install-app {

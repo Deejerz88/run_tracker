@@ -49,7 +49,7 @@ router.post("/signup", async (req, res) => {
   console.log("user", user);
   if (user) return res.status(409).json({ error: "User already exists" });
 
-  let { data: participants } = await axios.get(
+  let { data: clubParticipants } = await axios.get(
     "https://runsignup.com/rest/club/2190/members",
     {
       params: {
@@ -61,10 +61,10 @@ router.post("/signup", async (req, res) => {
     }
   );
 
-  console.log("participants", participants.club_members[0]);
+  console.log("clubParticipants", clubParticipants.club_members[0]);
   // return res.json(participants.club_members[0]);
   let participant =
-    participants.club_members.find(
+    clubParticipants.club_members.find(
       (participant) => participant.user.email === email
     ) || {};
   console.log("participant", participant);
@@ -83,7 +83,7 @@ router.post("/signup", async (req, res) => {
     console.log("partnerParticipants", partnerParticipants);
 
     participant =
-      participants.users.find(
+      partnerParticipants.users.find(
         (participant) => participant.user.email === email
       ) || {};
     console.log("participant1", participant);
