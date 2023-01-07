@@ -281,7 +281,8 @@
 }
 
 #account-form,
-#feedback-form {
+#feedback-form,
+#goals-form {
   background: whitesmoke;
   padding: 1em;
   border-radius: 0 05px 5px;

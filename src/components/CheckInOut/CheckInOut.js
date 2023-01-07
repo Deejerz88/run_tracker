@@ -6,6 +6,7 @@ import {
   History,
   Contact,
   Account,
+  Goals,
 } from "./components/index.js";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
@@ -155,7 +156,7 @@ const CheckInOut = ({
             <History participant={participant} />
           </Tab>
           {user?.user_id === participant.user_id ? (
-            <Tab eventKey="Account" title="Account">
+            <Tab eventKey="account" title="Account">
               <Account participant={participant} race={race} />
             </Tab>
           ) : (
@@ -165,6 +166,11 @@ const CheckInOut = ({
               className="contact-tab"
             >
               <Contact participant={participant} handleClick={handleClick} />
+            </Tab>
+          )}
+          {user?.user_id === participant.user_id && (
+            <Tab eventKey="goals" title="Goals">
+              <Goals participant={participant} />
             </Tab>
           )}
         </Tabs>
