@@ -16,7 +16,7 @@ import { UserContext } from "../../App.js";
 import "./style.css";
 import $ from "jquery";
 
-const Login = ({ show, setShow}) => {
+const Login = ({ show, setShow }) => {
   const [state, setState] = useState({
     email: "",
     username: "",
@@ -24,7 +24,7 @@ const Login = ({ show, setShow}) => {
     action: "Log In",
   });
 
-  const User = useContext(UserContext);
+  const [User, setUser] = useContext(UserContext);
 
   const handleClick = (e) => {
     const { id, nodeName } = e.target;
@@ -149,14 +149,23 @@ const Login = ({ show, setShow}) => {
       }
       console.log("res", res);
       const { user } = res.data;
+      User.stayLoggedIn = stayLoggedIn.toString();
       User.user = user;
       User.loggedIn = "true";
+      setUser((prevState) => ({
+        ...prevState,
+        stayLoggedIn: stayLoggedIn.toString(),
+        user,
+        loggedIn: "true",
+      }));
       if (stayLoggedIn) {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("stayLoggedIn", "true");
       } else {
         sessionStorage.setItem("user", JSON.stringify(user));
         sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("stayLoggedIn", "false");
       }
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`
@@ -167,17 +176,17 @@ const Login = ({ show, setShow}) => {
         transition: Flip,
       });
     }
-    handleClose(); 
+    handleClose();
   };
 
-  return ( 
+  return (
     <Modal size="lg" show={show} onHide={handleClose} centered>
       <Modal.Header className="d-flex justify-content-between">
         <Modal.Title>Log In</Modal.Title>
         <BsXSquareFill className="close-modal" onClick={handleClose} />
       </Modal.Header>
       <Modal.Body>
-        <Form id="login-form" onSubmit={handleSubmit}> 
+        <Form id="login-form" onSubmit={handleSubmit}>
           <Row className="">
             <Col xs={2} id="reset-back" onClick={handleClick} F>
               <TiArrowBackOutline className="back-arrow" />

@@ -1,27 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { startCase, isEqual } from "lodash";
 import { toast, Flip } from "react-toastify";
 import axios from "axios";
 import $ from "jquery";
+import { UserContext } from "../../../App.js";
+import { Tabulator } from "tabulator-tables";
 
 const Account = ({ participant }) => {
-  console.log('participant', participant)
+  console.log("participant", participant);
 
+  const [User, setUser] = useContext(UserContext);
   const [originalData, setOriginalData] = useState({
-    first_name: participant.first_name,
-    last_name: participant.last_name,
-    email: participant.email,
-    phone: participant.phone,
+    ...participant,
     change_password: "",
     confirm_password: "",
   });
 
   const [formData, setFormData] = useState({
-    first_name: participant.first_name,
-    last_name: participant.last_name,
-    email: participant.email,
-    phone: participant.phone,
+    ...participant,
     change_password: "",
     confirm_password: "",
   });
@@ -40,7 +37,7 @@ const Account = ({ participant }) => {
         ? $(".confirm_password").css({ display: "flex" })
         : $(".confirm_password").css({ display: "none" });
     }
-    
+
     console.log("key", key, "value", value);
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
@@ -59,16 +56,24 @@ const Account = ({ participant }) => {
     }
     try {
       const { data } = await axios.post("/api/user", formData);
+      const table = Tabulator.findTable("#participant-table")[0];
       console.log("data", data);
-      $('#change_password').val('');
-      $('#confirm_password').val('')
+      $("#change_password").val("");
+      $("#confirm_password").val("");
       $(".confirm_password").hide();
       setOriginalData(formData);
+      console.log("tableData", table.getData());
+      setUser((prevState) => ({
+        ...prevState,
+        user: { ...prevState.user, ...formData },
+      }));
       toast.success("Account updated", {
         position: "top-center",
         autoClose: 3000,
         transition: Flip,
       });
+      const { user } = data;
+      table.updateData([{ ...user }]);
     } catch (err) {
       console.log("err", err);
       toast.error("Error updating account", {
@@ -91,10 +96,11 @@ const Account = ({ participant }) => {
   }, [formData, originalData]);
 
   return (
-    <Form id="account-form" onChange={handleChange} onSubmit={handleSubmit}>
+    <Form id="account-form" onSubmit={handleSubmit}>
       {[
         "first_name",
         "last_name",
+        "username",
         "email",
         "phone",
         "change_password",
@@ -114,14 +120,15 @@ const Account = ({ participant }) => {
               <Form.Control
                 id={field}
                 type={type}
-                defaultValue={
-                  participant.user_id && field === "phone"
-                    ? participant[field]
+                value={
+                  formData.user_id && field === "phone"
+                    ? formData[field]
                         .replace(/(\D|-|\(|\))/g, "")
                         .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3")
-                    : participant[field]
+                    : formData[field]
                 }
                 disabled={field === "email"}
+                onChange={handleChange}
               />
             </Col>
           </Form.Group>
@@ -135,7 +142,14 @@ const Account = ({ participant }) => {
             </Button>
           </Col>
           <Col>
-            <Button variant="outline-danger" type="reset">
+            <Button
+              variant="outline-danger"
+              type="reset"
+              onClick={() => {
+                $("#submit-row").hide();
+                setFormData(originalData);
+              }}
+            >
               Cancel
             </Button>
           </Col>

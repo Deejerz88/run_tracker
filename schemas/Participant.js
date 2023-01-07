@@ -58,9 +58,9 @@ const participantSchema = new Schema(
   },
   {
     statics: {
-      checkPassword(password, hash) {
+      async checkPassword(password, hash) {
         console.log("password", password, "hash", hash);
-        return bcrypt.compareSync(password, hash);
+        return await bcrypt.compare(password, hash);
       },
     },
   }
@@ -93,8 +93,8 @@ raceSchema.pre("save", function (next) {
 });
 
 participantSchema.pre("save", function (next) {
-  // if (this.isModified("password"))
-  this.password = bcrypt.hashSync(this.password, 10);
+  if (this.isModified("password"))
+    this.password = bcrypt.hashSync(this.password, 10);
   if (this.races.length) {
     this.totalAttendance = _.sumBy(this.races, "totalAttendance");
     this.totalMileage = _.sumBy(this.races, "totalMileage");

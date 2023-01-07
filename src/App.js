@@ -3,24 +3,62 @@ import { ParticipantTable } from "./components/index.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Image, Row, Button } from "react-bootstrap";
-import { createContext } from "react";
+import { useEffect, useState, createContext } from "react";
 
-const user =
-  JSON.parse(localStorage.getItem("user")) ||
-  JSON.parse(sessionStorage.getItem("user")) ||
-  {};
-const loggedIn =
-  JSON.parse(localStorage.getItem("loggedIn"))?.toString() ||
-  JSON.parse(sessionStorage.getItem("loggedIn"))?.toString() ||
-  "false";
-const checkedIn =
-  JSON.parse(localStorage.getItem("checkedIn"))?.toString() ||
-  JSON.parse(sessionStorage.getItem("checkedIn"))?.toString() ||
-  "false";
-
-export const UserContext = createContext();
+export const UserContext = createContext({}, () => {});
 
 function App() {
+  const [state, setState] = useState({
+    user: {},
+    loggedIn: "false",
+    stayLoggedIn: "false",
+    checkedIn: "false",
+  });
+
+  useEffect(() => {
+    const stayLoggedIn =
+      localStorage.getItem("stayLoggedIn")?.toString() ||
+      sessionStorage.getItem("stayLoggedIn")?.toString() ||
+      "false";
+
+    const user = stayLoggedIn
+      ? localStorage.getItem("user")
+      : sessionStorage.getItem("user");
+
+    const loggedIn = stayLoggedIn
+      ? localStorage.getItem("loggedIn")
+      : sessionStorage.getItem("loggedIn");
+
+    const checkedIn = stayLoggedIn
+      ? localStorage.getItem("checkedIn")
+      : sessionStorage.getItem("checkedIn");
+    
+    const newState = {
+      user: (user && JSON.parse(user)) || {},
+      loggedIn: (loggedIn && JSON.parse(loggedIn)?.toString()) || "false",
+      stayLoggedIn:
+        (stayLoggedIn && JSON.parse(stayLoggedIn)?.toString()) || "false",
+      checkedIn: (checkedIn && JSON.parse(checkedIn)?.toString()) || "false",
+    };
+
+    setState(newState);
+  }, []);
+
+  useEffect(() => {
+    console.log("state", state);
+    if (state.stayLoggedIn === "true") {
+      localStorage.setItem("user", JSON.stringify(state.user));
+      localStorage.setItem("loggedIn", state.loggedIn);
+      localStorage.setItem("stayLoggedIn", state.stayLoggedIn);
+      localStorage.setItem("checkedIn", state.checkedIn);
+    } else {
+      sessionStorage.setItem("user", JSON.stringify(state.user));
+      sessionStorage.setItem("loggedIn", state.loggedIn);
+      sessionStorage.setItem("stayLoggedIn", state.stayLoggedIn);
+      sessionStorage.setItem("checkedIn", state.checkedIn);
+    }
+  }, [state]);
+
   return (
     <>
       <ToastContainer />
@@ -35,13 +73,7 @@ function App() {
       <Button id="install-app" variant="outline-danger">
         Install App
       </Button>
-      <UserContext.Provider
-        value={{
-          user,
-          loggedIn,
-          checkedIn,
-        }}
-      >
+      <UserContext.Provider value={[state, setState]}>
         <ParticipantTable />
       </UserContext.Provider>
     </>

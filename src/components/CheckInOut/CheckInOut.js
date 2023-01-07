@@ -34,7 +34,8 @@ const CheckInOut = ({
     start: null,
     finish: null,
   });
-  const { user } = useContext(UserContext);
+  const [User, setUser] = useContext(UserContext);
+  const { user } = User;
 
   const handleClose = () => {
     setShow(false);

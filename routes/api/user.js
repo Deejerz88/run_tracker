@@ -19,16 +19,21 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { first_name, last_name, email, phone, change_password } = req.body;
+  const { first_name, last_name, email, phone, password, username } = req.body;
+  console.log('user', req.body)
   console.log("email", email);
   const user = await Participant.findOne({ email });
   console.log("user", user);
   if (!user) return res.status(404).json({ error: "User not found" });
   user.first_name = first_name;
   user.last_name = last_name;
+  user.username = username;
   user.phone = phone;
-  change_password && (user.password = change_password);
-  user.save();
+  if (password) {
+    console.log("changing password", password);
+    user.password = password;
+  }
+  await user.save();
   res.json({ user });
 });
 
@@ -40,7 +45,7 @@ router.post("/signup", async (req, res) => {
   let { username, email, password } = req.body;
   console.log("email", email, "password", password, "username", username);
   let user;
-  user = await Participant.findOne({ email});
+  user = await Participant.findOne({ email });
   console.log("user", user);
   if (user) return res.status(409).json({ error: "User already exists" });
 
@@ -62,7 +67,7 @@ router.post("/signup", async (req, res) => {
     participants.club_members.find(
       (participant) => participant.user.email === email
     ) || {};
-  console.log("participant", participant)
+  console.log("participant", participant);
   if (!participant.user) {
     const { data: partnerParticipants } = await axios.get(
       "https://runsignup.com/rest/users",

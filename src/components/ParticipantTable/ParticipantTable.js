@@ -26,7 +26,7 @@ const ParticipantTable = () => {
   const [table, setTable] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
-  const User = useContext(UserContext);
+  const [User, setUser] = useContext(UserContext);
   const { user } = User;
 
   console.log("User", User);
@@ -55,14 +55,12 @@ const ParticipantTable = () => {
     const selectedRace = $(`#race-select option:selected`).text();
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
     const selectedDate = $(`#race-date`).val();
-    // console.log("selectedDate", selectedDate);
     const bool = _.find(
       thisRace.attendance,
       (a) => a.date === selectedDate
     ) || {
       [field]: false,
     };
-    // console.log("bool", bool[field]);
     return bool[field];
   };
 
