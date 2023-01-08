@@ -122,23 +122,7 @@
   width: auto
 }
 
-@media screen and (max-width: 850px) {
-  #logo {
-    margin: 70px auto 20px auto;
-  }
-}
 
-@media screen and (max-width: 600px) {
-  #logo {
-    width: 400px;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
 
 .App-header {
   background-color: #282c34;

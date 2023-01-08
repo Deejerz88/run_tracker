@@ -25,7 +25,7 @@ code {
 
 @media screen and (max-width: 500px) {
   .nav-justified .nav-item {
-    font-size: 0.7em;
+    font-size: 0.9em;
   }
 }
 
@@ -35,6 +35,9 @@ code {
   }
   .checkIn-row {
     flex-direction: column;
+  }
+  #logo {
+    width: 400px;
   }
 }
 
@@ -58,5 +61,10 @@ code {
   #duration-card .card-title {
     font-size: 2em !important;
     line-height: 1.5 !important;
+  }
+}
+@media screen and (max-width: 850px) {
+  #logo {
+    margin: 70px auto 20px auto;
   }
 }
