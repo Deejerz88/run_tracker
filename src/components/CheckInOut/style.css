@@ -332,7 +332,7 @@ div[id^="goal-row-"] {
   border-radius: 8px;
   display: none;
   opacity: 0;
-  transition: .3s all;
+  transition: 0.3s all;
 }
 /* 
 .off-screen {
@@ -343,18 +343,25 @@ div[id^="goal-row-"] {
   transition: 0.3s all;
 } */
 
-
 #reset-goal {
   display: none;
   opacity: 0;
   transition: 0.5s ease-out;
 }
 
-#goal-form{
-  height: 130px
+#goal-form {
+  height: 130px;
 }
 
-#add-goal-row{
+#add-goal-row {
   height: 100px;
   transition: 0.2s ease-out;
-} 
+}
+
+#checkInOut .form-check{
+  margin: 10px;
+}
+
+label[for="acknowledged"] {
+  font-size: 0.8em;
+}

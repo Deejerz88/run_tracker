@@ -12,7 +12,7 @@ const handleSubmit = async ({
   race,
   handleClose,
   date,
-  User
+  User,
 }) => {
   e.preventDefault();
   e.stopPropagation();
@@ -25,7 +25,18 @@ const handleSubmit = async ({
       autoClose: 1500,
     });
     return;
+  } else if (
+    activeKey === "in" &&
+    state.duration.hours >= 1 &&
+    !state.acknowledged
+  ) {
+    toast.error("Please accept duration acknowledgement", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 1500,
+    });
+    return;
   }
+
   const fields = $(`input[name=${activeKey}]`);
   const data = {
     duration: {},
@@ -80,7 +91,7 @@ const handleSubmit = async ({
   ]);
   // table.redraw(true);
   User.user = newParticipant;
-  
+
   handleClose();
   window.scrollTo(0, 0);
   toast.success(`${participant.name} checked ${activeKey}`, {

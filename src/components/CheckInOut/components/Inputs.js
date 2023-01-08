@@ -154,6 +154,21 @@ const Inputs = ({
                   />
                 </FloatingLabel>
               </Col>
+              {state.duration.hours >= 1 && (
+                <Form.Check
+                  type="checkbox"
+                  id="acknowledged"
+                  label="I will be back after training ends and understand there may
+                not be any coaching support present"
+                  inline
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      acknowledged: e.target.checked,
+                    }))
+                  }
+                />
+              )}
             </Row>
           </Accordion.Body>
         </Accordion.Item>
