@@ -69,7 +69,7 @@ function App() {
         <Image
           id="logo"
           fluid
-          src="./assets/images/logo.png"
+          src="./assets/images/logo.webp"
           className="mx-auto"
         />
       </Row>

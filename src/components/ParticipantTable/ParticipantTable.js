@@ -114,10 +114,10 @@ const ParticipantTable = () => {
       },
       layout: "fitColumns",
       placeholder: "No Participants",
-      footerElement: "<div id='footer' class='tabulator-footer'></div>",
+      // footerElement: "<div id='footer' class='tabulator-footer'></div>",
       height: "100%",
-      // pagination: true,
-      // paginationSize: 50,
+      pagination: true,
+      paginationSize: 25,
       initialSort: [
         { column: "last_name", dir: "asc" },
         {
