@@ -365,3 +365,17 @@ div[id^="goal-row-"] {
 label[for="acknowledged"] {
   font-size: 0.8em;
 }
+
+.accordion-button:not(.collapsed){
+  color: white !important;
+  background-color: red !important;
+  box-shadow: none;
+}
+
+.accordion-button:not(.collapsed):focus{
+  box-shadow: none;
+}
+
+.accordion-button.collapsed:focus{
+  box-shadow:none
+}
