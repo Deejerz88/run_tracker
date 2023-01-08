@@ -10,17 +10,28 @@ import {
   Accordion,
 } from "react-bootstrap";
 import axios from "axios";
+import {BsPlusLg} from "react-icons/bs/index.esm.js";
 
 const Goals = ({ participant }) => {
   const [state, setState] = useState({
-    type: "event",
+    type: "",
     event: "Team Playmakers",
     category: "mileage",
-    target: "100",
+    mileage: "100",
+    pace: {
+      minutes: 10,
+      seconds: 0,
+    },
+    duration: {
+      hours: 0,
+      minutes: 30,
+      seconds: 0,
+    },
   });
   const [races, setRaces] = useState([]);
 
   const handleChange = (e) => {
+    e.preventDefault();
     const { name } = e.target;
     setState((prevState) => ({
       ...prevState,
@@ -37,7 +48,7 @@ const Goals = ({ participant }) => {
 
   const Event = () => {
     return (
-      <InputGroup className="mb-3">
+      <InputGroup className="mt-1">
         <FloatingLabel label="Event">
           <Form.Select
             id="goal-event"
@@ -56,49 +67,62 @@ const Goals = ({ participant }) => {
 
   const Category = () => {
     return (
-      <ButtonGroup toggle id="goal-category" name="category" className="">
-        {["Complete", "Attendance", "Mileage", "Duration", "Avg Pace"].map(
-          (category) => {
-            if (state.type === "overall" && category === "Complete")
-              return null;
-            else
-              return (
-                <Button
-                  key={category}
-                  variant="danger"
-                  id={`goal-${category}`}
-                  value={category}
-                  onClick={handleChange}
-                  className={state.category === category.toLowerCase() ? "active" : ""}
-                >
-                  {category}
-                </Button>
-              );
-          }
-        )}
-      </ButtonGroup>
+      <InputGroup className="mt-1">
+        <FloatingLabel label="Category">
+          <Form.Select
+            id="goal-category"
+            name="category"
+            value={state.category}
+            onChange={handleChange}
+          >
+            {["Mileage", "Pace", "Duration", "Finish"].map((category) => {
+              if (state.type === "overall" && category === "Finish")
+                return null;
+              else return <option key={category}>{category}</option>;
+            })}
+          </Form.Select>
+        </FloatingLabel>
+      </InputGroup>
     );
   };
 
   const Target = () => {
     return (
-      <InputGroup className="mb-3">
-        <FloatingLabel label="Target">
+      <InputGroup className="">
+        {["hours", "minutes", "seconds"].map((type, i) => {
+          return (
+            <FloatingLabel key={type} label={type}>
+              <Form.Control
+                id={`duration`}
+                type="number"
+                step={type === "seconds" ? 5 : 1}
+                value={
+                  type === "seconds"
+                    ? Math.round(state.duration[type])
+                    : state.duration[type]
+                }
+                onChange={(e) => handleChange({ e, state, setState })}
+                name="in"
+              />
+            </FloatingLabel>
+          );
+        })}
+        {/* <FloatingLabel label="Target">
+          
           <Form.Control
             id="goal-target"
             name="target"
-            type={
-              state.category === "Duration" || state.category === "pace"
-                ? "time"
-                : "number"
-            }
             value={state.target}
             onChange={handleChange}
           />
-        </FloatingLabel>
+        </FloatingLabel> */}
       </InputGroup>
     );
   };
+
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
 
   return (
     <Form id="goals-form">
@@ -106,18 +130,24 @@ const Goals = ({ participant }) => {
         <Accordion.Item eventKey="0">
           <Accordion.Header>New Goal</Accordion.Header>
           <Accordion.Body>
-            <Row className="j mb-3">
+            <Row id="goal-row-1" className="mb-3">
               <Col xs={2} className="d-flex justify-content-start">
                 <h2 className="styled-title goal-number">1</h2>
               </Col>
               <Col xs={10} className="d-flex align-items-center">
-                <ButtonGroup id="goal-type" name="type" className="w-25">
+                <ButtonGroup
+                  id="goal-type"
+                  name="type"
+                  className="w-25"
+                  onClick={handleChange}
+                >
                   <Button
                     variant="danger"
                     id="goal-overall"
                     value="overall"
+                    type="radio"
+                    name="type"
                     className={state.type === "overall" ? "active" : ""}
-                    onClick={handleChange}
                   >
                     Overall
                   </Button>
@@ -126,15 +156,15 @@ const Goals = ({ participant }) => {
                     id="goal-event"
                     name="type"
                     value="event"
+                    type="radio"
                     className={state.type === "event" ? "active" : ""}
-                    onClick={handleChange}
                   >
                     Event
                   </Button>
                 </ButtonGroup>
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row id="goal-row-2" className="mb-3">
               <Col
                 xs={2}
                 className="d-flex justify-content-start align-items-center"
@@ -142,35 +172,40 @@ const Goals = ({ participant }) => {
                 <h2 className="styled-title goal-number">2</h2>
               </Col>
               <Col xs={10} className="d-flex justify-content-start">
-                {state.type && state.type === "event" ? (
-                  <Event />
-                ) : (
-                  <Category />
-                )}
+                {state.type === "event" ? <Event /> : <Category />}
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row id="goal-row-3" className="mb-3">
               <Col xs={2} className="d-flex justify-content-start">
                 <h2 className="styled-title goal-number">3</h2>
               </Col>
-              <Col xs={10} className="">
-                {state.type && state.type === "event" ? (
-                  <Category />
-                ) : (
+              <Col xs={10} className="align-items-center">
+                {state.type === "event" ? <Category /> : <Target />}
+              </Col>
+            </Row>
+            <Row id="goal-row-4" className="mb-3">
+              {state.type === "event" && state.category !== "Finish" && (
+                <Col xs={2} className="d-flex justify-content-start">
+                  <h2 className="styled-title goal-number">4</h2>
+                </Col>
+              )}
+              <Col
+                xs={10}
+                className="d-flex justify-content-end align-items-center"
+              >
+                {state.type === "event" && state.category !== "Finish" && (
                   <Target />
                 )}
               </Col>
             </Row>
-            <Row className="mb-3">
-              <Col xs={2} className="d-flex justify-content-start">
-                <h2 className="styled-title goal-number">4</h2>
-              </Col>
-              <Col xs={10} className="d-flex justify-content-end">
-                {state.type &&
-                state.type === "event" &&
-                state.category !== "complete" ? (
-                  <Target />
-                ) : null}
+            <Row id="add-goal-row" className="mb-3">
+              <Col xs={12} className="d-flex justify-content-start">
+                <Button variant="danger" id="add-goal">
+                  <BsPlusLg size='0.8em' className='me-2'/> Add Goal
+                </Button>
+                <Button variant="danger" id="reset-goal" className="ms-3">
+                  Reset
+                </Button>
               </Col>
             </Row>
           </Accordion.Body>
