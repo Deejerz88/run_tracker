@@ -171,12 +171,12 @@
 }
 
 #email-card .card-body {
-  background: url("/public/assets/images/email2.png") no-repeat 50% 45%;
+  background: url("/public/assets/images/email2.webp") no-repeat 50% 45%;
   background-size: 300px;
 }
 
 #phone-card .card-body {
-  background: url("/public/assets/images/phone.png") no-repeat 30% 120%;
+  background: url("/public/assets/images/phone.webp") no-repeat 30% 120%;
   background-size: 130px;
 }
 
@@ -185,7 +185,7 @@
 }
 
 #attendance-card .card-body {
-  background: url("/public/assets/images/attendance2.png") no-repeat 65% 50%;
+  background: url("/public/assets/images/attendance2.webp") no-repeat 65% 50%;
   background-size: 90px;
 }
 
@@ -201,17 +201,17 @@
 
 #mileage-card .card-body {
   padding-top: 30px;
-  background: url("/public/assets/images/mileage.png") no-repeat 60% 70%;
+  background: url("/public/assets/images/mileage.webp") no-repeat 60% 70%;
   background-size: 175px;
 }
 
 #duration-card .card-body {
-  background: url("/public/assets/images/duration.png") no-repeat 60% 60%;
+  background: url("/public/assets/images/duration.webp") no-repeat 60% 60%;
   background-size: 220px;
 }
 
 #pace-card .card-body {
-  background: url("/public/assets/images/pace.png") no-repeat 45% 50%;
+  background: url("/public/assets/images/pace.webp") no-repeat 45% 50%;
   background-size: 120px;
 }
 
