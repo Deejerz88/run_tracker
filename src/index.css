@@ -3,52 +3,60 @@ body {
   font-family: "Roboto Slab", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: url('/public/assets/images/background.jpg') repeat;
-  background-size: 100%
+  background: url("/public/assets/images/background.jpg") repeat;
+  background-size: 100%;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-
 /* Media Queries */
 
-@media screen  and (max-width: 600px) {
-  #filter-row-2{
-    flex-direction: column;
+@media screen and (max-width: 400px) {
+  button[data-rr-ui-event-key="checkIn"] span {
+    display: none;
   }
-  .checkIn-row{
-    flex-direction: column;
+  button[data-rr-ui-event-key="checkIn"]::after {
+    content: "In/Out";
   }
-
 }
 
-@media screen and (max-width: 700px){
+@media screen and (max-width: 500px) {
+  .nav-justified .nav-item {
+    font-size: 0.7em;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #filter-row-2 {
+    flex-direction: column;
+  }
+  .checkIn-row {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 700px) {
   #pace-title-col {
     width: 105px !important;
   }
-  #attendance-title-col{
+  #attendance-title-col {
     width: 175px !important;
   }
-  #mileage-title-col{
+  #mileage-title-col {
     width: 140px !important;
   }
-
-  
 }
 
-
-@media screen and (max-width: 768px){
-
-#duration-card .card-text{
+@media screen and (max-width: 768px) {
+  #duration-card .card-text {
     font-size: 1.2em !important;
     line-height: 1.75 !important;
   }
-  #duration-card .card-title{
-    font-size: 2.0em !important;
+  #duration-card .card-title {
+    font-size: 2em !important;
     line-height: 1.5 !important;
   }
-
 }

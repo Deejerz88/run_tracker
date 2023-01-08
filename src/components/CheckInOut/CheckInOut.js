@@ -113,8 +113,8 @@ const CheckInOut = ({
       duration,
       checkedIn,
       checkedOut,
-      start: start,
-      finish: finish,
+      start,
+      finish,
     });
   }, [participant, race, table, date]);
 
@@ -136,7 +136,7 @@ const CheckInOut = ({
           }
         >
           {user?.user_id === participant.user_id && (
-            <Tab eventKey="checkIn" title="Check In / Out">
+            <Tab eventKey="checkIn" title={<span>Check <br/> In / Out</span>}>
               <Inputs
                 state={state}
                 setState={setState}
