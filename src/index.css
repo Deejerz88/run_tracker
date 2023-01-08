@@ -12,6 +12,12 @@ code {
     monospace;
 }
 
+#logo {
+  margin-top: 20px;
+  width: 450px;
+  transition: 0.2s all linear
+}
+
 /* Media Queries */
 
 @media screen and (max-width: 400px) {
@@ -21,11 +27,20 @@ code {
   button[data-rr-ui-event-key="checkIn"]::after {
     content: "In/Out";
   }
+  .nav-justified .nav-item {
+    font-size: 0.7em;
+  }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 500px) and (min-width: 401px) {
+  button[data-rr-ui-event-key="checkIn"] span {
+    display: none;
+  }
+  button[data-rr-ui-event-key="checkIn"]::after {
+    content: "In/Out";
+  }
   .nav-justified .nav-item {
-    font-size: 0.9em;
+    font-size: 0.85em;
   }
 }
 
@@ -63,6 +78,7 @@ code {
     line-height: 1.5 !important;
   }
 }
+
 @media screen and (max-width: 850px) {
   #logo {
     margin: 70px auto 20px auto;
