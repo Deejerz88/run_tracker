@@ -116,7 +116,7 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   console.log("username", username, "password", password);
 
-  const user = await Participant.findOne({ username });
+  const user = await Participant.findOne({ username_lower: username.toLowerCase() });
   console.log("user", user);
 
   if (!user)

@@ -43,6 +43,7 @@ const participantSchema = new Schema(
   {
     user_id: { type: Number, index: true, unique: true },
     username: { type: String, index: true, unique: true },
+    username_lower: { type: String, index: true, unique: true },
     email: { type: String, index: true, unique: true },
     phone: String,
     password: String,
@@ -119,6 +120,7 @@ participantSchema.pre("save", function (next) {
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
   }
+  this.username_lower = this.username.toLowerCase();
   next();
 });
 
