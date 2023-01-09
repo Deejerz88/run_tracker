@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Modal, Tabs, Tab } from "react-bootstrap";
+import { Tabs, Tab } from "react-bootstrap";
 import {
   Inputs,
   Stats,
@@ -8,19 +8,11 @@ import {
   Account,
   Goals,
 } from "./components/index.js";
-import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import "./style.css";
-import { UserContext } from "../../App.js";
+import { AppContext } from "../../App.js";
+import axios from "axios";
 
-const CheckInOut = ({
-  show,
-  setShow,
-  participant,
-  setParticipant,
-  race,
-  table,
-  date,
-}) => {
+const Profile = ({ table }) => {
   const [state, setState] = useState({
     mileage: 3,
     pace: {
@@ -35,11 +27,22 @@ const CheckInOut = ({
     start: null,
     finish: null,
   });
-  const [User] = useContext(UserContext);
-  const { user } = User;
+  const [Context, setContext] = useContext(AppContext);
+  let { user, participant, race, date } = Context;
+  console.log("Profile Context", Context);
+
+  if (!participant.user_id) {
+    const user_id = Number(window.location.pathname.split("/")[2]);
+    console.log("user_id", user_id);
+    (async () => {
+      const { data } = await axios.get(`/participant/${user_id}`);
+      console.log("data", data);
+      if (!data) return;
+      setContext({ ...Context, participant: data });
+    })();
+  }
 
   const handleClose = () => {
-    setShow(false);
     setState({
       mileage: 3,
       pace: {
@@ -54,7 +57,7 @@ const CheckInOut = ({
       start: null,
       finish: null,
     });
-    setTimeout(() => setParticipant({}), 100);
+    setTimeout(() => setContext({ ...Context, participant: {} }), 100);
   };
 
   const handleClick = (e) => {
@@ -123,60 +126,51 @@ const CheckInOut = ({
   }, [state]);
 
   return (
-    <Modal fullscreen={true} show={show} onHide={handleClose}>
-      <Modal.Header className="d-flex justify-content-between">
-        <Modal.Title>{`${participant.first_name} ${participant.last_name} - ${race.name}`}</Modal.Title>
-        <BsXSquareFill className="close-modal" onClick={handleClose} />
-      </Modal.Header>
-      <Modal.Body>
-        <Tabs
-          justify
-          defaultActiveKey={
-            user?.user_id === participant.user_id ? "checkIn" : "stats"
+    <Tabs
+      justify
+      defaultActiveKey={
+        user?.user_id === participant.user_id ? "checkIn" : "stats"
+      }
+    >
+      {user?.user_id === participant.user_id && (
+        <Tab
+          eventKey="checkIn"
+          title={
+            <span>
+              Check <br /> In / Out
+            </span>
           }
         >
-          {user?.user_id === participant.user_id && (
-            <Tab eventKey="checkIn" title={<span>Check <br/> In / Out</span>}>
-              <Inputs
-                state={state}
-                setState={setState}
-                checkedIn={participant.checkedIn}
-                participant={participant}
-                race={race}
-                table={table}
-                handleClose={handleClose}
-                date={date}
-              />
-            </Tab>
-          )}
-          <Tab eventKey="stats" title="Stats" className="stats-tab">
-            <Stats participant={participant} race={race} />
-          </Tab>
-          <Tab eventKey="history" title="History">
-            <History participant={participant} />
-          </Tab>
-          {user?.user_id === participant.user_id ? (
-            <Tab eventKey="account" title="Account">
-              <Account participant={participant} race={race} />
-            </Tab>
-          ) : (
-            <Tab
-              eventKey="contact"
-              title="Contact Info"
-              className="contact-tab"
-            >
-              <Contact participant={participant} handleClick={handleClick} />
-            </Tab>
-          )}
-          {user?.user_id === participant.user_id && (
-            <Tab eventKey="goals" title="Goals">
-              <Goals participant={participant} />
-            </Tab>
-          )}
-        </Tabs>
-      </Modal.Body>
-    </Modal>
+          <Inputs
+            state={state}
+            setState={setState}
+            table={table}
+            handleClose={handleClose}
+          />
+        </Tab>
+      )}
+      <Tab eventKey="stats" title="Stats" className="stats-tab">
+        <Stats />
+      </Tab>
+      <Tab eventKey="history" title="History">
+        <History />
+      </Tab>
+      {user?.user_id === participant.user_id ? (
+        <Tab eventKey="account" title="Account">
+          <Account />
+        </Tab>
+      ) : (
+        <Tab eventKey="contact" title="Contact Info" className="contact-tab">
+          <Contact handleClick={handleClick} />
+        </Tab>
+      )}
+      {user?.user_id === participant.user_id && (
+        <Tab eventKey="goals" title="Goals">
+          <Goals />
+        </Tab>
+      )}
+    </Tabs>
   );
 };
 
-export default CheckInOut;
+export default Profile;

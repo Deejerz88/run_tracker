@@ -17,35 +17,48 @@ router.get("/", async (req, res) => {
   res.json(participants);
 });
 
-router.get('/all', async (req, res) => {
-  const participants = await axios.get('https://runsignup.com/rest/users', {
+router.get("/all", async (req, res) => {
+  const participants = await axios.get("https://runsignup.com/rest/users", {
     params: {
       api_key: process.env.RSU_KEY,
       api_secret: process.env.RSU_SECRET,
-      format: 'json',
-      results_per_page: 2500
-    }
-  })
-  console.log('participants', participants.data)
-  res.json(participants.data)
-})
+      format: "json",
+      results_per_page: 2500,
+    },
+  });
+  console.log("participants", participants.data);
+  res.json(participants.data);
+});
 
 router.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
+  console.log("user_id", user_id);
+  if (!user_id) return res.json({})
   mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  const participant = await Participant.findOne({ user_id }).lean();
-  // console.log("participant", participant);
+  const participant = await Participant.findOne({ user_id }).lean().catch((e) =>
+    console.log("e", e)
+  );
+  console.log("participant", participant);
+  if (!participant) {
+    const { data } = await axios.get("https://runsignup.com/rest/user/", {
+      params: {
+        api_key: process.env.RSU_KEY,
+        api_secret: process.env.RSU_SECRET,
+        format: "json",
+        user_id,
+      },
+    });
+    console.log("data", data);
+  }
   res.json(participant);
 });
 
 // router.get('/rsu/:user_id', async (req, res) => {
 //   const { user_id } = req.params;
 //   const { data } = await axios.get('https://runsignup.com/rest/user/', {
-
-
 
 // router.get("/:user_id/:race_id", async (req, res) => {
 //   const { user_id, race_id } = req.params;

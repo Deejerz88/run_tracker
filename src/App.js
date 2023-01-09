@@ -1,21 +1,29 @@
-import "./App.css";
-import { ParticipantTable } from "./components/index.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Image, Row, Button } from "react-bootstrap";
 import { useEffect, useState, createContext } from "react";
+import { Home, ProfilePage } from "./Pages/index.js";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createRoutesFromElements,
+  Route,
+} from "react-router-dom";
+import { DateTime } from "luxon";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "./App.css";
 
-
-export const UserContext = createContext({}, () => {});
+export const AppContext = createContext({}, () => {});
 
 function App() {
-  const [state, setState] = useState({
+  const [Context, setContext] = useState({
     user: {},
     loggedIn: "false",
     stayLoggedIn: "false",
     checkedIn: "false",
+    participant: {},
+    race: {},
+    date: DateTime.local().toISODate(),
   });
 
   useEffect(() => {
@@ -35,50 +43,49 @@ function App() {
     const checkedIn = stayLoggedIn
       ? localStorage.getItem("checkedIn")
       : sessionStorage.getItem("checkedIn");
-    
+
     const newState = {
       user: (user && JSON.parse(user)) || {},
       loggedIn: (loggedIn && JSON.parse(loggedIn)?.toString()) || "false",
       stayLoggedIn:
         (stayLoggedIn && JSON.parse(stayLoggedIn)?.toString()) || "false",
       checkedIn: (checkedIn && JSON.parse(checkedIn)?.toString()) || "false",
+      participant: {},
+      race: {},
+      date: DateTime.local().toISODate(),
     };
 
-    setState(newState);
+    setContext(newState);
   }, []);
 
   useEffect(() => {
-    console.log("state", state);
-    if (state.stayLoggedIn === "true") {
-      localStorage.setItem("user", JSON.stringify(state.user));
-      localStorage.setItem("loggedIn", state.loggedIn);
-      localStorage.setItem("stayLoggedIn", state.stayLoggedIn);
-      localStorage.setItem("checkedIn", state.checkedIn);
+    console.log("state", Context);
+    if (Context.stayLoggedIn === "true") {
+      localStorage.setItem("user", JSON.stringify(Context.user));
+      localStorage.setItem("loggedIn", Context.loggedIn);
+      localStorage.setItem("stayLoggedIn", Context.stayLoggedIn);
+      localStorage.setItem("checkedIn", Context.checkedIn);
     } else {
-      sessionStorage.setItem("user", JSON.stringify(state.user));
-      sessionStorage.setItem("loggedIn", state.loggedIn);
-      sessionStorage.setItem("stayLoggedIn", state.stayLoggedIn);
-      sessionStorage.setItem("checkedIn", state.checkedIn);
+      sessionStorage.setItem("user", JSON.stringify(Context.user));
+      sessionStorage.setItem("loggedIn", Context.loggedIn);
+      sessionStorage.setItem("stayLoggedIn", Context.stayLoggedIn);
+      sessionStorage.setItem("checkedIn", Context.checkedIn);
     }
-  }, [state]);
+  }, [Context]);
+
+  const BrowserRouter = createBrowserRouter(
+    createRoutesFromElements([
+      <Route path="/" element={<Home />} />,
+      <Route path="/profile/:user_id" element={<ProfilePage />} />,
+    ])
+  );
 
   return (
     <>
       <ToastContainer />
-      <Row>
-        <Image
-          id="logo"
-          fluid
-          src="./assets/images/logo.webp"
-          className="mx-auto"
-        />
-      </Row>
-      <Button id="install-app" variant="outline-danger">
-        Install App
-      </Button>
-      <UserContext.Provider value={[state, setState]}>
-        <ParticipantTable />
-      </UserContext.Provider>
+      <AppContext.Provider value={[Context, setContext]}>
+        <RouterProvider router={BrowserRouter} />
+      </AppContext.Provider>
     </>
   );
 }

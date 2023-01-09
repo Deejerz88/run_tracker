@@ -4,13 +4,14 @@ import { startCase, isEqual } from "lodash";
 import { toast, Flip } from "react-toastify";
 import axios from "axios";
 import $ from "jquery";
-import { UserContext } from "../../../App.js";
+import { AppContext } from "../../../App.js";
 import { Tabulator } from "tabulator-tables";
 
-const Account = ({ participant, race }) => {
+const Account = () => {
+  const [Context, setContext] = useContext(AppContext);
+  const { participant, race } = Context;
   console.log("participant", participant);
   const { first_name, last_name, username, email, phone } = participant;
-  const [, setUser] = useContext(UserContext);
   const [originalData, setOriginalData] = useState({
     first_name,
     last_name,
@@ -89,7 +90,7 @@ const Account = ({ participant, race }) => {
           change_password: "",
           confirm_password: "",
         });
-        setUser((prevState) => ({
+        setContext((prevState) => ({
           ...prevState,
           user: { ...prevState.user, ...formData },
         }));

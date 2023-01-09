@@ -62,8 +62,14 @@
 }
 
 .tabulator .tabulator-footer .tabulator-page.active{
-  background-color: #e16f73;
+  background-color: #fdfafa;
   font-weight: bold;
+  color: #ED1C24;
+}
+
+.tabulator .tabulator-footer .tabulator-page:not(.active){
+  background-color: #000000;
+  color: #fffdfd;
 }
 
 #footer{
@@ -73,4 +79,9 @@
 #history-table.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs{
   background: rgba(0, 0, 0, 0.9) !important;
   color: white;
+}
+
+.tabulator .tabulator-footer .tabulator-page:disabled {
+  background-color: #000000;
+  color: #fffdfd;
 }

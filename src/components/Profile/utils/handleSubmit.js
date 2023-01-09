@@ -12,7 +12,7 @@ const handleSubmit = async ({
   race,
   handleClose,
   date,
-  User,
+  setContext,
 }) => {
   e.preventDefault();
   e.stopPropagation();
@@ -75,25 +75,11 @@ const handleSubmit = async ({
   ];
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
-  const { user_id } = newParticipant;
-  table.updateData([
-    {
-      user_id,
-      ...newParticipant,
-      start: DateTime.fromMillis(
-        start.time || state.start || participant.start
-      ).toFormat("HH:mm"),
-      finish: DateTime.fromMillis(finish.actual || finish.target).toFormat(
-        "HH:mm"
-      ),
-      [`checked${startCase(activeKey)}`]: true,
-    },
-  ]);
-  // table.redraw(true);
-  User.user = newParticipant;
-
+  setContext((prev) => ({
+    ...prev,
+    user: newParticipant,
+  }));
   handleClose();
-  window.scrollTo(0, 0);
   toast.success(`${participant.name} checked ${activeKey}`, {
     position: toast.POSITION.TOP_CENTER,
     autoClose: 1500,

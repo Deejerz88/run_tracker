@@ -12,21 +12,13 @@ import {
 import { DateTime } from "luxon";
 import { startCase } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
-import { UserContext } from "../../../App.js";
+import { AppContext } from "../../../App.js";
 
-const Inputs = ({
-  state,
-  setState,
-  checkedIn,
-  participant,
-  race,
-  table,
-  handleClose,
-  date,
-}) => {
+const Inputs = ({ state, setState, table, handleClose }) => {
   const [activeKey, setActiveKey] = useState("in");
 
-  const User = useContext(UserContext);
+  const [Context, setContext] = useContext(AppContext);
+  const { participant, race, date, checkedIn } = Context;
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
@@ -54,7 +46,7 @@ const Inputs = ({
           table,
           handleClose,
           date,
-          User,
+          setContext,
         })
       }
       onClick={handleClick}

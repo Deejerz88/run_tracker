@@ -1,7 +1,11 @@
-import React from "react";
+import { useContext } from "react";
 import { Row, Col, Card } from "react-bootstrap";
+import { AppContext } from "../../../App.js";
 
-const Stats = ({ participant, race }) => {
+const Stats = () => {
+  const [Context] = useContext(AppContext);
+  let { participant, race } = Context;
+  console.log('participant', participant)
   return (
     <Row className="stats-row">
       {["race", "Overall"].map((title, i) => {

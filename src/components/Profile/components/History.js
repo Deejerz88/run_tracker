@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { DateTime, Duration } from "luxon";
 import axios from "axios";
+import { AppContext } from "../../../App.js";
 
-const History = ({ participant }) => {
-
+const History = () => {
+  const [Context] = useContext(AppContext);
+  const { participant } = Context;
   useEffect(() => {
     const getHistory = async (table) => {
       if (!participant) return;
@@ -49,7 +51,7 @@ const History = ({ participant }) => {
     const table = new Tabulator("#history-table", {
       layout: "fitColumns",
       placeholder: "No Events... yet!",
-      height: '100%',
+      height: "100%",
       groupBy: (data) => data.race,
       groupHeader: (value, count, data, group) => {
         return value + " (" + count + " attended)";

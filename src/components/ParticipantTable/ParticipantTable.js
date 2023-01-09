@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
 import { Filters } from "./index.js";
-import { CheckInOut, Login } from "../index.js";
+import { Profile, Login } from "../index.js";
 import axios from "axios";
 import _ from "lodash";
 import { DateTime } from "luxon";
@@ -13,23 +13,21 @@ import {
   BsXCircleFill,
 } from "react-icons/bs/index.esm.js";
 import { Button } from "react-bootstrap";
-import { UserContext } from "../../App.js";
+import { AppContext } from "../../App.js";
 import "./style.css";
 import { toast, Flip } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ParticipantTable = () => {
-  const [showCheck, setShowCheck] = useState(false);
-  const [participant, setParticipant] = useState({});
   const [races, setRaces] = useState([]);
-  const [race, setRace] = useState({});
-  const [date, setDate] = useState(DateTime.local().toISODate());
   const [table, setTable] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
-  const [User] = useContext(UserContext);
-  const { user } = User;
+  const [Context, setContext] = useContext(AppContext);
+  const { user } = Context;
+  const navigate = useNavigate();
 
-  console.log("User", User);
+  console.log("Context", Context);
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
@@ -77,12 +75,13 @@ const ParticipantTable = () => {
   };
 
   useEffect(() => {
-    if (!race.name) return;
+    const race = Context.race;
     const table = Tabulator.findTable("#participant-table")[0];
+    if (!table || !race.name) return;
     table.setData(
       `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
     );
-  }, [race]);
+  }, [Context.race]);
 
   const startFinishFormatter = (cell) => {
     const value = cell.getValue() || "";
@@ -97,7 +96,11 @@ const ParticipantTable = () => {
     getRaces().then((data) => {
       setRaces(data);
       console.log("races: ", data);
-      setRace(data[0]);
+      setContext((prevcContext) => ({
+        ...prevcContext,
+        race: data[0],
+      }));
+      console.log("Context.race", Context);
     });
     const table = new Tabulator("#participant-table", {
       ajaxResponse: async (url, params, response) => {
@@ -113,11 +116,12 @@ const ParticipantTable = () => {
         return _.uniqBy(updated, "user_id");
       },
       layout: "fitColumns",
-      placeholder: "No Participants",
+      placeholder: "No Participants", 
       // footerElement: "<div id='footer' class='tabulator-footer'></div>",
       height: "100%",
       pagination: true,
       paginationSize: 25,
+      // paginationSizeSelector: [25, 50, 100],
       initialSort: [
         { column: "last_name", dir: "asc" },
         {
@@ -200,8 +204,14 @@ const ParticipantTable = () => {
     });
     table.on("rowClick", (e, row) => {
       console.log("rowClick", row);
-      setParticipant(row.getData());
-      setShowCheck(true);
+      // setParticipant(row.getData());
+      // setShowCheck(true);
+      setContext((prevcContext) => ({
+        ...prevcContext,
+        participant: row.getData(),
+      }));
+
+      navigate(`/profile/${row.getData().user_id}`);
     });
 
     table.on("tableBuilt", () => {
@@ -256,10 +266,13 @@ const ParticipantTable = () => {
         id="check-in"
         variant="danger"
         onClick={() => {
-          setParticipant(User.user);
-          setShowCheck(true);
+          setContext((prevcContext) => ({
+            ...prevcContext,
+            participant: user,
+          }));
+          navigate(`/profile/${user.user_id}`);
         }}
-        className={User.loggedIn === "true" ? "" : "d-none"}
+        className={Context.loggedIn === "true" ? "" : "d-none"}
       >
         {user.first_name
           ? `${user.first_name} ${user.last_name}`
@@ -268,16 +281,19 @@ const ParticipantTable = () => {
       <Button
         id="login"
         variant="danger"
-        name={User.loggedIn}
+        name={Context.loggedIn}
         onClick={() => {
-          if (User.loggedIn === "true") {
-            User.loggedIn = "false";
-            User.user = {};
+          if (Context.loggedIn === "true") {
+            setContext((prevcContext) => ({
+              ...prevcContext,
+              loggedIn: "false",
+              user: {},
+              participant: {},
+            }));
             localStorage.setItem("loggedIn", null);
             localStorage.setItem("user", JSON.stringify(null));
             sessionStorage.setItem("loggedIn", null);
             sessionStorage.setItem("user", JSON.stringify(null));
-            setParticipant({});
             toast.error("Logged Out", {
               position: "top-center",
               transition: Flip,
@@ -288,26 +304,10 @@ const ParticipantTable = () => {
           }
         }}
       >
-        {User.loggedIn === "true" ? "Log Out" : "Log In"}
+        {Context.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
-      <CheckInOut
-        show={showCheck}
-        setShow={setShowCheck}
-        participant={participant}
-        setParticipant={setParticipant}
-        table={table}
-        race={race}
-        setRace={setRace}
-        date={date}
-      />
       <Login show={showLogin} setShow={setShowLogin} />
-      <Filters
-        setRace={setRace}
-        races={races}
-        setDate={setDate}
-        date={date}
-        table={table}
-      />
+      <Filters races={races} table={table} />
       <div className="m-3 " id="participant-table" />
     </>
   );

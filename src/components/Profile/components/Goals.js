@@ -11,9 +11,9 @@ import {
 import axios from "axios";
 import { BsPlusLg } from "react-icons/bs/index.esm.js";
 import $ from "jquery";
-import { isEqual, difference } from "lodash";
+import { startCase } from "lodash";
 
-const Goals = ({ participant }) => {
+const Goals = () => {
   const [state, setState] = useState({
     type: "none",
     event: "",
@@ -49,63 +49,55 @@ const Goals = ({ participant }) => {
     });
   };
 
+  const hideRow = (row) => {
+    $(`#goal-row-${row}`).css({ marginLeft: 2000, opacity: 0 });
+    setTimeout(() => {
+      $(`#goal-row-${row}`).hide();
+    }, 500);
+  };
+
+  const showRow = (row) => {
+    $(`#goal-row-${row}`).css({ display: "flex" });
+    setTimeout(() => {
+      $(`#goal-row-${row}`).css({ marginLeft: 0, opacity: 1 });
+    }, 0);
+  };
+
+  const growForm = (size) => {
+    $("#goal-form").height($("#goal-form").height() + size);
+  };
+
   const handleSelect = (e) => {
     e.preventDefault();
-    const { name, id, value } = e.target;
+    const { name, value } = e.target;
     console.log("name", name, e.target, value);
     switch (name) {
       case "type":
         if (state.type === "none" || !state.type) {
-          $("#goal-row-2").css({ display: "flex" });
-          setTimeout(() => {
-            $("#goal-row-2").css({ marginLeft: 0, opacity: 1 });
-          }, 0);
-          $("#goal-form").height($("#goal-form").height() + 75);
+          showRow(2);
+          growForm(75);
         }
         resetState(value);
-        $("#goal-row-3").css({ marginLeft: 2000, opacity: 0 });
-        setTimeout(() => {
-          $("#goal-row-3").hide();
-        }, 500);
-        $("#goal-row-4").css({ marginLeft: 2000, opacity: 0 });
-        setTimeout(() => {
-          $("#goal-row-4").hide();
-        }, 500);
+        hideRow(3);
+        hideRow(4);
         $("#goal-form").height(200);
         break;
       case "event":
       case "category":
         if (!state[name] || (name === "category" && state[name] === "Finish"))
-          $("#goal-form").height($("#goal-form").height() + 75);
+          growForm(75);
         setState((prevState) => ({
           ...prevState,
           [name]: value,
         }));
         console.log("state event", state.event);
         if (!state.event) {
-          $("#goal-row-3").css({ display: "flex" });
-          setTimeout(() => {
-            $("#goal-row-3").css({ marginLeft: 0, opacity: 1 });
-          }, 0);
-          // $("#goal-form").height($("#goal-form").height() + 150);
-          // $("#add-goal-row").css({ opacity: 1 });
-          // setTimeout(() => {
-          //   $("#add-goal-row").css({ display: "flex" });
-          // }, 100);
-        } else {
+          showRow(3);
+        } else if (name !== "event") {
           if (value === "Finish") {
-            $("#goal-row-4").css({ marginLeft: 2000, opacity: 0 });
-            setTimeout(() => {
-              $("#goal-row-4").hide();
-            }, 500);
-            // $("add-goal-row").css({ display: "flex" });
+            hideRow(4);
           } else {
-            $("#goal-row-4").css({ display: "flex" });
-            setTimeout(() => {
-              $("#goal-row-4").css({ marginLeft: 0, opacity: 1 });
-            }, 0);
-            // $("add-goal-row").css({ display: "flex" });
-            // $("#goal-form").height(400);
+            showRow(4);
           }
         }
         break;
@@ -144,10 +136,7 @@ const Goals = ({ participant }) => {
       console.log("add goal", state);
       // $("#add-goal-row").hide().css({ opacity: 0 });
       resetState();
-      $("#goal-row-1").css({ display: "flex" });
-      setTimeout(() => {
-        $("#goal-row-1").css({ marginLeft: 0, opacity: 1 });
-      }, 0);
+      showRow(1);
       $("#reset-goal").css({ display: "block" });
       setTimeout(() => {
         $("#reset-goal").css({ opacity: 1 });
@@ -297,10 +286,6 @@ const Goals = ({ participant }) => {
 
   return (
     <Form id="goal-form" onClick={handleClick}>
-      {/* <Accordion defaultActiveKey="0">
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>New Goal</Accordion.Header>
-          <Accordion.Body> */}
       <Row id="goal-row-1" className=" ">
         <Col xs={2} className="d-flex justify-content-start">
           <h2 className="styled-title goal-number">1</h2>
@@ -312,54 +297,51 @@ const Goals = ({ participant }) => {
             className="w-25"
             onClick={handleSelect}
           >
-            <Button
-              id="goal-overall"
-              value="overall"
-              variant="danger"
-              type="radio"
-              name="type"
-              // active={state.type === "overall"}
-              className={state.type === "overall" ? "active" : ""}
-            >
-              Overall
-            </Button>
-            <Button
-              id="goal-event"
-              variant="danger"
-              name="type"
-              value="event"
-              type="radio"
-              className={state.type === "event" ? "active" : ""}
-            >
-              Event
-            </Button>
+            {["overall", "event"].map((type, i) => {
+              return (
+                <Button
+                  key={type}
+                  id={`goal-${type}`}
+                  value={type}
+                  variant="danger"
+                  type="radio"
+                  name="type"
+                  className={state.type === type ? "active" : ""}
+                >
+                  {startCase(type)}
+                </Button>
+              );
+            })}
           </ButtonGroup>
         </Col>
       </Row>
-      <Row id="goal-row-2" className=" ">
-        <Col xs={2} className="d-flex justify-content-start align-items-center">
-          <h2 className="styled-title goal-number">2</h2>
-        </Col>
-        <Col xs={10} className="d-flex justify-content-start">
-          {state.type === "event" ? <Event /> : <Category />}
-        </Col>
-      </Row>
-      <Row id="goal-row-3" className=" ">
-        <Col xs={2} className="d-flex justify-content-start">
-          <h2 className="styled-title goal-number">3</h2>
-        </Col>
-        <Col xs={10} className="align-items-center">
-          {state.type === "event" ? <Category /> : <Target />}
-        </Col>
-      </Row>
-      <Row id="goal-row-4" className="">
-        <Col xs={2} className="d-flex justify-content-start">
-          <h2 className="styled-title goal-number">4</h2>
-        </Col>
-        <Col xs={10} className="">
-          <Target />
-        </Col>
-      </Row>
+      {[2, 3, 4].map((i) => {
+        const event = state.type === "event";
+        return (
+          <Row id={`goal-row-${i}`} className=" ">
+            <Col xs={2} className="d-flex justify-content-start">
+              <h2 className="styled-title goal-number">{i}</h2>
+            </Col>
+            <Col xs={10}>
+              {i === 2 ? (
+                event ? (
+                  <Event />
+                ) : (
+                  <Category />
+                )
+              ) : i === 3 ? (
+                event ? (
+                  <Category />
+                ) : (
+                  <Target />
+                )
+              ) : (
+                <Target />
+              )}
+            </Col>
+          </Row>
+        );
+      })}
       <Row
         id="add-goal-row"
         className=""
@@ -393,9 +375,6 @@ const Goals = ({ participant }) => {
           </Button>
         </Col>
       </Row>
-      {/* </Accordion.Body>
-        </Accordion.Item>
-      </Accordion> */}
     </Form>
   );
 };

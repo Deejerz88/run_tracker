@@ -12,7 +12,7 @@ import axios from "axios";
 import { BsXSquareFill } from "react-icons/bs/index.esm.js";
 import { TiArrowBackOutline } from "react-icons/ti/index.esm.js";
 import { toast, Flip } from "react-toastify";
-import { UserContext } from "../../App.js";
+import { AppContext } from "../../App.js";
 import "./style.css";
 import $ from "jquery";
 
@@ -24,7 +24,7 @@ const Login = ({ show, setShow }) => {
     action: "Log In",
   });
 
-  const [User, setUser] = useContext(UserContext);
+  const [Context, setContext] = useContext(AppContext);
 
   const handleClick = (e) => {
     const { id, nodeName } = e.target;
@@ -149,15 +149,12 @@ const Login = ({ show, setShow }) => {
       }
       console.log("res", res);
       const { user } = res.data;
-      User.stayLoggedIn = stayLoggedIn.toString();
-      User.user = user;
-      User.loggedIn = "true";
-      setUser((prevState) => ({
-        ...prevState,
+      setContext({
+        ...Context,
         stayLoggedIn: stayLoggedIn.toString(),
         user,
         loggedIn: "true",
-      }));
+      });
       if (stayLoggedIn) {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("loggedIn", "true");

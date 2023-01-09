@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Row,
   Col,
@@ -11,12 +11,14 @@ import {
 import "./style.css";
 import { Tabulator } from "tabulator-tables";
 import { MdOutlineClear } from "react-icons/md/index.esm.js";
+import { AppContext } from "../../../../App.js";
 
-const Filters = ({ setRace, date, setDate, table, races }) => {
+const Filters = ({ table, races }) => {
   //filter by name and checked in true/false
   const [name, setName] = useState("");
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkedOut, setCheckedOut] = useState(false);
+  const [Context, setContext] = useContext(AppContext);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -32,10 +34,13 @@ const Filters = ({ setRace, date, setDate, table, races }) => {
       const [raceId, type] = value.split("-");
       const eventIds = selectedOptions[0].dataset.eventids;
       const raceName = selectedOptions[0].innerText;
-      setRace({ id: Number(raceId), name: raceName, type, eventIds });
+      setContext({
+        ...Context,
+        race: { id: Number(raceId), name: raceName, type, eventIds },
+      });
     } else if (id === "race-date") {
       console.log("date", value);
-      setDate(value);
+      setContext({ ...Context, date: value });
       table.setData();
     }
   };
@@ -123,7 +128,7 @@ const Filters = ({ setRace, date, setDate, table, races }) => {
               type="date"
               id="race-date"
               aria-label="race-date"
-              value={date}
+              value={Context.date}
               onChange={handleChange}
             />
           </FloatingLabel>
