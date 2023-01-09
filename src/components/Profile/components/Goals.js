@@ -240,7 +240,6 @@ const Goals = () => {
                     ? Math.round(state.pace[type])
                     : state.pace[type]
                 }
-                // onChange={handleSelect}
                 onBlur={handleBlur}
               />
             </FloatingLabel>
@@ -266,7 +265,6 @@ const Goals = () => {
                     ? Math.round(state.duration[type])
                     : state.duration[type]
                 }
-                // onChange={handleSelect}
                 onBlur={handleBlur}
               />
             </FloatingLabel>
@@ -318,7 +316,7 @@ const Goals = () => {
       {[2, 3, 4].map((i) => {
         const event = state.type === "event";
         return (
-          <Row id={`goal-row-${i}`} className=" ">
+          <Row key={i}  id={`goal-row-${i}`} className=" ">
             <Col xs={2} className="d-flex justify-content-start">
               <h2 className="styled-title goal-number">{i}</h2>
             </Col>

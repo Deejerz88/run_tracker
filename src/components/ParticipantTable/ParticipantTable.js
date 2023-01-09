@@ -75,13 +75,13 @@ const ParticipantTable = () => {
   };
 
   useEffect(() => {
-    const race = Context.race;
+    const { race } = Context;
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table || !race.name) return;
     table.setData(
       `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
     );
-  }, [Context.race]);
+  }, [Context]);
 
   const startFinishFormatter = (cell) => {
     const value = cell.getValue() || "";
@@ -98,7 +98,7 @@ const ParticipantTable = () => {
       console.log("races: ", data);
       setContext((prevcContext) => ({
         ...prevcContext,
-        race: data[0],
+        race: Context.race.name ? Context.race : data[0],
       }));
       console.log("Context.race", Context);
     });
@@ -116,7 +116,8 @@ const ParticipantTable = () => {
         return _.uniqBy(updated, "user_id");
       },
       layout: "fitColumns",
-      placeholder: "No Participants", 
+      placeholder: "No Participants",
+      responsiveLayout: "hide",
       // footerElement: "<div id='footer' class='tabulator-footer'></div>",
       height: "100%",
       pagination: true,
@@ -136,36 +137,45 @@ const ParticipantTable = () => {
           title: "First",
           field: "first_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
+          // responsive: 0,
+          minWidth: 120,
         },
         {
           title: "Last",
           field: "last_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
+          // responsive: 0,
+          minWidth: 120,
         },
         {
           title: "In",
           field: "checkedIn",
-          maxWidth: 100,
+          maxWidth: 120,
+          minWidth: 100,
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
           formatter: checkInOutFormatter,
           mutatorData: checkInOutMutator,
+          responsive: 1,
         },
         {
           title: "Out",
           field: "checkedOut",
-          maxWidth: 100,
+          maxWidth: 120,
+          minWidth: 100,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: "boolean",
           formatter: checkInOutFormatter,
           mutatorData: checkInOutMutator,
+          responsive: 1,
         },
         {
           title: "Start",
           field: "start",
-          maxWidth: 140,
+          maxWidth: 120,
+          minWidth: 110,
           hozAlign: "center",
           sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {
             return (
@@ -176,11 +186,13 @@ const ParticipantTable = () => {
           headerHozAlign: "center",
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
+          responsive: 1,
         },
         {
           title: "Finish",
           field: "finish",
-          maxWidth: 140,
+          maxWidth: 120,
+          minWidth: 110,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: function (a, b, aRow, bRow, column, dir, sorterParams) {
@@ -191,6 +203,7 @@ const ParticipantTable = () => {
           },
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
+          responsive: 2,
         },
         {
           title: "Name",
@@ -235,28 +248,6 @@ const ParticipantTable = () => {
     });
     table.on("renderComplete", () => {
       //check if on mobile deice
-      const windowWidth = window.innerWidth;
-      const mobileCols = ["first_name", "last_name", "checkedOut", "checkedIn"];
-      const nonMobileCols = [
-        "first_name",
-        "last_name",
-        "checkedOut",
-        "checkedIn",
-        "start",
-        "finish",
-      ];
-      const cols = windowWidth < 800 ? mobileCols : nonMobileCols;
-      console.log("cols", cols);
-      table.getColumns().forEach((col) => {
-        const field = col.getField();
-        if (cols.includes(field)) {
-          col.show();
-          col.getDefinition().visible = true;
-        } else {
-          col.hide();
-          col.getDefinition().visible = false;
-        }
-      });
     });
   }, []);
 
