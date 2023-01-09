@@ -151,7 +151,7 @@ const ParticipantTable = () => {
           title: "In",
           field: "checkedIn",
           maxWidth: 90,
-          minWidth:80,
+          minWidth:70,
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
