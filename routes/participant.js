@@ -33,14 +33,14 @@ router.get("/all", async (req, res) => {
 router.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
   console.log("user_id", user_id);
-  if (!user_id) return res.json({})
+  if (!user_id) return res.json({});
   mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  const participant = await Participant.findOne({ user_id }).lean().catch((e) =>
-    console.log("e", e)
-  );
+  let participant = await Participant.findOne({ user_id })
+    .lean()
+    .catch((e) => console.log("e", e));
   console.log("participant", participant);
   if (!participant) {
     const { data } = await axios.get("https://runsignup.com/rest/user/", {
@@ -52,6 +52,8 @@ router.get("/:user_id", async (req, res) => {
       },
     });
     console.log("data", data);
+    if (!data) return res.json({});
+    participant = data.user;
   }
   res.json(participant);
 });
