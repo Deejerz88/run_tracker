@@ -42,8 +42,8 @@ const raceSchema = new Schema({
 const participantSchema = new Schema(
   {
     user_id: { type: Number, index: true, unique: true },
-    username: { type: String, index: true, unique: true },
-    username_lower: { type: String, index: true, unique: true },
+    username: { type: String, index: true },
+    username_lower: { type: String, index: true },
     email: { type: String, index: true, unique: true },
     phone: String,
     password: String,
