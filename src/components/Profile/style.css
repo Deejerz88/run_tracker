@@ -332,6 +332,7 @@ div[id^="goal-row-"] {
   display: none;
   opacity: 0;
   transition: 0.3s all;
+  background-color: rgb(255, 255, 255);
 }
 
 #reset-goal {

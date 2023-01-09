@@ -13,12 +13,32 @@ import { DateTime } from "luxon";
 import { startCase } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
 import { AppContext } from "../../../App.js";
+import axios from "axios";
 
 const Inputs = ({ state, setState, table, handleClose }) => {
   const [activeKey, setActiveKey] = useState("in");
-
+  const [races, setRaces] = useState([]);
   const [Context, setContext] = useContext(AppContext);
+  const [selectedRace, setSelectedRace] = useState(Context.race);
   const { user, participant, race, date, checkedIn } = Context;
+
+  useEffect(() => {
+    (async () => {
+      let { data: races } = await axios.get("/race");
+      setRaces(["", ...races]);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!races.length > 1) return;
+    console.log("changing race", races, races[1], Context);
+    setSelectedRace(Context.race.name ? Context.race : races[1]);
+  }, [races, Context]);
+
+  useEffect(() => {
+    console.log("selectedRace", selectedRace);
+    if (!selectedRace) return;
+  }, [selectedRace]);
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
@@ -50,7 +70,30 @@ const Inputs = ({ state, setState, table, handleClose }) => {
         })
       }
       onClick={handleClick}
+      className="bg-light"
     >
+      <Row>
+        <Col>
+          <FloatingLabel label="Race" className="m-3">
+            <Form.Select
+              id="checkin-race"
+              value={selectedRace?.name || ""}
+              onChange={(e) =>
+                handleChange({
+                  e,
+                  setContext,
+                  races,
+                  setSelectedRace,
+                })
+              }
+            >
+              {races.map((race, i) => (
+                <option key={i}>{race.name}</option>
+              ))}
+            </Form.Select>
+          </FloatingLabel>
+        </Col>
+      </Row>
       <Accordion
         id="checkInOut"
         defaultActiveKey={user.user_id && checkedIn ? "out" : "in"}
@@ -237,7 +280,13 @@ const Inputs = ({ state, setState, table, handleClose }) => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Button id='checkinout-button' variant="danger" name={activeKey} type="submit" className="">
+      <Button
+        id="checkinout-button"
+        variant="danger"
+        name={activeKey}
+        type="submit"
+        className=""
+      >
         {activeKey === "in" ? "Check In" : "Check Out"}
       </Button>
     </Form>

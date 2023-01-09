@@ -149,12 +149,12 @@ const Login = ({ show, setShow }) => {
       }
       console.log("res", res);
       const { user } = res.data;
-      setContext({
-        ...Context,
+      setContext((prev) => ({
+        ...prev,
         stayLoggedIn: stayLoggedIn.toString(),
         user,
         loggedIn: "true",
-      });
+      }));
       if (stayLoggedIn) {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("loggedIn", "true");

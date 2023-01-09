@@ -20,6 +20,7 @@ import {
 } from "react-icons/bs/index.esm.js";
 import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
 import { MdManageAccounts } from "react-icons/md/index.esm.js";
+import $ from "jquery";
 
 const Profile = ({ table }) => {
   const [state, setState] = useState({
@@ -47,7 +48,7 @@ const Profile = ({ table }) => {
       const { data } = await axios.get(`/participant/${user_id}`);
       console.log("data", data);
       if (!data) return;
-      setContext({ ...Context, participant: data });
+      setContext((prev) => ({ ...Context, participant: data }));
     })();
   }
 
@@ -66,7 +67,17 @@ const Profile = ({ table }) => {
       start: null,
       finish: null,
     });
-    setTimeout(() => setContext({ ...Context, participant: {} }), 100);
+    let race = $("#checkin-race").val();
+    console.log("race", {
+      id: 27849,
+      name: "2023 Blue Cross Winter Warm Up",
+      type: "race",
+      eventIds: [675203],
+    });
+    setTimeout(
+      () => setContext((prev) => ({ ...prev, participant: {}, race })),
+      100
+    );
   };
 
   const handleClick = (e) => {
@@ -151,6 +162,7 @@ const Profile = ({ table }) => {
               className="d-flex align-items-center justify-content-center"
               onClick={() => {
                 console.log("redirecting to home");
+                handleClose();
                 navigate("/");
               }}
               id="home-col"

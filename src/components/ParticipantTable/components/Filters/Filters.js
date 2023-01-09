@@ -12,6 +12,7 @@ import "./style.css";
 import { Tabulator } from "tabulator-tables";
 import { MdOutlineClear } from "react-icons/md/index.esm.js";
 import { AppContext } from "../../../../App.js";
+import $ from "jquery";
 
 const Filters = ({ table, races }) => {
   //filter by name and checked in true/false
@@ -19,6 +20,9 @@ const Filters = ({ table, races }) => {
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkedOut, setCheckedOut] = useState(false);
   const [Context, setContext] = useContext(AppContext);
+  const [selectedRace, setSelectedRace] = useState();
+
+  console.log("context", Context);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -34,16 +38,31 @@ const Filters = ({ table, races }) => {
       const [raceId, type] = value.split("-");
       const eventIds = selectedOptions[0].dataset.eventids;
       const raceName = selectedOptions[0].innerText;
-      setContext({
-        ...Context,
+      setContext((prev) => ({
+        ...prev,
         race: { id: Number(raceId), name: raceName, type, eventIds },
-      });
+      }));
     } else if (id === "race-date") {
       console.log("date", value);
-      setContext({ ...Context, date: value });
+      setContext((prev) => ({ ...prev, date: value }));
       table.setData();
     }
   };
+
+  useEffect(() => {
+    console.log("selectedRace", selectedRace);
+  }, [selectedRace]);
+
+  useEffect(() => {
+    const { race } = Context;
+    console.log("filter context", race, Context);
+    setSelectedRace(race);
+    console.log(
+      "options",
+      (document.getElementById("race-select").options.selectedIndex =
+        races.findIndex((r) => r.id === race.id))
+    );
+  }, [Context]);
 
   const nameFilter = ({ data, name }) => {
     return data.name.toLowerCase().includes(name.toLowerCase());

@@ -1,8 +1,24 @@
 import { DateTime, Duration } from "luxon";
 import $ from "jquery";
 
-const handleChange = ({ e, state, setState }) => {
+const handleChange = ({
+  e,
+  state,
+  setState,
+  setContext,
+  races,
+  setSelectedRace,
+}) => {
   let { id, value } = e.target;
+  if ((id = "checkin-race")) {
+    const race = races.find((r) => r.name === value);
+    setContext((prevState) => ({
+      ...prevState,
+      race,
+    }));
+    setSelectedRace(race);
+    return;
+  }
   let group = id.split("-")[0];
   let type = id.split("-")[1];
   console.log("id", id, "group", group, "type", type);
