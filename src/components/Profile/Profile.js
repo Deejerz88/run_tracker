@@ -155,7 +155,11 @@ const Profile = ({ table }) => {
         <>
           <Row id="profile-header">
             <Col xs={10}>
-              <h2>{`${participant.first_name} ${participant.last_name}`}</h2>
+              <h2>
+                {participant.first_name
+                  ? `${participant.first_name} ${participant.last_name}`
+                  : participant.username}
+              </h2>
             </Col>
             <Col
               xs={2}
@@ -173,7 +177,8 @@ const Profile = ({ table }) => {
           <Tabs
             justify
             defaultActiveKey={
-              user?.user_id === participant.user_id ? "checkIn" : "stats"
+              // user?.user_id === participant.user_id ? "checkIn" : "stats"
+              "checkIn"
             }
           >
             <Tab
@@ -214,7 +219,7 @@ const Profile = ({ table }) => {
             >
               <History />
             </Tab>
-            {user?.user_id === participant.user_id && (
+            {/* {user?.user_id === participant.user_id && (
               <Tab
                 eventKey="goals"
                 title={
@@ -225,7 +230,7 @@ const Profile = ({ table }) => {
               >
                 <Goals />
               </Tab>
-            )}
+            )} */}
             {user?.user_id === participant.user_id ? (
               <Tab
                 eventKey="account"

@@ -20,7 +20,11 @@ const Inputs = ({ state, setState, table, handleClose }) => {
   const [races, setRaces] = useState([]);
   const [Context, setContext] = useContext(AppContext);
   const [selectedRace, setSelectedRace] = useState(Context.race);
-  const { user, participant, race, date, checkedIn } = Context;
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(Context.date);
+  const { user, participant, race, date } = Context;
+
+  const today = DateTime.local().toISODate();
 
   useEffect(() => {
     (async () => {
@@ -30,6 +34,10 @@ const Inputs = ({ state, setState, table, handleClose }) => {
   }, []);
 
   useEffect(() => {
+    console.log("checkedIn", checkedIn);
+  }, [checkedIn]);
+
+  useEffect(() => {
     if (!races.length > 1) return;
     console.log("changing race", races, races[1], Context);
     setSelectedRace(Context.race.name ? Context.race : races[1]);
@@ -37,7 +45,17 @@ const Inputs = ({ state, setState, table, handleClose }) => {
 
   useEffect(() => {
     console.log("selectedRace", selectedRace);
-    if (!selectedRace) return;
+    if (!selectedRace || !participant.races) return;
+    const participantRace = participant.races.find(
+      (r) => r.id === selectedRace.id
+    );
+    console.log("participantRace", participantRace);
+    if (!participantRace || !participantRace.attendance) return;
+    const todaysEvent = participantRace.attendance.find(
+      (a) => a.date === today
+    );
+    console.log("todaysEvent", todaysEvent);
+    setCheckedIn(todaysEvent?.checkedIn || false);
   }, [selectedRace]);
 
   useEffect(() => {
@@ -49,8 +67,16 @@ const Inputs = ({ state, setState, table, handleClose }) => {
   }, [state]);
 
   const handleClick = (e) => {
+    e.stopPropagation();
+    const { id, name, type } = e.target;
+    const expanded = e.target.getAttribute("aria-expanded");
+    console.log("expanded", typeof expanded, type);
+    console.log("clicked", e.target);
     if (e.target.type === "number") {
       e.target.select();
+    } else if (type === "button" && expanded == "false") {
+      console.log("clicked header", activeKey);
+      setActiveKey(activeKey === "in" ? "out" : "in");
     }
   };
   return (
@@ -62,17 +88,18 @@ const Inputs = ({ state, setState, table, handleClose }) => {
           state,
           setState,
           participant,
-          race,
-          table,
+          selectedRace,
           handleClose,
-          date,
+          selectedDate,
           setContext,
+          checkedIn,
+          setCheckedIn,
         })
       }
       onClick={handleClick}
       className="bg-light"
     >
-      <Row>
+      <Row id="checkin-race-row">
         <Col>
           <FloatingLabel label="Race" className="m-3">
             <Form.Select
@@ -93,15 +120,27 @@ const Inputs = ({ state, setState, table, handleClose }) => {
             </Form.Select>
           </FloatingLabel>
         </Col>
+        <Col>
+          <FloatingLabel label="Date" className="m-3">
+            <Form.Control
+              id="checkin-date"
+              type="date"
+              value={selectedDate || today}
+              onChange={(e) => handleChange({ e, setContext, setSelectedDate })}
+            />
+          </FloatingLabel>
+        </Col>
       </Row>
       <Accordion
         id="checkInOut"
-        defaultActiveKey={user.user_id && checkedIn ? "out" : "in"}
+        activeKey={activeKey}
         onSelect={(val) => setActiveKey(val)}
         name={activeKey}
       >
         <Accordion.Item eventKey="in">
-          <Accordion.Header>Check In</Accordion.Header>
+          <Accordion.Header name="header-in" onClick={handleClick}>
+            Check In
+          </Accordion.Header>
           <Accordion.Body>
             <Row>
               <Col xs={6}>
@@ -208,7 +247,9 @@ const Inputs = ({ state, setState, table, handleClose }) => {
           </Accordion.Body>
         </Accordion.Item>
         <Accordion.Item eventKey="out">
-          <Accordion.Header>Check Out</Accordion.Header>
+          <Accordion.Header name="header-out" onClick={handleClick}>
+            Check Out
+          </Accordion.Header>
           <Accordion.Body>
             <Row>
               <Col xs={6}>

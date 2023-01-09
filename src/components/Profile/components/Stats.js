@@ -63,7 +63,7 @@ const Stats = () => {
                     </Col>
                     <Col>
                       <Row>
-                        <Card.Text>{stats.avgPace?.minutes}</Card.Text>
+                        <Card.Text>{stats.avgPace?.minutes || 0}</Card.Text>
                       </Row>
                       <Row>
                         <p>mins</p>
@@ -72,7 +72,7 @@ const Stats = () => {
                     <Col>
                       <Row>
                         <Card.Text>
-                          {Math.round(stats.avgPace?.seconds)}
+                          {Math.round(stats.avgPace?.seconds || 0)}
                         </Card.Text>
                       </Row>
                       <Row>
@@ -147,7 +147,7 @@ const Stats = () => {
                     <Col>
                       <Row>
                         <Card.Text>
-                          {Math.round(stats.totalDuration?.seconds)}
+                          {Math.round(stats.totalDuration?.seconds || 0)}
                         </Card.Text>
                       </Row>
                       <Row>
@@ -155,7 +155,7 @@ const Stats = () => {
                       </Row>
                       <Row>
                         <Card.Text>
-                          {Math.round(Math.round(stats.avgDuration?.seconds))}
+                          {Math.round(stats.avgDuration?.seconds || 0)}
                         </Card.Text>
                       </Row>
                       <Row>
