@@ -123,6 +123,9 @@ const ParticipantTable = () => {
       pagination: true,
       paginationSize: 25,
       // paginationSizeSelector: [25, 50, 100],
+      columnDefaults: {
+        resizable: false,
+      },
       initialSort: [
         { column: "last_name", dir: "asc" },
         {
@@ -151,7 +154,7 @@ const ParticipantTable = () => {
           title: "In",
           field: "checkedIn",
           maxWidth: 90,
-          minWidth:70,
+          minWidth: 70,
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
