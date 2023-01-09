@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Tabs, Tab } from "react-bootstrap";
+import { Tabs, Tab, Row, Col, Spinner } from "react-bootstrap";
 import {
   Inputs,
   Stats,
@@ -11,6 +11,8 @@ import {
 import "./style.css";
 import { AppContext } from "../../App.js";
 import axios from "axios";
+import { FaHome } from "react-icons/fa/index.esm.js";
+import { useNavigate } from "react-router-dom";
 
 const Profile = ({ table }) => {
   const [state, setState] = useState({
@@ -30,7 +32,7 @@ const Profile = ({ table }) => {
   const [Context, setContext] = useContext(AppContext);
   let { user, participant, race, date } = Context;
   console.log("Profile Context", Context);
-
+  const navigate = useNavigate();
   if (!participant.user_id) {
     const user_id = Number(window.location.pathname.split("/")[2]);
     console.log("user_id", user_id);
@@ -61,9 +63,11 @@ const Profile = ({ table }) => {
   };
 
   const handleClick = (e) => {
+    let { id } = e.target;
+    console.log("target", e.target);
     const card = e.target.closest(".card");
     console.log("card", card);
-    const { id } = card;
+    id = card.id;
     if (id === "phone-card") {
       const phone = participant.phone;
       if (phone) {
@@ -126,50 +130,78 @@ const Profile = ({ table }) => {
   }, [state]);
 
   return (
-    <Tabs
-      justify
-      defaultActiveKey={
-        user?.user_id === participant.user_id ? "checkIn" : "stats"
-      }
-    >
-      {user?.user_id === participant.user_id && (
-        <Tab
-          eventKey="checkIn"
-          title={
-            <span>
-              Check <br /> In / Out
-            </span>
-          }
-        >
-          <Inputs
-            state={state}
-            setState={setState}
-            table={table}
-            handleClose={handleClose}
-          />
-        </Tab>
-      )}
-      <Tab eventKey="stats" title="Stats" className="stats-tab">
-        <Stats />
-      </Tab>
-      <Tab eventKey="history" title="History">
-        <History />
-      </Tab>
-      {user?.user_id === participant.user_id ? (
-        <Tab eventKey="account" title="Account">
-          <Account />
-        </Tab>
+    <>
+      {!participant.user_id ? (
+        <Spinner animation="border" />
       ) : (
-        <Tab eventKey="contact" title="Contact Info" className="contact-tab">
-          <Contact handleClick={handleClick} />
-        </Tab>
+        <>
+          <Row id="profile-header">
+            <Col xs={10}>
+              <h2>{`${participant.first_name} ${participant.last_name}`}</h2>
+            </Col>
+            <Col
+              xs={2}
+              className="d-flex align-items-center justify-content-end"
+                onClick={() => {
+                console.log('redirecting to home')
+                navigate("/");
+              }}
+              id="home-col"
+            >
+              <FaHome id="home-button" size="2em" />
+            </Col>
+          </Row>
+          <Tabs
+            justify
+            defaultActiveKey={
+              user?.user_id === participant.user_id ? "checkIn" : "stats"
+            }
+          >
+            {user?.user_id === participant.user_id && (
+              <Tab
+                eventKey="checkIn"
+                title={
+                  <span>
+                    Check <br /> In / Out
+                  </span>
+                }
+              >
+                <Inputs
+                  state={state}
+                  setState={setState}
+                  table={table}
+                  handleClose={handleClose}
+                />
+              </Tab>
+            )}
+            <Tab eventKey="stats" title="Stats" className="stats-tab">
+              <Stats />
+            </Tab>
+            <Tab eventKey="history" title="History">
+              <History />
+            </Tab>
+            {user?.user_id === participant.user_id ? (
+              <Tab eventKey="account" title="Account">
+                <Account />
+              </Tab>
+            ) : (
+              <Tab
+                eventKey="contact"
+                title="Contact Info"
+                className="contact-tab"
+              >
+                <Contact handleClick={handleClick} />
+              </Tab>
+            )}
+            {user?.user_id === participant.user_id && (
+              <Tab eventKey="goals" title="Goals">
+                <Goals />
+              </Tab>
+            )}
+          </Tabs>
+        </>
       )}
-      {user?.user_id === participant.user_id && (
-        <Tab eventKey="goals" title="Goals">
-          <Goals />
-        </Tab>
-      )}
-    </Tabs>
+    </>
   );
 };
 

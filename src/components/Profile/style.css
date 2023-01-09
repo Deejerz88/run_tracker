@@ -13,6 +13,8 @@
   border: none;
   transition: 0.1s all ease-out;
   height: 100%;
+  padding: 3px;
+  line-height: 1.3
 }
 
 .nav-item > button:hover {
@@ -261,22 +263,15 @@
   transform: scale(1.1);
 }
 
-.modal-header {
+#profile-header {
   background: rgba(0, 0, 0, 0.9);
-}
-
-.modal-title.h4 {
   color: white;
   font-weight: 700;
   -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
   user-select: none;
-  /* background:  */
-}
-
-.modal-body {
-  background: url("/public/assets/images/background.webp") no-repeat 65% 50%;
-  background-size: cover;
-  padding: 3em 0.25em;
+  height: 50px;
+  margin: 0 0 20px 0;
+  padding: 10px 0;
 }
 
 #account-form,
@@ -320,10 +315,6 @@ button[id^="goal-"].active {
   color: white;
 }
 
-#goal-category button {
-  /* font-size: 0.8em */
-}
-
 div[id^="goal-row-"] {
   margin: 5px 0px 5px 2000px;
   padding: 8px 5px;
@@ -334,14 +325,6 @@ div[id^="goal-row-"] {
   opacity: 0;
   transition: 0.3s all;
 }
-/* 
-.off-screen {
-  background-color: #ed1c24;
-  opacity: 0;
-  display: none;
-  margin-left: 2000px;
-  transition: 0.3s all;
-} */
 
 #reset-goal {
   display: none;
@@ -358,7 +341,7 @@ div[id^="goal-row-"] {
   transition: 0.2s ease-out;
 }
 
-#checkInOut .form-check{
+#checkInOut .form-check {
   margin: 10px;
 }
 
@@ -366,16 +349,32 @@ label[for="acknowledged"] {
   font-size: 0.8em;
 }
 
-.accordion-button:not(.collapsed){
+.accordion-button:not(.collapsed) {
   color: white !important;
-  background-color: red !important;
+  background-color: #ed1c24 !important;
   box-shadow: none;
 }
 
-.accordion-button:not(.collapsed):focus{
+.accordion-button:not(.collapsed):focus {
   box-shadow: none;
 }
 
-.accordion-button.collapsed:focus{
-  box-shadow:none
+.accordion-button.collapsed:focus {
+  box-shadow: none;
+}
+
+#home-button {
+  color: #ed1c24;
+  transition: 0.2s all ease-out;
+  margin: 0 20px 0 0;
+}
+
+#home-button:hover {
+  color: #ff0008;
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+#home-button:active {
+  transform: scale(1.05);
 }

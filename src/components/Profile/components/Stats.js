@@ -5,7 +5,8 @@ import { AppContext } from "../../../App.js";
 const Stats = () => {
   const [Context] = useContext(AppContext);
   let { participant, race } = Context;
-  console.log('participant', participant)
+  race = race.name ? race : { name: "Team Playmakers" };
+  console.log("participant", participant);
   return (
     <Row className="stats-row">
       {["race", "Overall"].map((title, i) => {
