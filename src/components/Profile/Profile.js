@@ -161,7 +161,8 @@ const Profile = ({ table }) => {
           <Tabs
             justify
             defaultActiveKey={
-              user?.user_id === participant.user_id ? "checkIn" : "stats"
+              // user?.user_id === participant.user_id ? "checkIn" : "stats"
+              'checkIn'
             }
           >
             <Tab
