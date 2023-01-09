@@ -176,24 +176,23 @@ const Profile = ({ table }) => {
               user?.user_id === participant.user_id ? "checkIn" : "stats"
             }
           >
-            {user?.user_id === participant.user_id && (
-              <Tab
-                eventKey="checkIn"
-                title={
-                  <Row className="flex-column justify-content-end">
-                    <BsCheck2All size="1.5em" />
-                    Check In
-                  </Row>
-                }
-              >
-                <Inputs
-                  state={state}
-                  setState={setState}
-                  table={table}
-                  handleClose={handleClose}
-                />
-              </Tab>
-            )}
+            <Tab
+              eventKey="checkIn"
+              title={
+                <Row className="flex-column justify-content-end">
+                  <BsCheck2All size="1.5em" />
+                  Check In
+                </Row>
+              }
+            >
+              <Inputs
+                state={state}
+                setState={setState}
+                table={table}
+                handleClose={handleClose}
+              />
+            </Tab>
+
             <Tab
               eventKey="stats"
               title={

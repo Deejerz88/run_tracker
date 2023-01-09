@@ -5,10 +5,11 @@
 
 
 
-.form-select,
-.form-control {
-  border: none;
-  box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
+.form-control,
+.form-select {
+  /* box-shadow: inset 0 0 5px #d4d1d1; */
+  box-shadow: 0px 0px 5px #838181, inset 0 0 5px #c8c6c6cb;
+  border: 1px solid #ddd;
 }
 
 .form-control:focus,

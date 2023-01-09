@@ -2,12 +2,6 @@
   border: none;
 }
 
-.tab-content .form-control,
-.tab-content .form-select {
-  box-shadow: inset 0 0 5px #d4d1d1;
-  border: 1px solid #ddd;
-}
-
 .nav.nav-tabs.nav-justified {
   position: fixed;
   bottom: 0;
@@ -279,7 +273,7 @@
   font-weight: 700;
   -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
   user-select: none;
-  height: 50px;
+  height: 75px;
   margin: 0 0 20px 0;
   padding: 10px 0;
 }
