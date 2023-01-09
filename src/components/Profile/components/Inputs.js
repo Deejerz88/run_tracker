@@ -237,7 +237,7 @@ const Inputs = ({ state, setState, table, handleClose }) => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <Button variant="danger" name={activeKey} type="submit" className="m-3">
+      <Button id='checkinout-button' variant="danger" name={activeKey} type="submit" className="">
         {activeKey === "in" ? "Check In" : "Check Out"}
       </Button>
     </Form>

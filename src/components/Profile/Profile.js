@@ -13,6 +13,13 @@ import { AppContext } from "../../App.js";
 import axios from "axios";
 import { FaHome } from "react-icons/fa/index.esm.js";
 import { useNavigate } from "react-router-dom";
+import {
+  BsCheck2All,
+  BsCalendar2Week,
+  BsTrophy,
+} from "react-icons/bs/index.esm.js";
+import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
+import { MdManageAccounts } from "react-icons/md/index.esm.js";
 
 const Profile = ({ table }) => {
   const [state, setState] = useState({
@@ -142,8 +149,8 @@ const Profile = ({ table }) => {
             <Col
               xs={2}
               className="d-flex align-items-center justify-content-center"
-                onClick={() => {
-                console.log('redirecting to home')
+              onClick={() => {
+                console.log("redirecting to home");
                 navigate("/");
               }}
               id="home-col"
@@ -162,7 +169,7 @@ const Profile = ({ table }) => {
                 eventKey="checkIn"
                 title={
                   <span>
-                    Check <br /> In / Out
+                    <BsCheck2All /> Check In
                   </span>
                 }
               >
@@ -174,14 +181,48 @@ const Profile = ({ table }) => {
                 />
               </Tab>
             )}
-            <Tab eventKey="stats" title="Stats" className="stats-tab">
+            <Tab
+              eventKey="stats"
+              title={
+                <>
+                  <TbDeviceWatchStats size="1.3em" /> Stats
+                </>
+              }
+              className="stats-tab"
+            >
               <Stats />
             </Tab>
-            <Tab eventKey="history" title="History">
+            <Tab
+              eventKey="history"
+              title={
+                <>
+                  <BsCalendar2Week /> History
+                </>
+              }
+            >
               <History />
             </Tab>
+            {user?.user_id === participant.user_id && (
+              <Tab
+                eventKey="goals"
+                title={
+                  <>
+                    <BsTrophy /> Goals
+                  </>
+                }
+              >
+                <Goals />
+              </Tab>
+            )}
             {user?.user_id === participant.user_id ? (
-              <Tab eventKey="account" title="Account">
+              <Tab
+                eventKey="account"
+                title={
+                  <>
+                    <MdManageAccounts size="1.3em" /> Account
+                  </>
+                }
+              >
                 <Account />
               </Tab>
             ) : (
@@ -191,11 +232,6 @@ const Profile = ({ table }) => {
                 className="contact-tab"
               >
                 <Contact handleClick={handleClick} />
-              </Tab>
-            )}
-            {user?.user_id === participant.user_id && (
-              <Tab eventKey="goals" title="Goals">
-                <Goals />
               </Tab>
             )}
           </Tabs>
