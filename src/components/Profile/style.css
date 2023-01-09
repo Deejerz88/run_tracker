@@ -366,7 +366,9 @@ label[for="acknowledged"] {
 #home-button {
   color: #ed1c24;
   transition: 0.2s all ease-out;
-  margin: 0 20px 0 0;
+  margin: 0;
+  font-size: 2em;
+
 }
 
 #home-button:hover {

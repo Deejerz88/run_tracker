@@ -141,14 +141,14 @@ const Profile = ({ table }) => {
             </Col>
             <Col
               xs={2}
-              className="d-flex align-items-center justify-content-end"
+              className="d-flex align-items-center justify-content-center"
                 onClick={() => {
                 console.log('redirecting to home')
                 navigate("/");
               }}
               id="home-col"
             >
-              <FaHome id="home-button" size="2em" />
+              <FaHome id="home-button" />
             </Col>
           </Row>
           <Tabs
