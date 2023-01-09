@@ -168,9 +168,10 @@ const Profile = ({ table }) => {
               <Tab
                 eventKey="checkIn"
                 title={
-                  <span>
-                    <BsCheck2All /> Check In
-                  </span>
+                  <Row className="flex-column justify-content-end">
+                    <BsCheck2All size="1.5em" />
+                    Check In
+                  </Row>
                 }
               >
                 <Inputs
@@ -184,9 +185,9 @@ const Profile = ({ table }) => {
             <Tab
               eventKey="stats"
               title={
-                <>
-                  <TbDeviceWatchStats size="1.3em" /> Stats
-                </>
+                <Row className="flex-column justify-content-end">
+                  <TbDeviceWatchStats size="1.5em" /> Stats
+                </Row>
               }
               className="stats-tab"
             >
@@ -195,9 +196,9 @@ const Profile = ({ table }) => {
             <Tab
               eventKey="history"
               title={
-                <>
-                  <BsCalendar2Week /> History
-                </>
+                <Row className="flex-column justify-content-center">
+                  <BsCalendar2Week size="1.2em" /> History
+                </Row>
               }
             >
               <History />
@@ -206,9 +207,9 @@ const Profile = ({ table }) => {
               <Tab
                 eventKey="goals"
                 title={
-                  <>
-                    <BsTrophy /> Goals
-                  </>
+                  <Row className="flex-column justify-content-center">
+                    <BsTrophy size="1.2em" /> Goals
+                  </Row>
                 }
               >
                 <Goals />
@@ -218,9 +219,9 @@ const Profile = ({ table }) => {
               <Tab
                 eventKey="account"
                 title={
-                  <>
-                    <MdManageAccounts size="1.3em" /> Account
-                  </>
+                  <Row className="flex-column">
+                    <MdManageAccounts size="1.5em" /> Account
+                  </Row>
                 }
               >
                 <Account />

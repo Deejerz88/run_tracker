@@ -27,13 +27,13 @@ code {
   button[data-rr-ui-event-key="checkIn"]::after {
     content: "In/Out";
   } */
-  .nav-justified .nav-item {
+  /* .nav-justified .nav-item {
     font-size: 0.7em;
-  }
+  } */
 }
 
 @media screen and (max-width: 500px) and (min-width: 401px) {
-  button[data-rr-ui-event-key="checkIn"] span {
+  /* button[data-rr-ui-event-key="checkIn"] span {
     display: none;
   }
   button[data-rr-ui-event-key="checkIn"]::after {
@@ -41,7 +41,7 @@ code {
   }
   .nav-justified .nav-item {
     font-size: 0.85em;
-  }
+  } */
 }
 
 @media screen and (max-width: 600px) {
