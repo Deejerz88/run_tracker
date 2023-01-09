@@ -8,21 +8,34 @@ const handleChange = ({
   setContext,
   races,
   setSelectedRace,
+  setSelectedDate
 }) => {
+  e.stopPropagation();
   let { id, value } = e.target;
-  if ((id = "checkin-race")) {
-    const race = races.find((r) => r.name === value);
-    setContext((prevState) => ({
-      ...prevState,
-      race,
-    }));
-    setSelectedRace(race);
-    return;
-  }
+  console.log("id", id, "value", value, e.target);
+
   let group = id.split("-")[0];
   let type = id.split("-")[1];
   console.log("id", id, "group", group, "type", type);
   console.log("value", value);
+  if (group === "checkin") {
+    if (type === "race") {
+      const race = races.find((r) => r.name === value);
+      setContext((prevState) => ({
+        ...prevState,
+        race,
+      }));
+      setSelectedRace(race);
+    } else if (type === "date") {
+      setContext((prevState) => ({
+        ...prevState,
+        date: value,
+      }));
+      setSelectedDate(value);
+    }
+
+    return;
+  }
   const startTime = DateTime.fromFormat($("#start-time").val(), "HH:mm");
   const update = {
     ...state,

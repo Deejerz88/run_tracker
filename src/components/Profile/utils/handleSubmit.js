@@ -8,17 +8,17 @@ const handleSubmit = async ({
   e,
   state,
   participant,
-  table,
-  race,
-  handleClose,
-  date,
+  selectedRace,
+  selectedDate,
   setContext,
+  checkedIn,
+  setCheckedIn,
 }) => {
   e.preventDefault();
   e.stopPropagation();
-  console.log("race", race, "state", state.start, e.target.name);
+  console.log("race", selectedRace, "selectedDate", selectedDate);
   const activeKey = $("#checkInOut").attr("name");
-  if (activeKey === "out" && !participant.checkedIn) {
+  if (activeKey === "out" && !checkedIn) {
     console.log("not checked in");
     toast.error("Participant must be checked in before checking out", {
       position: toast.POSITION.TOP_CENTER,
@@ -57,10 +57,10 @@ const handleSubmit = async ({
   const { pace, duration, start, finish, mileage } = data;
   participant.races = [
     {
-      ...race,
+      ...selectedRace,
       attendance: [
         {
-          date,
+          date: selectedDate,
           pace,
           duration,
           start: start.time,
@@ -75,15 +75,20 @@ const handleSubmit = async ({
   ];
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
+  console.log("newParticipant", newParticipant);
   setContext((prev) => ({
     ...prev,
     user: newParticipant,
   }));
-  handleClose();
-  toast.success(`${participant.name} checked ${activeKey}`, {
-    position: toast.POSITION.TOP_CENTER,
-    autoClose: 1500,
-  });
+  // handleClose();
+  toast.success(
+    `${newParticipant.first_name} ${newParticipant.last_name} checked ${activeKey} for ${selectedRace.name}`,
+    {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 1500,
+    }
+  );
+  setCheckedIn(activeKey === "in");
 };
 
 export default handleSubmit;

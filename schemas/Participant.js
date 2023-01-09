@@ -120,7 +120,7 @@ participantSchema.pre("save", function (next) {
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
   }
-  this.username_lower = this.username.toLowerCase();
+  this.username_lower = this.username?.toLowerCase() || "";
   next();
 });
 

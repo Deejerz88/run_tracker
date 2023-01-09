@@ -130,7 +130,7 @@ router.post("/", async (req, res) => {
       );
       if (attendanceInd > -1) {
         attendance[attendanceInd] = {
-          ...attendanceUpdate,
+          ...attendanceUpdate, 
           start: attendanceUpdate.start || attendance[attendanceInd].start,
           finish: attendanceUpdate.finish || attendance[attendanceInd].finish,
           checkedIn:
