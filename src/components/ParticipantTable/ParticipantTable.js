@@ -150,8 +150,8 @@ const ParticipantTable = () => {
         {
           title: "In",
           field: "checkedIn",
-          maxWidth: 85,
-          minWidth:75,
+          maxWidth: 90,
+          minWidth:80
           hozAlign: "center",
           sorter: "boolean",
           headerHozAlign: "center",
@@ -162,8 +162,8 @@ const ParticipantTable = () => {
         {
           title: "Out",
           field: "checkedOut",
-          maxWidth: 85,
-          minWidth: 75,
+          maxWidth: 90,
+          minWidth: 80,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: "boolean",
