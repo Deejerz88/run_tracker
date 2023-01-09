@@ -2,8 +2,6 @@
   border: none;
 }
 
-
-
 .nav.nav-tabs.nav-justified {
   position: fixed;
   bottom: 0;
@@ -275,7 +273,7 @@
   font-weight: 700;
   -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141);
   user-select: none;
-  height: 50px;
+  height: 75px;
   margin: 0 0 20px 0;
   padding: 10px 0;
 }
@@ -289,7 +287,7 @@
   transition: 0.2s all ease-out;
 }
 
-#feedback-form{
+#feedback-form {
   margin-bottom: 100px;
 }
 .confirm_password {
@@ -389,6 +387,6 @@ label[for="acknowledged"] {
 #home-button:active {
   transform: scale(1.05);
 }
- #checkinout-button{
-  margin: 10px 0 100px 10px
- }
+#checkinout-button {
+  margin: 10px 0 100px 10px;
+}

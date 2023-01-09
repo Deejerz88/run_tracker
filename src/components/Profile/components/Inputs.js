@@ -18,7 +18,7 @@ const Inputs = ({ state, setState, table, handleClose }) => {
   const [activeKey, setActiveKey] = useState("in");
 
   const [Context, setContext] = useContext(AppContext);
-  const { participant, race, date, checkedIn } = Context;
+  const { user, participant, race, date, checkedIn } = Context;
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
@@ -53,7 +53,7 @@ const Inputs = ({ state, setState, table, handleClose }) => {
     >
       <Accordion
         id="checkInOut"
-        defaultActiveKey={checkedIn ? "out" : "in"}
+        defaultActiveKey={user.user_id && checkedIn ? "out" : "in"}
         onSelect={(val) => setActiveKey(val)}
         name={activeKey}
       >
