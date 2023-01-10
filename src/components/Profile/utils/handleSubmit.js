@@ -14,11 +14,18 @@ const handleSubmit = async ({
   checkedIn,
   setCheckedIn,
   showGroup,
-  setShowGroup,
+  defaults,
 }) => {
   e.preventDefault();
   e.stopPropagation();
-  console.log("race", selectedRace, "selectedDate", selectedDate);
+  console.log(
+    "race",
+    selectedRace,
+    "selectedDate",
+    selectedDate,
+    "defaults",
+    defaults
+  );
   const activeKey = $("#checkInOut").attr("name");
   if (activeKey === "out" && !checkedIn) {
     console.log("not checked in");
@@ -82,6 +89,8 @@ const handleSubmit = async ({
       ],
     },
   ];
+  // participant.settings = { ...participant.settings, defaultFields: defaults };
+  console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
   console.log("newParticipant", newParticipant);

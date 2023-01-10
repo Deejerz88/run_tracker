@@ -25,6 +25,7 @@ const Inputs = ({ state, setState, handleClose }) => {
   const [selectedDate, setSelectedDate] = useState(Context.date);
   const { participant } = Context;
   const [showGroup, setShowGroup] = useState({});
+  const [defaults, setDefaults] = useState([]);
 
   const today = DateTime.local().toISODate();
 
@@ -70,9 +71,9 @@ const Inputs = ({ state, setState, handleClose }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
-    const { name, type, classList } = e.target;
+    const { name, type, classList, id } = e.target;
     console.log("name", name, e.target);
-    const expanded = e.target.getAttribute("aria-expanded");
+    const expanded = e.target.getAttribute("aria-{expanded");
     console.log("expanded", typeof expanded, type);
     console.log("clicked", e.target);
     if (e.target.type === "number") {
@@ -90,11 +91,20 @@ const Inputs = ({ state, setState, handleClose }) => {
         $(`.${name}`).toggleClass("hidden");
         setShowGroup({ ...showGroup, [name]: !showGroup[name] });
       }
+      if (!defaults.includes(name)) $("#default-fields").prop("checked", false);
+    } else if (id === "default-fields") {
+      console.log("default fields", e.target.checked);
+      if (e.target.checked)
+        setDefaults(Object.keys(showGroup).filter((g) => showGroup[g]));
     }
   };
   useEffect(() => {
     console.log("showGroup", showGroup);
   }, [showGroup]);
+
+  useEffect(() => {
+    console.log("defaults", defaults);
+  }, [defaults]);
 
   return (
     <Form
@@ -113,6 +123,7 @@ const Inputs = ({ state, setState, handleClose }) => {
           setCheckedIn,
           showGroup,
           setShowGroup,
+          defaults
         })
       }
       onClick={handleClick}
@@ -206,7 +217,7 @@ const Inputs = ({ state, setState, handleClose }) => {
               </Row>
               <Row>
                 <Col xs={6}>
-                  <Row className="mileage hidden">
+                  <Row className={`hidden mileage`}>
                     <FormLabel>Mileage</FormLabel>
                     <InputGroup className="mb-3">
                       <FloatingLabel label="Target">
@@ -263,7 +274,7 @@ const Inputs = ({ state, setState, handleClose }) => {
                       ? "hidden"
                       : "";
                   return (
-                    <Col xs={4}>
+                    <Col key={group} xs={4}>
                       <Button
                         variant="outline-danger"
                         onClick={handleClick}
@@ -292,15 +303,16 @@ const Inputs = ({ state, setState, handleClose }) => {
         >
           {activeKey === "in" ? "Check In" : "Check Out"}
         </Button>
-
+{/* 
         <Form.Check
           type="switch"
           id="default-fields"
           label="Default Fields"
           className="align-self-center "
+          defaultChecked="true"
           onChange={handleClick}
           inline
-        />
+        /> */}
       </Row>
     </Form>
   );

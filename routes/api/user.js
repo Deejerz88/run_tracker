@@ -107,12 +107,10 @@ router.post("/signup", async (req, res) => {
     const eventParticipants = _.concat(
       allParticipants[0].map((event) => event.participants)
     );
-    console.log('eventParticipants', eventParticipants[0][0])
+    console.log("eventParticipants", eventParticipants[0][0]);
 
     participant =
-      eventParticipants[0].find(
-        (p) => p.user?.email === email
-      ) || {};
+      eventParticipants[0].find((p) => p.user?.email === email) || {};
     console.log("participant1", participant);
   }
   if (!participant.user)
@@ -181,7 +179,7 @@ router.post("/reset", async (req, res) => {
   const { email } = req.body;
   console.log("email", email);
 
-  const user = await Participant.findOne({ email });
+  const user = await Participant.findOne({ email_lower: email.toLowerCase() });
   console.log("user", user);
 
   if (!user)

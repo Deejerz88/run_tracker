@@ -47,7 +47,7 @@ const Stats = () => {
                       </Col>
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      <Card.Text>{stats.totalAttendance}</Card.Text>
+                      <Card.Text>{stats.totalAttendance || 0}</Card.Text>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -97,8 +97,10 @@ const Stats = () => {
                       </Col>
                     </Col>
                     <Col>
-                      <Card.Text>{stats.totalMileage?.toFixed(1)}</Card.Text>
-                      <Card.Text>{stats.avgMileage?.toFixed(1)}</Card.Text>
+                      <Card.Text>
+                        {stats.totalMileage?.toFixed(1) || 0}
+                      </Card.Text>
+                      <Card.Text>{stats.avgMileage?.toFixed(1) || 0}</Card.Text>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -118,13 +120,13 @@ const Stats = () => {
                     </Col>
                     <Col>
                       <Row>
-                        <Card.Text>{stats.totalDuration?.hours}</Card.Text>
+                        <Card.Text>{stats.totalDuration?.hours || 0}</Card.Text>
                       </Row>
                       <Row>
                         <p>hrs</p>
                       </Row>
                       <Row>
-                        <Card.Text>{stats.avgDuration?.hours}</Card.Text>
+                        <Card.Text>{stats.avgDuration?.hours || 0}</Card.Text>
                       </Row>
                       <Row>
                         <p>hrs</p>
@@ -132,13 +134,15 @@ const Stats = () => {
                     </Col>
                     <Col>
                       <Row>
-                        <Card.Text>{stats.totalDuration?.minutes}</Card.Text>
+                        <Card.Text>
+                          {stats.totalDuration?.minutes || 0}
+                        </Card.Text>
                       </Row>
                       <Row>
                         <p>mins</p>
                       </Row>
                       <Row>
-                        <Card.Text>{stats.avgDuration?.minutes}</Card.Text>
+                        <Card.Text>{stats.avgDuration?.minutes || 0}</Card.Text>
                       </Row>
                       <Row>
                         <p>mins</p>

@@ -104,7 +104,7 @@ const ParticipantTable = () => {
       ajaxResponse: async (url, params, response) => {
         const participants = await getParticipants();
         let updated = response.map((d) => {
-          const participant = _.find(
+          let participant = _.find(
             participants,
             (p) => p.user_id === d.user_id
           );

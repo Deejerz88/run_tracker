@@ -8,14 +8,13 @@ const handleChange = ({
   setContext,
   races,
   setSelectedRace,
-  setSelectedDate
+  setSelectedDate,
 }) => {
   e.stopPropagation();
   let { id, value } = e.target;
   console.log("id", id, "value", value, e.target);
 
-  let group = id.split("-")[0];
-  let type = id.split("-")[1];
+  let [group, type, inOut] = id.split("-");
   console.log("id", id, "group", group, "type", type);
   console.log("value", value);
   if (group === "checkin") {
@@ -36,7 +35,10 @@ const handleChange = ({
 
     return;
   }
-  const startTime = DateTime.fromFormat($("#start-time").val(), "HH:mm");
+  const startTime = DateTime.fromFormat(
+    $(`#start-time-${inOut}`).val(),
+    "HH:mm"
+  );
   const update = {
     ...state,
   };

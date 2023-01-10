@@ -108,6 +108,7 @@ router.get("/:type/:raceId", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
+    mongoose.set("strictQuery", false);
     mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -148,8 +149,9 @@ router.post("/", async (req, res) => {
     } else {
       doc = new Participant(update);
     }
-    const updatedDoc = await doc.save();
-    res.json(updatedDoc);
+    await doc.save();
+    console.log("update", update);
+    res.json(update);
   } catch (e) {
     console.log("e", e);
     res.json({ error: e });
