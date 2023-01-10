@@ -270,13 +270,13 @@ const Inputs = ({ state, setState, handleClose }) => {
                   name="mileage"
                   onClick={handleClick}
                   className={`${
-                    showGroup.mileage ? "active" : null
-                  } add-group`}
+                    showGroup.mileage ? "active" : ''
+                  } add-group d-flex align-items-center justify-content-center`}
                 >
                   {showGroup.mileage ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Mileage
                 </Button>
@@ -285,15 +285,15 @@ const Inputs = ({ state, setState, handleClose }) => {
                 <Button
                   variant="outline-danger"
                   name="pace"
-                  className={`${showGroup.pace ? "active" : null} ${
+                  className={`${showGroup.pace ? "active" : ''} ${
                     showGroup.mileage ? "" : "hidden "
                   } add-group`}
                   onClick={handleClick}
                 >
                   {showGroup.pace ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Pace
                 </Button>
@@ -302,15 +302,15 @@ const Inputs = ({ state, setState, handleClose }) => {
                 <Button
                   variant="outline-danger"
                   name="duration"
-                  className={`${showGroup.duration ? "active" : null} ${
+                  className={`${showGroup.duration ? "active" : ''} ${
                     showGroup.mileage ? "" : "hidden "
                   } add-group`}
                   onClick={handleClick}
                 >
                   {showGroup.duration ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Duartion
                 </Button>
@@ -417,13 +417,13 @@ const Inputs = ({ state, setState, handleClose }) => {
                   name="mileage"
                   onClick={handleClick}
                   className={`${
-                    showGroup.mileage ? "active" : null
+                    showGroup.mileage ? "active" : ''
                   } add-group`}
                 >
                   {showGroup.mileage ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Mileage
                 </Button>
@@ -432,15 +432,15 @@ const Inputs = ({ state, setState, handleClose }) => {
                 <Button
                   variant="outline-danger"
                   name="pace"
-                  className={`${showGroup.pace ? "active" : null} ${
+                  className={`${showGroup.pace ? "active" : ''} ${
                     showGroup.mileage ? "" : "hidden "
                   } add-group`}
                   onClick={handleClick}
                 >
                   {showGroup.pace ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Pace
                 </Button>
@@ -455,9 +455,9 @@ const Inputs = ({ state, setState, handleClose }) => {
                   onClick={handleClick}
                 >
                   {showGroup.duration ? (
-                    <BiMinus size="1em" />
+                    <BiMinus className="minus" size="1em" />
                   ) : (
-                    <BsPlusLg size="0.8em" />
+                    <BsPlusLg className="plus" size="0.8em" />
                   )}{" "}
                   Duartion
                 </Button>

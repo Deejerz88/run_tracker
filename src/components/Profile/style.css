@@ -407,7 +407,6 @@ label[for="acknowledged"] {
 
 .add-group {
   width: 100%;
-  
 }
 
 .add-group.active {
@@ -436,5 +435,11 @@ label[for="acknowledged"] {
 }
 
 #checkin-buttons .form-check-inline{
-  width: 150px;
+  width: 40%;
+  margin: 0;
+  padding-right: 0;
+}
+
+.plus, .minus{
+  margin: 5px
 }
