@@ -187,7 +187,7 @@ const ParticipantTable = () => {
           headerHozAlign: "center",
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
-          responsive: 3,
+          responsive: 4,
         },
         {
           title: "Finish",
@@ -298,7 +298,7 @@ const ParticipantTable = () => {
       >
         {Context.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
-      <Login show={showLogin} setShow={setShowLogin} />
+      <Login show={showLogin} setShow={setShowLogin} races={races} />
       <Filters races={races} />
       <div className="m-3 " id="participant-table" />
     </>

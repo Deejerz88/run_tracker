@@ -16,7 +16,7 @@ import { AppContext } from "../../App.js";
 import "./style.css";
 import $ from "jquery";
 
-const Login = ({ show, setShow }) => {
+const Login = ({ show, setShow, races }) => {
   const [state, setState] = useState({
     email: "",
     username: "",
@@ -129,6 +129,7 @@ const Login = ({ show, setShow }) => {
               email,
               username,
               password,
+              races,
             })
           : await axios.post("api/user/login", {
               username,

@@ -5,6 +5,7 @@ import sgMail from "@sendgrid/mail";
 import Pusher from "pusher";
 import "dotenv/config";
 import mongoose from "mongoose";
+import _ from "lodash";
 
 const pusher = new Pusher({
   appId: process.env.REACT_APP_PUSHER_ID,
@@ -20,7 +21,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { first_name, last_name, email, phone, password, username } = req.body;
-  console.log('user', req.body)
+  console.log("user", req.body);
   console.log("email", email);
   const user = await Participant.findOne({ email });
   console.log("user", user);
@@ -42,7 +43,8 @@ router.post("/signup", async (req, res) => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  let { username, email, password } = req.body;
+  let { username, email, password, races } = req.body;
+  console.log("races", races);
   console.log("email", email, "password", password, "username", username);
   let user;
   user = await Participant.findOne({ email });
@@ -61,30 +63,55 @@ router.post("/signup", async (req, res) => {
     }
   );
 
-  console.log("clubParticipants", clubParticipants.club_members[0]);
+  // console.log("clubParticipants", clubParticipants.club_members[0]);
   // return res.json(participants.club_members[0]);
   let participant =
     clubParticipants.club_members.find(
       (participant) => participant.user.email === email
     ) || {};
-  console.log("participant", participant);
+  // console.log("participant", participant);
   if (!participant.user) {
-    const { data: partnerParticipants } = await axios.get(
-      "https://runsignup.com/rest/users",
-      {
-        params: {
-          api_key: process.env.RSU_KEY,
-          api_secret: process.env.RSU_SECRET,
-          format: "json",
-          results_per_page: 2500,
-        },
-      }
+    // let partnerParticipants = [];
+    let promises = [];
+    races.forEach((race) => {
+      const { id, type, eventIds } = race;
+      console.log("id", id, "type", type, "eventIds", eventIds);
+      if (type === "club") return;
+      const promise = new Promise(async (resolve, reject) => {
+        try {
+          const { data } = await axios.get(
+            `https://runsignup.com/rest/race/${id}/participants`,
+            {
+              params: {
+                api_key: process.env.RSU_KEY,
+                api_secret: process.env.RSU_SECRET,
+                event_id: eventIds.join(","),
+                format: "json",
+                results_per_page: 2500,
+              },
+            }
+          );
+
+          resolve(data);
+        } catch (err) {
+          console.log("err", err);
+          reject(err);
+        }
+      });
+      promises.push(promise);
+    });
+    console.log("promises", promises);
+
+    let allParticipants = await Promise.all(promises);
+
+    const eventParticipants = _.concat(
+      allParticipants[0].map((event) => event.participants)
     );
-    console.log("partnerParticipants", partnerParticipants);
+    console.log('eventParticipants', eventParticipants[0][0])
 
     participant =
-      partnerParticipants.users.find(
-        (participant) => participant.user.email === email
+      eventParticipants[0].find(
+        (p) => p.user?.email === email
       ) || {};
     console.log("participant1", participant);
   }
@@ -116,7 +143,9 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   console.log("username", username, "password", password);
 
-  const user = await Participant.findOne({ username_lower: username.toLowerCase() });
+  const user = await Participant.findOne({
+    username_lower: username.toLowerCase(),
+  });
   console.log("user", user);
 
   if (!user)
