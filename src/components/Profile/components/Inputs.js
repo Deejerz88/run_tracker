@@ -14,8 +14,6 @@ import { startCase } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
 import { AppContext } from "../../../App.js";
 import axios from "axios";
-import { BsPlusLg } from "react-icons/bs/index.esm.js";
-import { BiMinus } from "react-icons/bi/index.esm.js";
 import $ from "jquery";
 
 const Inputs = ({ state, setState, handleClose }) => {
@@ -264,20 +262,15 @@ const Inputs = ({ state, setState, handleClose }) => {
               ))}
             </Row>
             <Row>
-              <Col xs={4}>
+              <Col className='p-0' xs={4}>
                 <Button
                   variant="outline-danger"
                   name="mileage"
                   onClick={handleClick}
                   className={`${
                     showGroup.mileage ? "active" : ''
-                  } add-group d-flex align-items-center justify-content-center`}
+                  } add-group`}
                 >
-                  {showGroup.mileage ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Mileage
                 </Button>
               </Col>
@@ -290,11 +283,6 @@ const Inputs = ({ state, setState, handleClose }) => {
                   } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup.pace ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Pace
                 </Button>
               </Col>
@@ -307,11 +295,6 @@ const Inputs = ({ state, setState, handleClose }) => {
                   } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup.duration ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Duartion
                 </Button>
               </Col>
@@ -420,11 +403,6 @@ const Inputs = ({ state, setState, handleClose }) => {
                     showGroup.mileage ? "active" : ''
                   } add-group`}
                 >
-                  {showGroup.mileage ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Mileage
                 </Button>
               </Col>
@@ -437,11 +415,6 @@ const Inputs = ({ state, setState, handleClose }) => {
                   } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup.pace ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Pace
                 </Button>
               </Col>
@@ -454,11 +427,6 @@ const Inputs = ({ state, setState, handleClose }) => {
                   } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup.duration ? (
-                    <BiMinus className="minus" size="1em" />
-                  ) : (
-                    <BsPlusLg className="plus" size="0.8em" />
-                  )}{" "}
                   Duartion
                 </Button>
               </Col>
