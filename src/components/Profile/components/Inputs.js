@@ -84,10 +84,13 @@ const Inputs = ({ state, setState, handleClose }) => {
       setActiveKey(activeKey === "in" ? "out" : "in");
     } else if (classList.contains("add-group")) {
       $(`.${name}`).toggleClass("hidden");
-      $(e.target).toggleClass("active");
       setShowGroup({ ...showGroup, [name]: !showGroup[name] });
     }
   };
+  useEffect(() => {
+    console.log("showGroup", showGroup);
+  }, [showGroup]);
+
   return (
     <Form
       id="checkInOut-form"
@@ -210,7 +213,7 @@ const Inputs = ({ state, setState, handleClose }) => {
 
             <Row>
               <Col xs={6}>
-                <Row className="mileage-in hidden">
+                <Row className="mileage hidden">
                   <FormLabel>Mileage</FormLabel>
                   <InputGroup className="mb-3">
                     <FloatingLabel label="Target">
@@ -231,7 +234,7 @@ const Inputs = ({ state, setState, handleClose }) => {
 
             <Row className="mb-3 checkIn-row">
               {["pace", "duration"].map((group, i) => (
-                <Col key={group} name={group} className={`${group}-in hidden`}>
+                <Col key={group} name={group} className={`${group} hidden`}>
                   <FormLabel>{startCase(group)}</FormLabel>
                   <InputGroup className="mb-3">
                     {["hours", "minutes", "seconds"].map((type, i) => {
@@ -264,11 +267,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="mileage-in"
+                  name="mileage"
                   onClick={handleClick}
-                  className="m-3 add-group"
+                  className={`${
+                    showGroup.mileage ? "active" : null
+                  } add-group`}
                 >
-                  {showGroup["mileage-in"] ? (
+                  {showGroup.mileage ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -279,11 +284,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="pace-in"
-                  className="m-3 add-group"
+                  name="pace"
+                  className={`${showGroup.pace ? "active" : null} ${
+                    showGroup.mileage ? "" : "hidden "
+                  } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup["pace-in"] ? (
+                  {showGroup.pace ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -294,11 +301,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="duration-in"
-                  className="m-3 add-group"
+                  name="duration"
+                  className={`${showGroup.duration ? "active" : null} ${
+                    showGroup.mileage ? "" : "hidden "
+                  } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup["duration-in"] ? (
+                  {showGroup.duration ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -354,7 +363,7 @@ const Inputs = ({ state, setState, handleClose }) => {
                 </FloatingLabel>
               </Col>
             </Row>
-            <Row className="checkIn-row mileage-out hidden">
+            <Row className="checkIn-row mileage hidden">
               <Col xs={6}>
                 <FormLabel>Mileage</FormLabel>
                 <InputGroup className="mb-3">
@@ -373,7 +382,7 @@ const Inputs = ({ state, setState, handleClose }) => {
             </Row>
             <Row className="checkIn-row">
               {["pace", "duration"].map((group, i) => (
-                <Col key={group} className={`${group}-out hidden`}>
+                <Col key={group} className={`${group} hidden`}>
                   <FormLabel>{startCase(group)}</FormLabel>
                   <InputGroup className="mb-3">
                     {["hours", "minutes", "seconds"].map((type, i) => {
@@ -405,11 +414,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="mileage-out"
+                  name="mileage"
                   onClick={handleClick}
-                  className="m-3 add-group"
+                  className={`${
+                    showGroup.mileage ? "active" : null
+                  } add-group`}
                 >
-                  {showGroup["mileage-out"] ? (
+                  {showGroup.mileage ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -420,11 +431,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="pace-out"
-                  className="m-3 add-group"
+                  name="pace"
+                  className={`${showGroup.pace ? "active" : null} ${
+                    showGroup.mileage ? "" : "hidden "
+                  } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup["pace-out"] ? (
+                  {showGroup.pace ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -435,11 +448,13 @@ const Inputs = ({ state, setState, handleClose }) => {
               <Col xs={4}>
                 <Button
                   variant="outline-danger"
-                  name="duration-out"
-                  className="m-3 add-group"
+                  name="duration"
+                  className={`${showGroup.duration ? "active" : ""} ${
+                    showGroup.mileage ? "" : "hidden "
+                  } add-group`}
                   onClick={handleClick}
                 >
-                  {showGroup["duration-out"] ? (
+                  {showGroup.duration ? (
                     <BiMinus size="1em" />
                   ) : (
                     <BsPlusLg size="0.8em" />
@@ -454,7 +469,7 @@ const Inputs = ({ state, setState, handleClose }) => {
       <Row id="checkin-buttons">
         <Button
           id="checkinout-button"
-          variant="danger"
+          variant="outline-danger"
           name={activeKey}
           type="submit"
           className=" m-3"

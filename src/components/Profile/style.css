@@ -405,8 +405,9 @@ label[for="acknowledged"] {
   display: none !important;
 }
 
-.add-in {
-  width: 110px;
+.add-group {
+  width: 100%;
+  
 }
 
 .add-group.active {
@@ -422,8 +423,10 @@ label[for="acknowledged"] {
   color: #ed1c24 !important;
 }
 
-#checkinout-button {
-  width: 100px;
+#checkinout-button.btn {
+  width: 50%;
+  background-color: #ed1c24;
+  color: white;
 }
 
 
