@@ -94,10 +94,10 @@ const handleSubmit = async ({
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
   console.log("newParticipant", newParticipant);
-  setContext((prev) => ({
-    ...prev,
-    user: newParticipant,
-  }));
+  // setContext((prev) => ({
+  //   ...prev,
+  //   user: newParticipant,
+  // }));
   // handleClose();
   toast.success(
     `${
