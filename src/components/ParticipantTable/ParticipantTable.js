@@ -68,7 +68,7 @@ const ParticipantTable = () => {
     if (!thisRace.attendance) return;
     const selectedDate = $(`#race-date`).val();
     const update = _.find(thisRace.attendance, (a) => a.date === selectedDate);
-    if (!update) return;
+    if (!update || !update[field]) return;
     return DateTime.fromMillis(update[field]).toFormat("hh:mm a");
   };
 
