@@ -13,6 +13,8 @@ const handleSubmit = async ({
   setContext,
   checkedIn,
   setCheckedIn,
+  showGroup,
+  setShowGroup,
 }) => {
   e.preventDefault();
   e.stopPropagation();
@@ -36,8 +38,14 @@ const handleSubmit = async ({
     });
     return;
   }
-
-  const fields = $(`input[name=${activeKey}]`);
+  let fields = $(`input[name=${activeKey}]`);
+  console.log("showGroup", showGroup);
+  fields = fields.filter((i, field) => {
+    const group = field.id.split("-")[0];
+    return showGroup[group] || group === "start" || group === "finish";
+  });
+  console.log("fields", fields);
+  if (!fields) return;
   const data = {
     duration: {},
     pace: {},
@@ -49,6 +57,7 @@ const handleSubmit = async ({
     const { id, value } = field;
     const group = id.split("-")[0];
     const type = id.split("-")[1];
+
     data[group][type] =
       group === "start" || group === "finish"
         ? DateTime.fromFormat(value, "HH:mm").toMillis()
@@ -82,7 +91,11 @@ const handleSubmit = async ({
   }));
   // handleClose();
   toast.success(
-    `${newParticipant.first_name} ${newParticipant.last_name} checked ${activeKey} for ${selectedRace.name}`,
+    `${
+      newParticipant.first_name
+        ? `${newParticipant.first_name} ${newParticipant.last_name}`
+        : newParticipant.username
+    } checked ${activeKey} for ${selectedRace.name}`,
     {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,

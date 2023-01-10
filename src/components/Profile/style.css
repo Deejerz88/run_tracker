@@ -407,19 +407,24 @@ label[for="acknowledged"] {
 
 .add-group {
   width: 100%;
+  padding: 3px !important;
 }
 
 .add-group.active {
   background-color: #ed1c24 !important;
+  border: 1px solid #ed1c24 !important;
+  color: white !important;
 }
 
-.add-group:active{
+.add-group:active {
   background-color: white !important;
+  border: 1px solid #ed1c24 !important;
 }
 
-.add-group:not(.active){
+.add-group:not(.active) {
   background-color: white !important;
   color: #ed1c24 !important;
+  border: 1px solid #ed1c24 !important;
 }
 
 #checkinout-button.btn {
@@ -428,18 +433,17 @@ label[for="acknowledged"] {
   color: white;
 }
 
-
-
 #checkin-buttons {
   margin: 10px 0 100px 10px;
 }
 
-#checkin-buttons .form-check-inline{
+#checkin-buttons .form-check-inline {
   width: 40%;
   margin: 0;
   padding-right: 0;
 }
 
-.plus, .minus{
-  margin: 5px
+.plus,
+.minus {
+  margin: 5px;
 }

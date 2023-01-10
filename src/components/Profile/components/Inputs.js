@@ -81,8 +81,15 @@ const Inputs = ({ state, setState, handleClose }) => {
       console.log("clicked header", activeKey);
       setActiveKey(activeKey === "in" ? "out" : "in");
     } else if (classList.contains("add-group")) {
-      $(`.${name}`).toggleClass("hidden");
-      setShowGroup({ ...showGroup, [name]: !showGroup[name] });
+      if (name === "mileage" && showGroup.mileage) {
+        ["mileage", "pace", "duration"].forEach((group) =>
+          $(`.${group}`).addClass("hidden")
+        );
+        setShowGroup({});
+      } else {
+        $(`.${name}`).toggleClass("hidden");
+        setShowGroup({ ...showGroup, [name]: !showGroup[name] });
+      }
     }
   };
   useEffect(() => {
@@ -149,290 +156,131 @@ const Inputs = ({ state, setState, handleClose }) => {
         onSelect={(val) => setActiveKey(val)}
         name={activeKey}
       >
-        <Accordion.Item eventKey="in">
-          <Accordion.Header name="header-in" onClick={handleClick}>
-            Check In
-          </Accordion.Header>
-          <Accordion.Body>
-            <Row>
-              <Col xs={6}>
-                <InputGroup className="mb-3">
-                  <FloatingLabel label="Start Time">
-                    <Form.Control
-                      id="start-time"
-                      type="time"
-                      value={
-                        state.start
-                          ? DateTime.fromMillis(state.start).toFormat("HH:mm")
-                          : DateTime.now().toFormat("HH:mm")
-                      }
-                      onChange={(e) => handleChange({ e, state, setState })}
-                      name="in"
-                    />
-                  </FloatingLabel>
-                </InputGroup>
-              </Col>
-              <Col xs={6}>
-                <FloatingLabel label="Estimated Return">
-                  <Form.Control
-                    id="finish-target"
-                    type="time"
-                    value={
-                      state.finish
-                        ? DateTime.fromMillis(state.finish).toFormat("HH:mm")
-                        : DateTime.now()
-                            .plus({
-                              minutes: state.duration.minutes,
-                              seconds: state.duration.seconds,
-                            })
-                            .toFormat("HH:mm")
-                    }
-                    onChange={(e) => handleChange({ e, state, setState })}
-                    name="in"
-                  />
-                </FloatingLabel>
-              </Col>
-              {state.duration.hours >= 1 && (
-                <Form.Check
-                  type="checkbox"
-                  id="acknowledged"
-                  label="I will be back after training ends and understand there may
-                not be any coaching support present"
-                  inline
-                  onChange={(e) =>
-                    setState((prevState) => ({
-                      ...prevState,
-                      acknowledged: e.target.checked,
-                    }))
-                  }
-                />
-              )}
-            </Row>
-
-            <Row>
-              <Col xs={6}>
-                <Row className="mileage hidden">
-                  <FormLabel>Mileage</FormLabel>
-                  <InputGroup className="mb-3">
-                    <FloatingLabel label="Target">
+        {[
+          { inOut: "in", label: "Check In" },
+          { inOut: "out", label: "Check Out" },
+        ].map(({ inOut, label }) => (
+          <Accordion.Item eventKey={inOut} key={inOut}>
+            <Accordion.Header name={`header-${inOut}`} onClick={handleClick}>
+              {label}
+            </Accordion.Header>
+            <Accordion.Body>
+              <Row>
+                {[
+                  { startfinish: "start", label: "Start Time" },
+                  { startfinish: "finish", label: "End Time" },
+                ].map(({ startfinish, label }) => (
+                  <Col xs={6} key={startfinish}>
+                    <FloatingLabel label={label}>
                       <Form.Control
-                        id="mileage-target"
-                        type="number"
-                        step={0.1}
-                        placeholder="Target Mileage"
-                        value={state.mileage?.toFixed(1) || 3}
+                        id={`${startfinish}-time-${inOut}`}
+                        type="time"
+                        value={
+                          state[startfinish]
+                            ? DateTime.fromMillis(state[startfinish]).toFormat(
+                                "HH:mm"
+                              )
+                            : DateTime.now().toFormat("HH:mm")
+                        }
                         onChange={(e) => handleChange({ e, state, setState })}
-                        name="in"
+                        name={inOut}
                       />
                     </FloatingLabel>
-                  </InputGroup>
-                </Row>
-              </Col>
-            </Row>
-
-            <Row className="mb-3 checkIn-row">
-              {["pace", "duration"].map((group, i) => (
-                <Col key={group} name={group} className={`${group} hidden`}>
-                  <FormLabel>{startCase(group)}</FormLabel>
-                  <InputGroup className="mb-3">
-                    {["hours", "minutes", "seconds"].map((type, i) => {
-                      if (group === "pace" && type === "hours") return null;
-                      else
-                        return (
-                          <FloatingLabel key={type} label={type}>
-                            <Form.Control
-                              id={`${group}-${type}`}
-                              type="number"
-                              step={type === "seconds" ? 5 : 1}
-                              value={
-                                type === "seconds"
-                                  ? Math.round(state[group][type])
-                                  : state[group][type]
-                              }
-                              onChange={(e) =>
-                                handleChange({ e, state, setState })
-                              }
-                              name="in"
-                            />
-                          </FloatingLabel>
-                        );
-                    })}
-                  </InputGroup>
-                </Col>
-              ))}
-            </Row>
-            <Row>
-              <Col className='p-0' xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="mileage"
-                  onClick={handleClick}
-                  className={`${
-                    showGroup.mileage ? "active" : ''
-                  } add-group`}
-                >
-                  Mileage
-                </Button>
-              </Col>
-              <Col xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="pace"
-                  className={`${showGroup.pace ? "active" : ''} ${
-                    showGroup.mileage ? "" : "hidden "
-                  } add-group`}
-                  onClick={handleClick}
-                >
-                  Pace
-                </Button>
-              </Col>
-              <Col xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="duration"
-                  className={`${showGroup.duration ? "active" : ''} ${
-                    showGroup.mileage ? "" : "hidden "
-                  } add-group`}
-                  onClick={handleClick}
-                >
-                  Duartion
-                </Button>
-              </Col>
-            </Row>
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="out">
-          <Accordion.Header name="header-out" onClick={handleClick}>
-            Check Out
-          </Accordion.Header>
-          <Accordion.Body>
-            <Row>
-              <Col xs={6}>
-                <InputGroup className="mb-3">
-                  <FloatingLabel label="Start Time">
-                    <Form.Control
-                      id="start"
-                      type="time"
-                      value={
-                        state.start
-                          ? DateTime.fromMillis(state.start).toFormat("HH:mm")
-                          : DateTime.now().toFormat("HH:mm")
-                      }
-                      onChange={(e) => handleChange({ e, state, setState })}
-                      name="out"
-                    />
-                  </FloatingLabel>
-                </InputGroup>
-              </Col>
-              <Col xs={6}>
-                <FloatingLabel label="Return Time">
-                  <Form.Control
-                    id="finish-actual"
-                    type="time"
-                    className="mb-3"
-                    value={
-                      state.finish
-                        ? DateTime.fromMillis(state.finish).toFormat("HH:mm")
-                        : DateTime.now()
-                            .plus({
-                              minutes: state.duration.minutes,
-                              seconds: state.duration.seconds,
-                            })
-                            .toFormat("HH:mm")
+                  </Col>
+                ))}
+                {state.duration.hours >= 1 && (
+                  <Form.Check
+                    type="checkbox"
+                    id={`acknowledged--${inOut}`}
+                    label="I will be back after training ends and understand there may
+                not be any coaching support present"
+                    inline
+                    onChange={(e) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        acknowledged: e.target.checked,
+                      }))
                     }
-                    onChange={(e) => handleChange({ e, state, setState })}
-                    name="out"
                   />
-                </FloatingLabel>
-              </Col>
-            </Row>
-            <Row className="checkIn-row mileage hidden">
-              <Col xs={6}>
-                <FormLabel>Mileage</FormLabel>
-                <InputGroup className="mb-3">
-                  <FloatingLabel label="Actual">
-                    <Form.Control
-                      id="mileage-actual"
-                      type="number"
-                      step={0.1}
-                      value={state.mileage?.toFixed(1) || 3}
-                      onChange={(e) => handleChange({ e, state, setState })}
-                      name="out"
-                    />
-                  </FloatingLabel>
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row className="checkIn-row">
-              {["pace", "duration"].map((group, i) => (
-                <Col key={group} className={`${group} hidden`}>
-                  <FormLabel>{startCase(group)}</FormLabel>
-                  <InputGroup className="mb-3">
-                    {["hours", "minutes", "seconds"].map((type, i) => {
-                      if (group === "pace" && type === "hours") return null;
-                      return (
-                        <FloatingLabel key={type} label={type}>
-                          <Form.Control
-                            id={`${group}-${type}-out`}
-                            type="number"
-                            step={type === "seconds" ? 5 : 1}
-                            value={
-                              type === "seconds"
-                                ? Math.round(state[group][type])
-                                : state[group][type]
-                            }
-                            onChange={(e) =>
-                              handleChange({ e, state, setState })
-                            }
-                            name="out"
-                          />
-                        </FloatingLabel>
-                      );
-                    })}
-                  </InputGroup>
+                )}
+              </Row>
+              <Row>
+                <Col xs={6}>
+                  <Row className="mileage hidden">
+                    <FormLabel>Mileage</FormLabel>
+                    <InputGroup className="mb-3">
+                      <FloatingLabel label="Target">
+                        <Form.Control
+                          id={`mileage-target-${inOut}`}
+                          type="number"
+                          step={0.1}
+                          value={state.mileage?.toFixed(1) || 3}
+                          onChange={(e) => handleChange({ e, state, setState })}
+                          name={inOut}
+                        />
+                      </FloatingLabel>
+                    </InputGroup>
+                  </Row>
                 </Col>
-              ))}
-            </Row>
-            <Row>
-              <Col xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="mileage"
-                  onClick={handleClick}
-                  className={`${
-                    showGroup.mileage ? "active" : ''
-                  } add-group`}
-                >
-                  Mileage
-                </Button>
-              </Col>
-              <Col xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="pace"
-                  className={`${showGroup.pace ? "active" : ''} ${
-                    showGroup.mileage ? "" : "hidden "
-                  } add-group`}
-                  onClick={handleClick}
-                >
-                  Pace
-                </Button>
-              </Col>
-              <Col xs={4}>
-                <Button
-                  variant="outline-danger"
-                  name="duration"
-                  className={`${showGroup.duration ? "active" : ""} ${
-                    showGroup.mileage ? "" : "hidden "
-                  } add-group`}
-                  onClick={handleClick}
-                >
-                  Duartion
-                </Button>
-              </Col>
-            </Row>
-          </Accordion.Body>
-        </Accordion.Item>
+              </Row>
+              <Row className="mb-3 checkIn-row">
+                {["pace", "duration"].map((group, i) => (
+                  <Col key={group} name={group} className={`${group} hidden`}>
+                    <FormLabel>{startCase(group)}</FormLabel>
+                    <InputGroup className="mb-3">
+                      {["hours", "minutes", "seconds"].map((type, i) => {
+                        if (group === "pace" && type === "hours") return null;
+                        else
+                          return (
+                            <FloatingLabel key={type} label={type}>
+                              <Form.Control
+                                id={`${group}-${type}-${inOut}`}
+                                type="number"
+                                step={type === "seconds" ? 5 : 1}
+                                value={
+                                  type === "seconds"
+                                    ? Math.round(state[group][type])
+                                    : state[group][type]
+                                }
+                                onChange={(e) =>
+                                  handleChange({ e, state, setState })
+                                }
+                                name={inOut}
+                              />
+                            </FloatingLabel>
+                          );
+                      })}
+                    </InputGroup>
+                  </Col>
+                ))}
+              </Row>
+              <Row>
+                {["mileage", "pace", "duration"].map((group, i) => {
+                  const hidden =
+                    group === "mileage"
+                      ? ""
+                      : !showGroup.mileage
+                      ? "hidden"
+                      : "";
+                  return (
+                    <Col xs={4}>
+                      <Button
+                        variant="outline-danger"
+                        onClick={handleClick}
+                        name={group}
+                        className={`add-group ${
+                          showGroup[group] ? "active" : ""
+                        } ${hidden}`}
+                      >
+                        {startCase(group)}
+                      </Button>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
       </Accordion>
       <Row id="checkin-buttons">
         <Button
