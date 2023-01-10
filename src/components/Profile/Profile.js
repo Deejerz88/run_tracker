@@ -6,7 +6,7 @@ import {
   History,
   Contact,
   Account,
-  Goals,
+  // Goals,
 } from "./components/index.js";
 import "./style.css";
 import { AppContext } from "../../App.js";
@@ -16,13 +16,13 @@ import { useNavigate } from "react-router-dom";
 import {
   BsCheck2All,
   BsCalendar2Week,
-  BsTrophy,
+  // BsTrophy,
 } from "react-icons/bs/index.esm.js";
 import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
 import { MdManageAccounts } from "react-icons/md/index.esm.js";
 import $ from "jquery";
 
-const Profile = ({ table }) => {
+const Profile = () => {
   const [state, setState] = useState({
     mileage: 3,
     pace: {
@@ -68,12 +68,6 @@ const Profile = ({ table }) => {
       finish: null,
     });
     let race = $("#checkin-race").val();
-    console.log("race", {
-      id: 27849,
-      name: "2023 Blue Cross Winter Warm Up",
-      type: "race",
-      eventIds: [675203],
-    });
     setTimeout(
       () => setContext((prev) => ({ ...prev, participant: {}, race })),
       100
@@ -100,7 +94,7 @@ const Profile = ({ table }) => {
   };
 
   useEffect(() => {
-    if (!participant.user_id || !race.id || !table) return;
+    if (!participant.user_id || !race.id ) return;
     console.log("participant", participant, "race", race);
     if (!participant?.races || !race) return;
     const thisRace = participant.races.find((r) => r?.id === race.id);
@@ -141,7 +135,7 @@ const Profile = ({ table }) => {
       start,
       finish,
     });
-  }, [participant, race, table, date]);
+  }, [participant, race,  date]);
 
   useEffect(() => {
     console.log("state", state);
@@ -193,7 +187,6 @@ const Profile = ({ table }) => {
               <Inputs
                 state={state}
                 setState={setState}
-                table={table}
                 handleClose={handleClose}
               />
             </Tab>

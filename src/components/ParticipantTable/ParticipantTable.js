@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
 import { Filters } from "./index.js";
-import { Profile, Login } from "../index.js";
+import { Login } from "../index.js";
 import axios from "axios";
 import _ from "lodash";
 import { DateTime } from "luxon";
@@ -20,9 +20,7 @@ import { useNavigate } from "react-router-dom";
 
 const ParticipantTable = () => {
   const [races, setRaces] = useState([]);
-  const [table, setTable] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
-
   const [Context, setContext] = useContext(AppContext);
   const { user } = Context;
   const navigate = useNavigate();
@@ -34,7 +32,7 @@ const ParticipantTable = () => {
     return data;
   };
 
-  const getParticipants = async (table) => {
+  const getParticipants = async () => {
     const { data } = await axios.get("/participant");
     return data;
   };
@@ -104,7 +102,7 @@ const ParticipantTable = () => {
     });
     const table = new Tabulator("#participant-table", {
       ajaxResponse: async (url, params, response) => {
-        const participants = await getParticipants(table);
+        const participants = await getParticipants();
         let updated = response.map((d) => {
           const participant = _.find(
             participants,
@@ -231,7 +229,6 @@ const ParticipantTable = () => {
     });
 
     table.on("tableBuilt", () => {
-      setTable(table);
       let deferredPrompt;
       window.addEventListener("beforeinstallprompt", (e) => {
         deferredPrompt = e;
@@ -252,6 +249,7 @@ const ParticipantTable = () => {
     table.on("renderComplete", () => {
       //check if on mobile deice
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -301,7 +299,7 @@ const ParticipantTable = () => {
         {Context.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
       <Login show={showLogin} setShow={setShowLogin} />
-      <Filters races={races} table={table} />
+      <Filters races={races} />
       <div className="m-3 " id="participant-table" />
     </>
   );

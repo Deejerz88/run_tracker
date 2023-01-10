@@ -400,3 +400,38 @@ label[for="acknowledged"] {
 #history-table {
   margin-top: 50px;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.add-in {
+  width: 110px;
+}
+
+.add-group.active {
+  background-color: #ed1c24 !important;
+}
+
+.add-group:active{
+  background-color: white !important;
+}
+
+.add-group:not(.active){
+  background-color: white !important;
+  color: #ed1c24 !important;
+}
+
+#checkinout-button {
+  width: 100px;
+}
+
+
+
+#checkin-buttons {
+  margin: 10px 0 100px 10px;
+}
+
+#checkin-buttons .form-check-inline{
+  width: 150px;
+}

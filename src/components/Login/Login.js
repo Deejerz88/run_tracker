@@ -24,7 +24,7 @@ const Login = ({ show, setShow }) => {
     action: "Log In",
   });
 
-  const [Context, setContext] = useContext(AppContext);
+  const [, setContext] = useContext(AppContext);
 
   const handleClick = (e) => {
     const { id, nodeName } = e.target;

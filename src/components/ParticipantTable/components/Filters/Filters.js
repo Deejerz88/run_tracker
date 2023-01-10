@@ -12,9 +12,8 @@ import "./style.css";
 import { Tabulator } from "tabulator-tables";
 import { MdOutlineClear } from "react-icons/md/index.esm.js";
 import { AppContext } from "../../../../App.js";
-import $ from "jquery";
 
-const Filters = ({ table, races }) => {
+const Filters = ({ races }) => {
   //filter by name and checked in true/false
   const [name, setName] = useState("");
   const [checkedIn, setCheckedIn] = useState(false);
@@ -26,6 +25,7 @@ const Filters = ({ table, races }) => {
 
   const handleChange = (e) => {
     e.preventDefault();
+    const table = Tabulator.findTable("#participant-table")[0];
     console.log("e", e.target.name, e.target.checked);
     const { id, name, value, selectedOptions } = e.target;
     if (id === "name-filter") {
@@ -62,7 +62,7 @@ const Filters = ({ table, races }) => {
       (document.getElementById("race-select").options.selectedIndex =
         races.findIndex((r) => r.id === race.id))
     );
-  }, [Context]);
+  }, [Context, races]);
 
   const nameFilter = ({ data, name }) => {
     return data.name.toLowerCase().includes(name.toLowerCase());
