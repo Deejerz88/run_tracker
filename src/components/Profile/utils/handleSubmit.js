@@ -18,14 +18,6 @@ const handleSubmit = async ({
 }) => {
   e.preventDefault();
   e.stopPropagation();
-  console.log(
-    "race",
-    selectedRace,
-    "selectedDate",
-    selectedDate,
-    "defaults",
-    defaults
-  );
   const activeKey = $("#checkInOut").attr("name");
   if (activeKey === "out" && !checkedIn) {
     console.log("not checked in");
@@ -46,12 +38,10 @@ const handleSubmit = async ({
     return;
   }
   let fields = $(`input[name=${activeKey}]`);
-  console.log("showGroup", showGroup);
   fields = fields.filter((i, field) => {
     const group = field.id.split("-")[0];
     return showGroup[group] || group === "start" || group === "finish";
   });
-  console.log("fields", fields);
   if (!fields) return;
   const data = {
     duration: {},
@@ -88,10 +78,8 @@ const handleSubmit = async ({
     },
   ];
   participant.settings = { ...participant.settings, defaultFields: defaults };
-  console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;
-  console.log("newParticipant", newParticipant);
   // setContext((prev) => ({
   //   ...prev,
   //   user: newParticipant,

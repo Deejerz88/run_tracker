@@ -76,7 +76,6 @@ const participantSchema = new Schema(
   {
     statics: {
       async checkPassword(password, hash) {
-        console.log("password", password, "hash", hash);
         return await bcrypt.compare(password, hash);
       },
     },
@@ -114,7 +113,6 @@ raceSchema.pre("save", function (next) {
 });
 
 participantSchema.pre("save", function (next) {
-  console.log("pre save", this);
   if (this.isModified("password"))
     this.password = bcrypt.hashSync(this.password, 10);
   this.username_lower = this.username?.toLowerCase() || "";

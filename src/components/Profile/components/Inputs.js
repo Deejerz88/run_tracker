@@ -16,7 +16,7 @@ import { AppContext } from "../../../App.js";
 import axios from "axios";
 import $ from "jquery";
 
-const Inputs = ({ state, setState, handleClose }) => {
+const Inputs = ({ state, setState }) => {
   const [activeKey, setActiveKey] = useState("in");
   const [races, setRaces] = useState([]);
   const [Context, setContext] = useContext(AppContext);
@@ -37,27 +37,19 @@ const Inputs = ({ state, setState, handleClose }) => {
   }, []);
 
   useEffect(() => {
-    console.log("checkedIn", checkedIn);
-  }, [checkedIn]);
-
-  useEffect(() => {
     if (!races.length > 1) return;
-    console.log("changing race", races, races[1], Context);
     setSelectedRace(Context.race.name ? Context.race : races[1]);
   }, [races, Context]);
 
   useEffect(() => {
-    console.log("selectedRace", selectedRace);
     if (!selectedRace || !participant.races) return;
     const participantRace = participant.races.find(
       (r) => r.id === selectedRace.id
     );
-    console.log("participantRace", participantRace);
     if (!participantRace || !participantRace.attendance) return;
     const todaysEvent = participantRace.attendance.find(
       (a) => a.date === selectedDate
     );
-    console.log("todaysEvent", todaysEvent);
     setCheckedIn(todaysEvent?.checkedIn || false);
   }, [participant.races, selectedDate, selectedRace]);
 
@@ -65,21 +57,13 @@ const Inputs = ({ state, setState, handleClose }) => {
     setActiveKey(checkedIn ? "out" : "in");
   }, [checkedIn]);
 
-  useEffect(() => {
-    console.log("inputs state", state);
-  }, [state]);
-
   const handleClick = (e) => {
     e.stopPropagation();
     const { name, type, classList, id } = e.target;
-    console.log("name", name, e.target);
     const expanded = e.target.getAttribute("aria-{expanded");
-    console.log("expanded", typeof expanded, type);
-    console.log("clicked", e.target);
     if (e.target.type === "number") {
       e.target.select();
     } else if (type === "button" && expanded === "false") {
-      console.log("clicked header", activeKey);
       setActiveKey(activeKey === "in" ? "out" : "in");
     } else if (classList.contains("add-group")) {
       if (name === "mileage" && showGroup.mileage) {
@@ -92,7 +76,6 @@ const Inputs = ({ state, setState, handleClose }) => {
         setShowGroup({ ...showGroup, [name]: !showGroup[name] });
       }
     } else if (id === "default-fields") {
-      console.log("default fields", e.target.checked);
       if (e.target.checked)
         setDefaults(Object.keys(showGroup).filter((g) => showGroup[g]));
     }
@@ -108,7 +91,6 @@ const Inputs = ({ state, setState, handleClose }) => {
           setState,
           participant,
           selectedRace,
-          handleClose,
           selectedDate,
           setContext,
           checkedIn,

@@ -83,9 +83,7 @@ const ParticipantTable = () => {
 
   const startFinishFormatter = (cell) => {
     const value = cell.getValue() || "";
-    // console.log('value', value)
     const data = cell.getRow().getData();
-    // console.log('data', data)
     const { checkedOut, checkedIn } = data;
     return checkedOut && checkedIn ? `<b>${value}</b>` : `<em>${value}</em>`;
   };
@@ -93,12 +91,10 @@ const ParticipantTable = () => {
   useEffect(() => {
     getRaces().then((data) => {
       setRaces(data);
-      console.log("races: ", data);
       setContext((prevcContext) => ({
         ...prevcContext,
         race: Context.race.name ? Context.race : data[0],
       }));
-      console.log("Context.race", Context);
     });
     const table = new Tabulator("#participant-table", {
       ajaxResponse: async (url, params, response) => {
@@ -110,7 +106,6 @@ const ParticipantTable = () => {
           );
           return { ...d, ...participant };
         });
-        console.log("updated", updated);
         return _.uniqBy(updated, "user_id");
       },
       layout: "fitColumns",

@@ -27,8 +27,7 @@ const Login = ({ show, setShow, races }) => {
   const [, setContext] = useContext(AppContext);
 
   const handleClick = (e) => {
-    const { id, nodeName } = e.target;
-    console.log("id", id, nodeName);
+    const { id } = e.target;
     switch (id) {
       case "signup-switch":
         const { checked } = e.target;
@@ -98,12 +97,10 @@ const Login = ({ show, setShow, races }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("state", state);
     const { username, password, email, action } = state;
     if (action === "Recover Account") {
       try {
-        const res = await axios.post("api/user/reset", { email });
-        console.log("res", res);
+        await axios.post("api/user/reset", { email });
         toast.success("Check your email for a link to recover your account", {
           position: "top-center",
           autoClose: 3000,
@@ -121,7 +118,6 @@ const Login = ({ show, setShow, races }) => {
     } else {
       const signup = $("#signup-switch").prop("checked");
       const stayLoggedIn = $("#stay-logged-in").prop("checked");
-      console.log("signup", signup);
       let res;
       try {
         res = signup
@@ -148,7 +144,6 @@ const Login = ({ show, setShow, races }) => {
         });
         return;
       }
-      console.log("res", res);
       const { user } = res.data;
       setContext((prev) => ({
         ...prev,

@@ -9,7 +9,6 @@ import { AppContext } from "../../../App.js";
 const Account = () => {
   const [Context, setContext] = useContext(AppContext);
   const { participant, race } = Context;
-  console.log("participant", participant);
   const { first_name, last_name, username, email, phone } = participant;
   const [originalData, setOriginalData] = useState({
     first_name,
@@ -38,9 +37,7 @@ const Account = () => {
   });
 
   const handleChange = (e) => {
-    console.log("e", e);
     const form = e.target.form;
-    console.log("form", form);
     let { id, value } = e.target;
     let key = id.replace(/ /g, "_");
     key = key.toLowerCase();
@@ -150,9 +147,7 @@ const Account = () => {
   }, [feedbackData]);
 
   useEffect(() => {
-    console.log("formData", formData, "originalData", originalData);
     if (!isEqual(formData, originalData)) {
-      console.log("changed");
       $("#submit-row").css({ display: "flex" });
     } else {
       console.log("not changed");

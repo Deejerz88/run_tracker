@@ -20,7 +20,7 @@ import {
 } from "react-icons/bs/index.esm.js";
 import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
 import { MdManageAccounts } from "react-icons/md/index.esm.js";
-import $ from "jquery";
+// import $ from "jquery";
 
 const Profile = () => {
   const [state, setState] = useState({
@@ -37,48 +37,25 @@ const Profile = () => {
     start: null,
     finish: null,
   });
+
   const [Context, setContext] = useContext(AppContext);
   let { user, participant, race, date } = Context;
   console.log("Profile Context", Context);
+
   const navigate = useNavigate();
+
   if (!participant.user_id) {
     const user_id = Number(window.location.pathname.split("/")[2]);
-    console.log("user_id", user_id);
     (async () => {
       const { data } = await axios.get(`/participant/${user_id}`);
-      console.log("data", data);
       if (!data) return;
       setContext((prev) => ({ ...Context, participant: data }));
     })();
   }
 
-  const handleClose = () => {
-    setState({
-      mileage: 3,
-      pace: {
-        minutes: 10,
-        seconds: 0,
-      },
-      duration: {
-        hours: 0,
-        minutes: 30,
-        seconds: 0,
-      },
-      start: null,
-      finish: null,
-    });
-    let race = $("#checkin-race").val();
-    setTimeout(
-      () => setContext((prev) => ({ ...prev, participant: {}, race })),
-      100
-    );
-  };
-
   const handleClick = (e) => {
     let { id } = e.target;
-    console.log("target", e.target);
     const card = e.target.closest(".card");
-    console.log("card", card);
     id = card.id;
     if (id === "phone-card") {
       const phone = participant.phone;
@@ -94,11 +71,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (!participant.user_id || !race.id ) return;
-    console.log("participant", participant, "race", race);
-    if (!participant?.races || !race) return;
+    if (!participant.user_id || !race.id) return;
+    if (race.name === "Team Playmakers") {
+    }
     const thisRace = participant.races.find((r) => r?.id === race.id);
-    console.log("thisRace", thisRace);
     if (!thisRace) {
       if (!participant.avgMileage) return;
       setState({
@@ -110,8 +86,9 @@ const Profile = () => {
       });
       return;
     }
+
     const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
-    console.log("todaysAttendance", todaysAttendance);
+
     if (!todaysAttendance) {
       setState({
         mileage: thisRace.avgMileage,
@@ -135,11 +112,8 @@ const Profile = () => {
       start,
       finish,
     });
-  }, [participant, race,  date]);
+  }, [participant, race, date]);
 
-  useEffect(() => {
-    console.log("state", state);
-  }, [state]);
 
   return (
     <>
@@ -160,8 +134,7 @@ const Profile = () => {
               className="d-flex align-items-center justify-content-center"
               onClick={() => {
                 console.log("redirecting to home");
-                handleClose();
-                navigate("/");
+               navigate("/")
               }}
               id="home-col"
             >
@@ -184,11 +157,7 @@ const Profile = () => {
                 </Row>
               }
             >
-              <Inputs
-                state={state}
-                setState={setState}
-                handleClose={handleClose}
-              />
+              <Inputs state={state} setState={setState} />
             </Tab>
 
             <Tab

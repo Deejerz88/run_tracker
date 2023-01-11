@@ -19,14 +19,10 @@ const Filters = ({ races }) => {
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkedOut, setCheckedOut] = useState(false);
   const [Context, setContext] = useContext(AppContext);
-  const [selectedRace, setSelectedRace] = useState();
-
-  console.log("context", Context);
 
   const handleChange = (e) => {
     e.preventDefault();
     const table = Tabulator.findTable("#participant-table")[0];
-    console.log("e", e.target.name, e.target.checked);
     const { id, name, value, selectedOptions } = e.target;
     if (id === "name-filter") {
       setName(value);
@@ -43,25 +39,15 @@ const Filters = ({ races }) => {
         race: { id: Number(raceId), name: raceName, type, eventIds },
       }));
     } else if (id === "race-date") {
-      console.log("date", value);
       setContext((prev) => ({ ...prev, date: value }));
       table.setData();
     }
   };
 
   useEffect(() => {
-    console.log("selectedRace", selectedRace);
-  }, [selectedRace]);
-
-  useEffect(() => {
     const { race } = Context;
-    console.log("filter context", race, Context);
-    setSelectedRace(race);
-    console.log(
-      "options",
-      (document.getElementById("race-select").options.selectedIndex =
-        races.findIndex((r) => r.id === race.id))
-    );
+    document.getElementById("race-select").options.selectedIndex =
+      races.findIndex((r) => r.id === race.id);
   }, [Context, races]);
 
   const nameFilter = ({ data, name }) => {
@@ -71,7 +57,6 @@ const Filters = ({ races }) => {
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
-    console.log("tableFilters", table.getFilters());
     const tableFilters = table.getFilters();
     const filterInd = tableFilters.findIndex((f) => f.value === "name");
     if (name) {
@@ -96,29 +81,24 @@ const Filters = ({ races }) => {
       table.setFilter(tableFilters);
     }
 
-    console.log("tableFitlers", table.getFilters());
   }, [name]);
 
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
-    console.log("tableFilters", table.getFilters());
     if (checkedIn) {
       table.addFilter("checkedIn", "=", true);
       setCheckedOut(false);
     } else table.removeFilter("checkedIn", "=", true);
-    console.log("tableFilters", table.getFilters());
   }, [checkedIn]);
 
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
-    console.log("tableFilters", table.getFilters());
     if (checkedOut) {
       table.addFilter("checkedOut", "=", true);
       setCheckedIn(false);
     } else table.removeFilter("checkedOut", "=", true);
-    console.log("tableFilters", table.getFilters());
   }, [checkedOut]);
 
   return (

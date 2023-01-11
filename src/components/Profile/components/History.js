@@ -10,17 +10,14 @@ const History = () => {
   useEffect(() => {
     const getHistory = async (table) => {
       if (!participant) return;
-      console.log("participant", participant);
       const { user_id } = participant;
       const { data } = await axios.get(`/participant/${user_id}`);
-      console.log("data", data);
       if (!data) return;
       const { races } = data;
       if (!data.user_id || !races.length) return;
       const history = [];
       races.forEach((race) => {
         const { attendance, id } = race;
-        console.log("attendance", attendance);
         if (!attendance) return;
         attendance.forEach((a) => {
           let { date, mileage, pace, duration } = a;
@@ -45,7 +42,6 @@ const History = () => {
           });
         });
       });
-      console.log("history", history);
       table.setData(history);
     };
     const table = new Tabulator("#history-table", {
@@ -101,12 +97,6 @@ const History = () => {
             const avgDuration = Duration.fromObject({ seconds: avg }).toFormat(
               "m:ss"
             );
-            console.log(
-              "totalDuration",
-              totalDuration,
-              "avgDuration",
-              avgDuration
-            );
             return `${totalDuration}<br/>${avgDuration}`;
           },
           bottomCalcFormatter: "html",
@@ -129,12 +119,6 @@ const History = () => {
             const avgDuration = Duration.fromObject({
               seconds: avg,
             }).toFormat("h:mm:ss");
-            console.log(
-              "totalDuration",
-              totalDuration,
-              "avgDuration",
-              avgDuration
-            );
             return `${totalDuration}<br/>${avgDuration}`;
           },
           bottomCalcFormatter: "html",

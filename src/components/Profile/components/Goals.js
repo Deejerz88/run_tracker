@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -13,7 +13,7 @@ import { BsPlusLg } from "react-icons/bs/index.esm.js";
 import $ from "jquery";
 import { startCase } from "lodash";
 import { Tabulator } from "tabulator-tables";
-import { AppContext } from "../../../App.js";
+// import { AppContext } from "../../../App.js";
 import { DateTime } from "luxon";
 
 const Goals = () => {
@@ -34,8 +34,8 @@ const Goals = () => {
     date: null,
   });
   const [races, setRaces] = useState([]);
-  const [Context, setContext] = useContext(AppContext);
-  const { participant } = Context;
+  // const [Context, setContext] = useContext(AppContext);
+  // const { participant } = Context;
 
   const resetState = (type) => {
     setState({
@@ -52,6 +52,7 @@ const Goals = () => {
         minutes: 0,
         seconds: 0,
       },
+      date: null,
     });
   };
 
@@ -82,7 +83,6 @@ const Goals = () => {
   const handleSelect = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
-    console.log("name", name, e.target, value);
     switch (name) {
       case "type":
         if (state.type === "none" || !state.type) {
@@ -101,7 +101,6 @@ const Goals = () => {
           ...prevState,
           [name]: value,
         }));
-        console.log("state race", state.race);
         if (!state.race) {
           showRow(3);
         } else if (name !== "race") {
@@ -125,9 +124,8 @@ const Goals = () => {
 
   const handleBlur = (e) => {
     e.preventDefault();
-    const { name, id, value } = e.target;
+    const { id, value } = e.target;
     const [group, field] = id.split("-");
-    console.log("name", name, group, field, value);
     group === "mileage"
       ? setState((prevState) => ({
           ...prevState,
@@ -149,7 +147,6 @@ const Goals = () => {
     if (type === "number") {
       e.target.select();
     } else if (id === "add-goal") {
-      console.log("add goal", state);
       if (!state.category) {
         resetState();
         showRow(1);
@@ -159,7 +156,6 @@ const Goals = () => {
         }, 0);
       }
     } else if (id === "add-goal-date") {
-      console.log("add goal date", $("#date-group"));
       $(e.target).hide();
       setState((prevState) => ({
         ...prevState,
@@ -182,7 +178,7 @@ const Goals = () => {
       const { data: races } = await axios.get("/race");
       setRaces(races);
     })();
-    const table = new Tabulator("#goal-table", {
+    new Tabulator("#goal-table", {
       layout: "fitColumns",
       columns: [
         { title: "Type", field: "type" },
@@ -192,10 +188,6 @@ const Goals = () => {
       ],
     });
   }, []);
-
-  useEffect(() => {
-    console.log("state", state);
-  }, [state]);
 
   const Race = () => {
     const raceList = ["", ...races];
