@@ -343,6 +343,7 @@ div[id^="goal-row-"] {
 
 #goal-form {
   height: 130px;
+  margin-bottom: 100px
 }
 
 #add-goal-row {
@@ -446,4 +447,8 @@ label[for="acknowledged"] {
 .plus,
 .minus {
   margin: 5px;
+}
+
+#add-goal-date{
+  width: 200px;
 }

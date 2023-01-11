@@ -123,7 +123,7 @@ const Inputs = ({ state, setState, handleClose }) => {
           setCheckedIn,
           showGroup,
           setShowGroup,
-          defaults
+          defaults,
         })
       }
       onClick={handleClick}
@@ -250,8 +250,8 @@ const Inputs = ({ state, setState, handleClose }) => {
                                 step={type === "seconds" ? 5 : 1}
                                 value={
                                   type === "seconds"
-                                    ? Math.round(state[group][type])
-                                    : state[group][type]
+                                    ? Math.round(state[group][type]) || 0
+                                    : state[group][type] || 0
                                 }
                                 onChange={(e) =>
                                   handleChange({ e, state, setState })
@@ -303,7 +303,7 @@ const Inputs = ({ state, setState, handleClose }) => {
         >
           {activeKey === "in" ? "Check In" : "Check Out"}
         </Button>
-{/* 
+
         <Form.Check
           type="switch"
           id="default-fields"
@@ -312,7 +312,7 @@ const Inputs = ({ state, setState, handleClose }) => {
           defaultChecked="true"
           onChange={handleClick}
           inline
-        /> */}
+        />
       </Row>
     </Form>
   );

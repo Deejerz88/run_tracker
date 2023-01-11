@@ -5,7 +5,6 @@ import { toast, Flip } from "react-toastify";
 import axios from "axios";
 import $ from "jquery";
 import { AppContext } from "../../../App.js";
-import { Tabulator } from "tabulator-tables";
 
 const Account = () => {
   const [Context, setContext] = useContext(AppContext);
@@ -74,9 +73,7 @@ const Account = () => {
         return;
       }
       try {
-        const { data } = await axios.post("/api/user", formData);
-        const { user } = data;
-        const table = Tabulator.findTable("#participant-table")[0];
+        await axios.post("/api/user", formData);
         $("#change_password").val("");
         $("#confirm_password").val("");
         $(".confirm_password").hide();
@@ -99,8 +96,6 @@ const Account = () => {
           autoClose: 3000,
           transition: Flip,
         });
-
-        table.updateData([{ ...user }]);
       } catch (err) {
         console.log("err", err);
         toast.error("Error updating account", {
@@ -185,7 +180,14 @@ const Account = () => {
             ? "tel"
             : "text";
           return (
-            <Form.Group key={field} as={Row} className={`m-3 ${field}`}>
+            <Form.Group
+              key={field}
+              as={Row}
+              className={`m-3 ${field} `}
+              style={{
+                display: field === "confirm_password" ? "none" : "flex",
+              }}
+            >
               <Form.Label column sm={2}>
                 <b>{startCase(field.replace(/_/g, " "))}</b>
               </Form.Label>
@@ -223,6 +225,7 @@ const Account = () => {
               onClick={() => {
                 $("#submit-row").hide();
                 setFormData(originalData);
+                $(".confirm_password").css({ display: "none" });
               }}
             >
               Cancel

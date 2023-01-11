@@ -62,9 +62,7 @@ const handleSubmit = async ({
   };
   fields.each((i, field) => {
     const { id, value } = field;
-    const group = id.split("-")[0];
-    const type = id.split("-")[1];
-
+    const [group, type] = id.split("-");
     data[group][type] =
       group === "start" || group === "finish"
         ? DateTime.fromFormat(value, "HH:mm").toMillis()
@@ -89,7 +87,7 @@ const handleSubmit = async ({
       ],
     },
   ];
-  // participant.settings = { ...participant.settings, defaultFields: defaults };
+  participant.settings = { ...participant.settings, defaultFields: defaults };
   console.log("participant", participant);
   let newParticipant = await axios.post("/participant", participant);
   newParticipant = newParticipant.data;

@@ -37,19 +37,24 @@ const raceSchema = new Schema({
   avgMileage: Number,
   avgDuration: durationSchema,
   attendance: [attendanceSchema],
+  goals: {
+    mileage: Number,
+    duration: durationSchema,
+    pace: paceSchema,
+  },
 });
 
-// const settingsSchema = new Schema({
-//   defaultFields: [String],
-// });
+const settingsSchema = new Schema({
+  defaultFields: [String],
+});
 
 const participantSchema = new Schema(
   {
     user_id: { type: Number, index: true, unique: true },
-    username: { type: String, index: true },
+    username: { type: String },
     username_lower: { type: String, index: true },
-    email: { type: String, index: true, unique: true },
-    // settings: { type: settingsSchema, default: () => ({ defaultFields: [] }) },
+    email: { type: String, unique: true },
+    settings: settingsSchema,
     email_lower: { type: String, index: true },
     phone: String,
     password: String,
@@ -62,6 +67,11 @@ const participantSchema = new Schema(
     totalDuration: durationSchema,
     avgPace: paceSchema,
     races: [raceSchema],
+    goals: {
+      mileage: Number,
+      duration: durationSchema,
+      pace: paceSchema,
+    },
   },
   {
     statics: {
@@ -74,13 +84,16 @@ const participantSchema = new Schema(
 );
 
 raceSchema.pre("save", function (next) {
-  try {
-    this.totalAttendance = this.attendance.length;
-    this.totalMileage = _.sumBy(this.attendance, "mileage");
-    const durationMinutes = _.sumBy(this.attendance, (a) => {
-      const { hours, minutes, seconds } = a.duration;
-      return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-    });
+  // try {
+  this.totalAttendance = this.attendance.length;
+  this.totalMileage = _.sumBy(this.attendance, "mileage");
+  const durationMinutes = _.sumBy(this.attendance, (a) => {
+    const { hours, minutes, seconds } = a.duration;
+    return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
+  });
+  this.avgMileage = this.totalMileage / this.totalAttendance;
+
+  if (durationMinutes) {
     this.avgPace = Duration.fromObject({
       minutes: durationMinutes / this.totalMileage,
     })
@@ -91,29 +104,31 @@ raceSchema.pre("save", function (next) {
     })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
-    this.avgMileage = this.totalMileage / this.totalAttendance;
     this.avgDuration = Duration.fromObject({
       minutes: durationMinutes / this.totalAttendance,
     })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
-    next();
-  } catch (err) {
-    next();
   }
+  next();
 });
 
 participantSchema.pre("save", function (next) {
-  try {
-    if (this.isModified("password"))
-      this.password = bcrypt.hashSync(this.password, 10);
-    if (this.races.length) {
-      this.totalAttendance = _.sumBy(this.races, "totalAttendance");
-      this.totalMileage = _.sumBy(this.races, "totalMileage");
-      const durationMinutes = _.sumBy(this.races, (r) => {
-        const { hours, minutes, seconds } = r.totalDuration;
-        return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-      });
+  console.log("pre save", this);
+  if (this.isModified("password"))
+    this.password = bcrypt.hashSync(this.password, 10);
+  this.username_lower = this.username?.toLowerCase() || "";
+  this.email_lower = this.email?.toLowerCase() || "";
+  this.avgMileage = this.totalMileage / this.totalAttendance;
+  if (this.races.length) {
+    this.totalAttendance = _.sumBy(this.races, "totalAttendance");
+    this.totalMileage = _.sumBy(this.races, "totalMileage");
+    const durationMinutes = _.sumBy(this.races, (r) => {
+      if (!r.totalDuration) return 0;
+      const { hours, minutes, seconds } = r.totalDuration;
+      return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
+    });
+    if (durationMinutes) {
       this.avgPace = Duration.fromObject({
         minutes: durationMinutes / this.totalMileage,
       })
@@ -124,19 +139,14 @@ participantSchema.pre("save", function (next) {
       })
         .shiftTo("hours", "minutes", "seconds")
         .toObject();
-      this.avgMileage = this.totalMileage / this.totalAttendance;
       this.avgDuration = Duration.fromObject({
         minutes: durationMinutes / this.totalAttendance,
       })
         .shiftTo("hours", "minutes", "seconds")
         .toObject();
     }
-    this.username_lower = this.username?.toLowerCase() || "";
-    this.email_lower = this.email?.toLowerCase() || "";
-    next();
-  } catch (err) {
-    next();
   }
+  next();
 });
 
 export default mongoose.model("Participant", participantSchema, "Participant");

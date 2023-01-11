@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Row,
   Col,
@@ -12,11 +12,14 @@ import axios from "axios";
 import { BsPlusLg } from "react-icons/bs/index.esm.js";
 import $ from "jquery";
 import { startCase } from "lodash";
+import { Tabulator } from "tabulator-tables";
+import { AppContext } from "../../../App.js";
+import { DateTime } from "luxon";
 
 const Goals = () => {
   const [state, setState] = useState({
     type: "none",
-    event: "",
+    race: "",
     category: "",
     mileage: 0,
     pace: {
@@ -28,13 +31,16 @@ const Goals = () => {
       minutes: 0,
       seconds: 0,
     },
+    date: null,
   });
   const [races, setRaces] = useState([]);
+  const [Context, setContext] = useContext(AppContext);
+  const { participant } = Context;
 
   const resetState = (type) => {
     setState({
       type: type || "",
-      event: "",
+      race: "",
       category: "",
       mileage: 0,
       pace: {
@@ -49,18 +55,24 @@ const Goals = () => {
     });
   };
 
-  const hideRow = (row) => {
-    $(`#goal-row-${row}`).css({ marginLeft: 2000, opacity: 0 });
-    setTimeout(() => {
-      $(`#goal-row-${row}`).hide();
-    }, 500);
+  const hideRow = (rows) => {
+    rows = typeof rows === "number" ? [rows] : rows;
+    rows.forEach(async (row) => {
+      $(`#goal-row-${row}`).css({ marginLeft: 2000, opacity: 0 });
+      setTimeout(() => {
+        $(`#goal-row-${row}`).hide();
+      }, 500);
+    });
   };
 
-  const showRow = (row) => {
-    $(`#goal-row-${row}`).css({ display: "flex" });
-    setTimeout(() => {
-      $(`#goal-row-${row}`).css({ marginLeft: 0, opacity: 1 });
-    }, 0);
+  const showRow = (rows) => {
+    rows = typeof rows === "number" ? [rows] : rows;
+    rows.forEach(async (row) => {
+      $(`#goal-row-${row}`).css({ display: "flex" });
+      setTimeout(() => {
+        $(`#goal-row-${row}`).css({ marginLeft: 0, opacity: 1 });
+      }, 0);
+    });
   };
 
   const growForm = (size) => {
@@ -78,11 +90,10 @@ const Goals = () => {
           growForm(75);
         }
         resetState(value);
-        hideRow(3);
-        hideRow(4);
+        hideRow([3, 4]);
         $("#goal-form").height(200);
         break;
-      case "event":
+      case "race":
       case "category":
         if (!state[name] || (name === "category" && state[name] === "Finish"))
           growForm(75);
@@ -90,16 +101,22 @@ const Goals = () => {
           ...prevState,
           [name]: value,
         }));
-        console.log("state event", state.event);
-        if (!state.event) {
+        console.log("state race", state.race);
+        if (!state.race) {
           showRow(3);
-        } else if (name !== "event") {
+        } else if (name !== "race") {
           if (value === "Finish") {
             hideRow(4);
           } else {
             showRow(4);
           }
         }
+        break;
+      case "date":
+        setState((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
         break;
       default:
         break;
@@ -127,21 +144,28 @@ const Goals = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    const { name, type } = e.target;
+    e.stopPropagation();
+    const { type, id } = e.target;
     if (type === "number") {
       e.target.select();
-      return;
-    }
-    if (name === "add") {
+    } else if (id === "add-goal") {
       console.log("add goal", state);
-      // $("#add-goal-row").hide().css({ opacity: 0 });
-      resetState();
-      showRow(1);
-      $("#reset-goal").css({ display: "block" });
-      setTimeout(() => {
-        $("#reset-goal").css({ opacity: 1 });
-      }, 0);
-    } else if (name === "reset") {
+      if (!state.category) {
+        resetState();
+        showRow(1);
+        $("#reset-goal").css({ display: "block" });
+        setTimeout(() => {
+          $("#reset-goal").css({ opacity: 1 });
+        }, 0);
+      }
+    } else if (id === "add-goal-date") {
+      console.log("add goal date", $("#date-group"));
+      $(e.target).hide();
+      setState((prevState) => ({
+        ...prevState,
+        date: DateTime.local().toISODate(),
+      }));
+    } else if (id === "reset-goal") {
       $('[id^="goal-row-"]').each((i, row) => {
         $(row).css({ marginLeft: 2000, opacity: 0 });
         setTimeout(() => {
@@ -158,21 +182,30 @@ const Goals = () => {
       const { data: races } = await axios.get("/race");
       setRaces(races);
     })();
+    const table = new Tabulator("#goal-table", {
+      layout: "fitColumns",
+      columns: [
+        { title: "Type", field: "type" },
+        { title: "Race" },
+        { title: "Category", field: "category" },
+        { title: "Target", field: "target" },
+      ],
+    });
   }, []);
 
   useEffect(() => {
     console.log("state", state);
   }, [state]);
 
-  const Event = () => {
+  const Race = () => {
     const raceList = ["", ...races];
     return (
-      <InputGroup className="">
-        <FloatingLabel label="Event">
+      <>
+        <FloatingLabel label="Race">
           <Form.Select
-            id="goal-event"
-            name="event"
-            value={state.event}
+            id="goal-race"
+            name="race"
+            value={state.race}
             onChange={handleSelect}
           >
             {raceList.map((race, i) => (
@@ -180,13 +213,13 @@ const Goals = () => {
             ))}
           </Form.Select>
         </FloatingLabel>
-      </InputGroup>
+      </>
     );
   };
 
   const Category = () => {
     return (
-      <InputGroup className=" ">
+      <>
         <FloatingLabel label="Category">
           <Form.Select
             id="goal-category"
@@ -203,13 +236,12 @@ const Goals = () => {
             )}
           </Form.Select>
         </FloatingLabel>
-      </InputGroup>
+      </>
     );
   };
 
   const Mileage = () => {
     return (
-      // <InputGroup className="">
       <FloatingLabel label="Miles">
         <Form.Control
           id="mileage"
@@ -220,13 +252,12 @@ const Goals = () => {
           className=""
         />
       </FloatingLabel>
-      // </InputGroup>
     );
   };
 
   const Pace = () => {
     return (
-      <InputGroup className="">
+      <InputGroup>
         {["minutes", "seconds"].map((type, i) => {
           return (
             <FloatingLabel key={type} label={type}>
@@ -251,7 +282,7 @@ const Goals = () => {
 
   const Duration = () => {
     return (
-      <InputGroup className="">
+      <>
         {["hours", "minutes", "seconds"].map((type, i) => {
           return (
             <FloatingLabel key={type} label={type}>
@@ -270,7 +301,7 @@ const Goals = () => {
             </FloatingLabel>
           );
         })}
-      </InputGroup>
+      </>
     );
   };
 
@@ -282,98 +313,147 @@ const Goals = () => {
     }[state.category];
   };
 
-  return (
-    <Form id="goal-form" onClick={handleClick}>
-      <Row id="goal-row-1" className=" ">
-        <Col xs={2} className="d-flex justify-content-start">
-          <h2 className="styled-title goal-number">1</h2>
-        </Col>
-        <Col xs={10} className="d-flex align-items-center">
-          <ButtonGroup
-            id="goal-type"
-            name="type"
-            className="w-25"
-            onClick={handleSelect}
-          >
-            {["overall", "event"].map((type, i) => {
-              return (
-                <Button
-                  key={type}
-                  id={`goal-${type}`}
-                  value={type}
-                  variant="danger"
-                  type="radio"
-                  name="type"
-                  className={state.type === type ? "active" : ""}
-                >
-                  {startCase(type)}
-                </Button>
-              );
-            })}
-          </ButtonGroup>
-        </Col>
-      </Row>
-      {[2, 3, 4].map((i) => {
-        const event = state.type === "event";
-        return (
-          <Row key={i}  id={`goal-row-${i}`} className=" ">
-            <Col xs={2} className="d-flex justify-content-start">
-              <h2 className="styled-title goal-number">{i}</h2>
-            </Col>
-            <Col xs={10}>
-              {i === 2 ? (
-                event ? (
-                  <Event />
-                ) : (
-                  <Category />
-                )
-              ) : i === 3 ? (
-                event ? (
-                  <Category />
-                ) : (
-                  <Target />
-                )
-              ) : (
-                <Target />
-              )}
-            </Col>
-          </Row>
-        );
-      })}
+  const GoalDate = () => {
+    return (
       <Row
-        id="add-goal-row"
-        className=""
-        style={{
-          display: state.category || state.type === "none" ? "flex" : "none",
-          opacity: state.category || state.type === "none" ? 1 : 0,
-        }}
+        id="goal-row-5"
+        style={{ display: "flex", opacity: 1, marginLeft: 0 }}
       >
-        <Col
-          xs={12}
-          className="d-flex justify-content-start align-items-center"
-        >
+        <Col xs={2} className="d-flex justify-content-start">
+          <h2 className="styled-title goal-number">5</h2>
+        </Col>
+        <Col className="d-flex align-items-center">
           <Button
-            variant="danger"
-            id="add-goal"
+            id="add-goal-date"
+            variant="outline-danger"
+            onClick={handleClick}
             name="add"
-            onClick={handleClick}
           >
-            <BsPlusLg size="0.8em" className="me-2" />{" "}
-            {state.category ? "Add" : "New"} Goal
+            <BsPlusLg /> Goal Date
           </Button>
-          <Button
-            variant="danger"
-            id="reset-goal"
-            name="reset"
-            className="ms-3"
-            onClick={handleClick}
-            style={{ display: state.category ? "inline-block" : "none" }}
+          <InputGroup
+            id="date-group"
+            style={{ display: state.date ? "" : "none" }}
           >
-            Reset
-          </Button>
+            <FloatingLabel label="Goal Date">
+              <Form.Control
+                id="goal-date"
+                type="date"
+                name="goal-date"
+                value={state.date}
+                onChange={handleSelect}
+              />
+            </FloatingLabel>
+          </InputGroup>
         </Col>
       </Row>
-    </Form>
+    );
+  };
+
+  return (
+    <>
+      <Form id="goal-form" onClick={handleClick} className="mb-3">
+        <Row id="goal-row-1" className=" ">
+          <Col xs={2} className="d-flex justify-content-start">
+            <h2 className="styled-title goal-number">1</h2>
+          </Col>
+          <Col xs={10} className="d-flex align-items-center">
+            <ButtonGroup
+              id="goal-type"
+              name="type"
+              className="w-25"
+              onClick={handleSelect}
+            >
+              {["overall", "race"].map((type, i) => {
+                return (
+                  <Button
+                    key={type}
+                    id={`goal-${type}`}
+                    value={type}
+                    variant="danger"
+                    type="radio"
+                    name="type"
+                    className={state.type === type ? "active" : ""}
+                  >
+                    {startCase(type)}
+                  </Button>
+                );
+              })}
+            </ButtonGroup>
+          </Col>
+        </Row>
+        {[2, 3, 4].map((i) => {
+          const race = state.type === "race";
+          return (
+            <Row key={i} id={`goal-row-${i}`} className=" ">
+              <Col xs={2} className="d-flex justify-content-start">
+                <h2 className="styled-title goal-number">{i}</h2>
+              </Col>
+              <Col xs={10}>
+                {i === 2 ? (
+                  race ? (
+                    <Race />
+                  ) : (
+                    <Category />
+                  )
+                ) : i === 3 ? (
+                  race ? (
+                    <Category />
+                  ) : (
+                    <Target />
+                  )
+                ) : i === 4 ? (
+                  race ? (
+                    <Target />
+                  ) : (
+                    <GoalDate />
+                  )
+                ) : (
+                  {
+                    /* <GoalDate /> */
+                  }
+                )}
+              </Col>
+            </Row>
+          );
+        })}
+        <GoalDate />
+        <Row
+          id="add-goal-row"
+          className=""
+          style={{
+            display: state.category || state.type === "none" ? "flex" : "none",
+            opacity: state.category || state.type === "none" ? 1 : 0,
+          }}
+        >
+          <Col
+            xs={12}
+            className="d-flex justify-content-start align-items-center"
+          >
+            <Button
+              variant="danger"
+              id="add-goal"
+              name="add"
+              onClick={handleClick}
+            >
+              <BsPlusLg size="0.8em" className="me-2" />{" "}
+              {state.category ? "Add" : "New"} Goal
+            </Button>
+            <Button
+              variant="danger"
+              id="reset-goal"
+              name="reset"
+              className="ms-3"
+              onClick={handleClick}
+              style={{ display: state.category ? "inline-block" : "none" }}
+            >
+              Reset
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+      {/* <div id="goal-table" className="mt-3" /> */}
+    </>
   );
 };
 

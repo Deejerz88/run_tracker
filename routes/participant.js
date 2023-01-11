@@ -107,54 +107,53 @@ router.get("/:type/:raceId", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  try {
-    mongoose.set("strictQuery", false);
-    mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    const update = req.body;
-    const raceUpdate = update.races[0];
-    const attendanceUpdate = raceUpdate.attendance[0];
-    console.log("raceUpdate", raceUpdate);
-    let doc = await Participant.findOne({ user_id: update.user_id });
-    console.log("doc", doc);
-    if (doc) {
-      const { races } = doc;
-      console.log("races", races);
-      let race = races.find((r) => r.id === raceUpdate.id);
-      console.log("race", race);
-      if (race) {
-        const { attendance } = race;
-        let attendanceInd = _.findIndex(
-          attendance,
-          (a) => a.date === attendanceUpdate.date
-        );
-        if (attendanceInd > -1) {
-          attendance[attendanceInd] = {
-            ...attendanceUpdate,
-            start: attendanceUpdate.start || attendance[attendanceInd].start,
-            finish: attendanceUpdate.finish || attendance[attendanceInd].finish,
-            checkedIn:
-              attendanceUpdate.checkedIn || attendance[attendanceInd].checkedIn,
-            checkedOut:
-              attendanceUpdate.checkedOut ||
-              attendance[attendanceInd].checkedOut,
-          };
-        } else attendance.push({ ...attendanceUpdate });
-      } else {
-        race = raceUpdate;
-        races.push(race);
-      }
+  mongoose.set("strictQuery", false);
+  mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const update = req.body;
+  const raceUpdate = update.races[0];
+  const attendanceUpdate = raceUpdate.attendance[0];
+  console.log("raceUpdate", raceUpdate);
+  let doc = await Participant.findOne({ user_id: update.user_id });
+  if (doc) {
+    update._id = doc._id;
+    const { races } = doc;
+    console.log("races", races);
+    let race = races.find((r) => r.id === raceUpdate.id);
+    console.log("race", race);
+    if (race) {
+      const { attendance } = race;
+      let attendanceInd = _.findIndex(
+        attendance,
+        (a) => a.date === attendanceUpdate.date
+      );
+      if (attendanceInd > -1) {
+        attendance[attendanceInd] = {
+          ...attendanceUpdate,
+          start: attendanceUpdate.start || attendance[attendanceInd].start,
+          finish: attendanceUpdate.finish || attendance[attendanceInd].finish,
+          checkedIn:
+            attendanceUpdate.checkedIn || attendance[attendanceInd].checkedIn,
+          checkedOut:
+            attendanceUpdate.checkedOut || attendance[attendanceInd].checkedOut,
+        };
+      } else attendance.push({ ...attendanceUpdate });
+      update.races = [...update.races, races];
     } else {
-      doc = new Participant(update);
+      race = raceUpdate;
+      races.push(race);
     }
-    await doc.save();
+    console.log("doc save", doc);
+    await doc.updateOne(update);
     console.log("update", update);
     res.json(update);
-  } catch (e) {
-    console.log("e", e);
-    res.json({ error: e });
+  } else {
+    doc = new Participant(update);
+    const newParticipant = await doc.save();
+    console.log("newParticipant", newParticipant);
+    res.json(newParticipant);
   }
 });
 export default router;
