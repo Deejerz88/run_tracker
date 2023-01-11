@@ -191,7 +191,7 @@ const Inputs = ({ state, setState, handleClose }) => {
                     </FloatingLabel>
                   </Col>
                 ))}
-                {state.duration.hours >= 1 && (
+                {state.duration?.hours >= 1 && (
                   <Form.Check
                     type="checkbox"
                     id={`acknowledged--${inOut}`}
@@ -242,8 +242,10 @@ const Inputs = ({ state, setState, handleClose }) => {
                                 step={type === "seconds" ? 5 : 1}
                                 value={
                                   type === "seconds"
-                                    ? Math.round(state[group][type]) || 0
-                                    : state[group][type] || 0
+                                    ? (state[group] &&
+                                        Math.round(state[group][type])) ||
+                                      0
+                                    : (state[group] && state[group][type]) || 0
                                 }
                                 onChange={(e) =>
                                   handleChange({ e, state, setState })
