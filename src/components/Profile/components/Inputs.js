@@ -10,7 +10,7 @@ import {
   FormLabel,
 } from "react-bootstrap";
 import { DateTime } from "luxon";
-import { startCase } from "lodash";
+import { startCase, isEqual } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
 import { AppContext } from "../../../App.js";
 import axios from "axios";
@@ -91,20 +91,12 @@ const Inputs = ({ state, setState, handleClose }) => {
         $(`.${name}`).toggleClass("hidden");
         setShowGroup({ ...showGroup, [name]: !showGroup[name] });
       }
-      if (!defaults.includes(name)) $("#default-fields").prop("checked", false);
     } else if (id === "default-fields") {
       console.log("default fields", e.target.checked);
       if (e.target.checked)
         setDefaults(Object.keys(showGroup).filter((g) => showGroup[g]));
     }
   };
-  useEffect(() => {
-    console.log("showGroup", showGroup);
-  }, [showGroup]);
-
-  useEffect(() => {
-    console.log("defaults", defaults);
-  }, [defaults]);
 
   return (
     <Form
@@ -309,7 +301,10 @@ const Inputs = ({ state, setState, handleClose }) => {
           id="default-fields"
           label="Default Fields"
           className="align-self-center "
-          defaultChecked="true"
+          checked={isEqual(
+            Object.keys(showGroup).filter((g) => showGroup[g]),
+            defaults
+          )}
           onChange={handleClick}
           inline
         />
