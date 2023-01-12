@@ -16,9 +16,13 @@ router.post("/", async (req, res) => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
+  //create feedback in db
   const feedback = new Feedback({ user_id, subject, message });
   await feedback.save();
+
   res.json(feedback);
+
+  //send email
   const replyTo = anonymous
     ? ""
     : `<p><b>From:</b> ${first_name} ${last_name}</p>

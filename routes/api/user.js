@@ -21,15 +21,12 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { first_name, last_name, email, phone, password, username } = req.body;
-  console.log("user", req.body);
-  console.log("email", email);
-  const user = await Participant.findOne({ email });
-  console.log("user", user);
+
+  let user = await Participant.findOne({ email });
   if (!user) return res.status(404).json({ error: "User not found" });
-  user.first_name = first_name;
-  user.last_name = last_name;
-  user.username = username;
-  user.phone = phone;
+
+  user = { ...user, first_name, last_name, phone, username, password };
+  
   if (password) {
     console.log("changing password", password);
     user.password = password;
@@ -43,12 +40,11 @@ router.post("/signup", async (req, res) => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
+
   let { username, email, password, races } = req.body;
-  console.log("races", races);
-  console.log("email", email, "password", password, "username", username);
   let user;
+
   user = await Participant.findOne({ email });
-  console.log("user", user);
   if (user) return res.status(409).json({ error: "User already exists" });
 
   let { data: clubParticipants } = await axios.get(
@@ -63,19 +59,15 @@ router.post("/signup", async (req, res) => {
     }
   );
 
-  // console.log("clubParticipants", clubParticipants.club_members[0]);
-  // return res.json(participants.club_members[0]);
   let participant =
     clubParticipants.club_members.find(
       (participant) => participant.user.email === email
     ) || {};
-  // console.log("participant", participant);
+  
   if (!participant.user) {
-    // let partnerParticipants = [];
     let promises = [];
     races?.forEach((race) => {
       const { id, type, eventIds } = race;
-      console.log("id", id, "type", type, "eventIds", eventIds);
       if (type === "club") return;
       const promise = new Promise(async (resolve, reject) => {
         try {
@@ -91,32 +83,31 @@ router.post("/signup", async (req, res) => {
               },
             }
           );
-
           resolve(data);
         } catch (err) {
           console.log("err", err);
           reject(err);
         }
       });
+
       promises.push(promise);
     });
-    console.log("promises", promises);
 
     let allParticipants = await Promise.all(promises);
 
     const eventParticipants = _.concat(
       allParticipants[0].map((event) => event.participants)
     );
-    console.log("eventParticipants", eventParticipants[0][0]);
 
     participant =
       eventParticipants[0].find((p) => p.user?.email === email) || {};
-    console.log("participant1", participant);
   }
+
   if (!participant.user)
     participant.user = { user_id: Math.floor(Math.random() * 1000000) };
-  console.log("participant2", participant);
+  
   let newUser = {};
+
   try {
     newUser = await Participant.create({
       ...participant.user,
@@ -128,7 +119,6 @@ router.post("/signup", async (req, res) => {
     console.log("err", err);
     return res.status(409).json({ error: "Username already in use" });
   }
-  console.log("newUser", newUser);
 
   req.session.save(() => {
     req.session.user = newUser;
@@ -139,12 +129,10 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  console.log("username", username, "password", password);
 
   const user = await Participant.findOne({
     username_lower: username.toLowerCase(),
   });
-  console.log("user", user);
 
   if (!user)
     return res
@@ -177,10 +165,8 @@ router.post("/logout", (req, res) => {
 
 router.post("/reset", async (req, res) => {
   const { email } = req.body;
-  console.log("email", email);
 
   const user = await Participant.findOne({ email_lower: email.toLowerCase() });
-  console.log("user", user);
 
   if (!user)
     return res
@@ -188,8 +174,6 @@ router.post("/reset", async (req, res) => {
       .json({ error: "No user with that email address exists" });
 
   const tempPW = Math.random().toString(36).slice(-8);
-
-  console.log("tempPW", tempPW);
 
   const msg = {
     to: email,

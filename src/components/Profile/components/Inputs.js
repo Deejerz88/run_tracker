@@ -38,18 +38,22 @@ const Inputs = ({ state, setState }) => {
 
   useEffect(() => {
     if (!races?.length > 1) return;
+    //change selected race when context changes
     setSelectedRace(Context.race.name ? Context.race : races[1]);
   }, [races, Context]);
 
   useEffect(() => {
+    //check if participant has checked in
     if (!selectedRace || !participant.races) return;
     const participantRace = participant.races?.find(
       (r) => r.id === selectedRace.id
     );
+
     if (!participantRace || !participantRace.attendance) return;
     const todaysEvent = participantRace.attendance.find(
       (a) => a.date === selectedDate
     );
+
     setCheckedIn(todaysEvent?.checkedIn || false);
   }, [participant.races, selectedDate, selectedRace]);
 
@@ -61,17 +65,21 @@ const Inputs = ({ state, setState }) => {
     e.stopPropagation();
     const { name, type, classList, id } = e.target;
     const expanded = e.target.getAttribute("aria-{expanded");
+
     if (e.target.type === "number") {
       e.target.select();
     } else if (type === "button" && expanded === "false") {
+      //toggle accordion
       setActiveKey(activeKey === "in" ? "out" : "in");
     } else if (classList.contains("add-group")) {
       if (name === "mileage" && showGroup.mileage) {
+        //hide all groups
         ["mileage", "pace", "duration"].forEach((group) =>
           $(`.${group}`).addClass("hidden")
         );
         setShowGroup({});
       } else {
+        //show group
         $(`.${name}`).toggleClass("hidden");
         setShowGroup({ ...showGroup, [name]: !showGroup[name] });
       }
@@ -118,8 +126,10 @@ const Inputs = ({ state, setState }) => {
                 })
               }
             >
-              {races?.map((race, i) => (
-                <option key={i}>{race.name}</option>
+              {races?.map((r, i) => (
+                <option key={i} value={r.name || ""} className={r}>
+                  {r.name}
+                </option>
               ))}
             </Form.Select>
           </FloatingLabel>
@@ -152,27 +162,37 @@ const Inputs = ({ state, setState }) => {
             <Accordion.Body>
               <Row>
                 {[
-                  { startfinish: "start", label: "Start Time" },
-                  { startfinish: "finish", label: "End Time" },
-                ].map(({ startfinish, label }) => (
-                  <Col xs={6} key={startfinish}>
-                    <FloatingLabel label={label}>
-                      <Form.Control
-                        id={`${startfinish}-time-${inOut}`}
-                        type="time"
-                        value={
-                          state[startfinish]
-                            ? DateTime.fromMillis(state[startfinish]).toFormat(
-                                "HH:mm"
-                              )
-                            : DateTime.now().toFormat("HH:mm")
-                        }
-                        onChange={(e) => handleChange({ e, state, setState })}
-                        name={inOut}
-                      />
-                    </FloatingLabel>
-                  </Col>
-                ))}
+                  { startFinish: "start", label: "Start Time" },
+                  { startFinish: "finish", label: "End Time" },
+                ].map(({ startFinish, label }) => {
+                  const now = DateTime.local();
+                  delete state.duration?._id;
+                  return (
+                    <Col xs={6} key={startFinish}>
+                      <FloatingLabel label={label}>
+                        <Form.Control
+                          id={`${startFinish}-time-${inOut}`}
+                          type="time"
+                          value={
+                            state[startFinish]
+                              ? DateTime.fromMillis(
+                                  state[startFinish]
+                                ).toFormat("HH:mm")
+                              : startFinish === "finish"
+                              ? DateTime.fromMillis(
+                                  state.start || now.toMillis()
+                                )
+                                  .plus(state.duration || { minutes: 30 })
+                                  .toFormat("HH:mm")
+                              : now.toFormat("HH:mm")
+                          }
+                          onChange={(e) => handleChange({ e, state, setState })}
+                          name={inOut}
+                        />
+                      </FloatingLabel>
+                    </Col>
+                  );
+                })}
                 {state.duration?.hours >= 1 && (
                   <Form.Check
                     type="checkbox"

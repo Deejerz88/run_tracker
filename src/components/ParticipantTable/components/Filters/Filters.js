@@ -24,6 +24,7 @@ const Filters = ({ races }) => {
     e.preventDefault();
     const table = Tabulator.findTable("#participant-table")[0];
     const { id, name, value, selectedOptions } = e.target;
+
     if (id === "name-filter") {
       setName(value);
     } else if (name === "checkedIn") {
@@ -34,6 +35,7 @@ const Filters = ({ races }) => {
       const [raceId, type] = value.split("-");
       const eventIds = selectedOptions[0].dataset.eventids;
       const raceName = selectedOptions[0].innerText;
+
       setContext((prev) => ({
         ...prev,
         race: { id: Number(raceId), name: raceName, type, eventIds },
@@ -46,6 +48,9 @@ const Filters = ({ races }) => {
 
   useEffect(() => {
     const { race } = Context;
+    console.log('races', races)
+    if (!races)
+    //change race input when context changes
     document.getElementById("race-select").options.selectedIndex =
       races?.findIndex((r) => r.id === race.id);
   }, [Context, races]);
@@ -57,10 +62,13 @@ const Filters = ({ races }) => {
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
+
     const tableFilters = table.getFilters();
     const filterInd = tableFilters.findIndex((f) => f.value === "name");
+
     if (name) {
       if (filterInd > -1) {
+        //update existing filter
         const filter = tableFilters[filterInd];
         filter.field = (row) => {
           return nameFilter({ data: row, name });
@@ -68,6 +76,7 @@ const Filters = ({ races }) => {
         tableFilters[filterInd] = filter;
         table.setFilter(tableFilters);
       } else {
+        //add new filter
         table.addFilter(
           (row) => {
             return nameFilter({ data: row, name });
@@ -77,6 +86,7 @@ const Filters = ({ races }) => {
         );
       }
     } else {
+      //remove filter
       tableFilters.splice(filterInd, 1);
       table.setFilter(tableFilters);
     }
@@ -85,6 +95,7 @@ const Filters = ({ races }) => {
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
+
     if (checkedIn) {
       table.addFilter("checkedIn", "=", true);
       setCheckedOut(false);
@@ -94,6 +105,7 @@ const Filters = ({ races }) => {
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
+
     if (checkedOut) {
       table.addFilter("checkedOut", "=", true);
       setCheckedIn(false);
@@ -110,7 +122,7 @@ const Filters = ({ races }) => {
               aria-label="race-select"
               onChange={handleChange}
             >
-              {races?.map((r) => (
+              {races && races.map((r) => (
                 <option
                   key={r.id}
                   value={`${r.id}-${r.type}`}

@@ -29,6 +29,7 @@ const ParticipantTable = () => {
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
+    console.log('data', data)
     return data;
   };
 
@@ -38,6 +39,7 @@ const ParticipantTable = () => {
   };
 
   const checkInOutFormatter = (cell) => {
+    //get component html
     const value = cell.getValue();
     return value
       ? renderToString(
@@ -47,10 +49,13 @@ const ParticipantTable = () => {
   };
 
   const checkInOutMutator = (value, data, type, params, component) => {
+    //check if participant checked in / returns true or false
     const field = component?.getField() || params?.field;
+    //search for selected race & date
     const selectedRace = $(`#race-select option:selected`).text();
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
     const selectedDate = $(`#race-date`).val();
+    //check if attendance exists for race & date
     const bool = _.find(
       thisRace.attendance,
       (a) => a.date === selectedDate
@@ -61,27 +66,23 @@ const ParticipantTable = () => {
   };
 
   const startFinishMutator = (value, data, type, mutatorParams, component) => {
+    //get start or finish time
     const field = component.getField();
-
+    //search for selected race & date
     const selectedRace = $(`#race-select option:selected`).text();
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
     if (!thisRace.attendance) return;
+
     const selectedDate = $(`#race-date`).val();
     const update = _.find(thisRace.attendance, (a) => a.date === selectedDate);
+
     if (!update || !update[field]) return;
+
     return DateTime.fromMillis(update[field]).toFormat("hh:mm a");
   };
 
-  useEffect(() => {
-    const { race } = Context;
-    const table = Tabulator.findTable("#participant-table")[0];
-    if (!table || !race.name) return;
-    table.setData(
-      `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
-    );
-  }, [Context]);
-
   const startFinishFormatter = (cell) => {
+    //italics if checked in & not checked out / bold if checked in & checked out
     const value = cell.getValue() || "";
     const data = cell.getRow().getData();
     const { checkedOut, checkedIn } = data;
@@ -89,15 +90,31 @@ const ParticipantTable = () => {
   };
 
   useEffect(() => {
+    //set table data when race context changes
+    const { race } = Context;
+    const table = Tabulator.findTable("#participant-table")[0];
+    if (!table || !race || !race.name) return;
+
+    table.setData(
+      `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
+    );
+  }, [Context]);
+
+  useEffect(() => {
+    //set race options, default race, and context
     getRaces().then((data) => {
+      console.log("races", data);
       setRaces(data);
       setContext((prevcContext) => ({
         ...prevcContext,
         race: Context.race.name ? Context.race : data[0],
       }));
     });
+
+    //create participant table
     const table = new Tabulator("#participant-table", {
       ajaxResponse: async (url, params, response) => {
+        //add participant data from db to response
         const participants = await getParticipants();
         let updated = response.map((d) => {
           let participant = _.find(
@@ -111,11 +128,9 @@ const ParticipantTable = () => {
       layout: "fitColumns",
       placeholder: "No Participants",
       responsiveLayout: "hide",
-      // footerElement: "<div id='footer' class='tabulator-footer'></div>",
       height: "100%",
       pagination: true,
       paginationSize: 25,
-      // paginationSizeSelector: [25, 50, 100],
       columnDefaults: {
         resizable: false,
       },
@@ -133,14 +148,14 @@ const ParticipantTable = () => {
           title: "First",
           field: "first_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
-          // responsive: 0,
+          responsive: 0,
           minWidth: 100,
         },
         {
           title: "Last",
           field: "last_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
-          // responsive: 0,
+          responsive: 0,
           minWidth: 100,
         },
         {
@@ -213,8 +228,6 @@ const ParticipantTable = () => {
     });
     table.on("rowClick", (e, row) => {
       console.log("rowClick", row);
-      // setParticipant(row.getData());
-      // setShowCheck(true);
       setContext((prevcContext) => ({
         ...prevcContext,
         participant: row.getData(),
@@ -241,10 +254,7 @@ const ParticipantTable = () => {
         }
       });
     });
-    table.on("renderComplete", () => {
-      //check if on mobile deice
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

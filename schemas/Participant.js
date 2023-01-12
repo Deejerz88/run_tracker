@@ -83,13 +83,16 @@ const participantSchema = new Schema(
 );
 
 raceSchema.pre("save", function (next) {
-  // try {
+  //calculate totals
   this.totalAttendance = this.attendance.length;
+
   this.totalMileage = _.sumBy(this.attendance, "mileage");
+
   const durationMinutes = _.sumBy(this.attendance, (a) => {
     const { hours, minutes, seconds } = a.duration;
     return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
   });
+
   this.avgMileage = this.totalMileage / this.totalAttendance;
 
   if (durationMinutes) {
@@ -109,23 +112,34 @@ raceSchema.pre("save", function (next) {
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
   }
+
   next();
 });
 
 participantSchema.pre("save", function (next) {
+
+  //update password hash
   if (this.isModified("password"))
     this.password = bcrypt.hashSync(this.password, 10);
+  
+  //update username_lower and email_lower for queries
   this.username_lower = this.username?.toLowerCase() || "";
   this.email_lower = this.email?.toLowerCase() || "";
+
+  //calculate totals
   this.avgMileage = this.totalMileage / this.totalAttendance;
-  if (this.races?.length) {
+
+  if (this.races && this.races.length) {
     this.totalAttendance = _.sumBy(this.races, "totalAttendance");
+
     this.totalMileage = _.sumBy(this.races, "totalMileage");
+
     const durationMinutes = _.sumBy(this.races, (r) => {
       if (!r.totalDuration) return 0;
       const { hours, minutes, seconds } = r.totalDuration;
       return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
     });
+
     if (durationMinutes) {
       this.avgPace = Duration.fromObject({
         minutes: durationMinutes / this.totalMileage,
@@ -144,6 +158,7 @@ participantSchema.pre("save", function (next) {
         .toObject();
     }
   }
+
   next();
 });
 

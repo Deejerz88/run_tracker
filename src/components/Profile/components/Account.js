@@ -41,11 +41,14 @@ const Account = () => {
     let { id, value } = e.target;
     let key = id.replace(/ /g, "_");
     key = key.toLowerCase();
+
     if (id === "phone") {
+      //format phone number
       value = value.replace(/(\D|-|\(|\))/g, "");
       const formatted = value.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
       e.target.value = formatted;
     } else if (id === "change_password") {
+      //show confirm password field
       value
         ? $(".confirm_password").css({ display: "flex" })
         : $(".confirm_password").css({ display: "none" });
@@ -140,17 +143,20 @@ const Account = () => {
   useEffect(() => {
     const { subject, message } = feedbackData;
     if (subject && message) {
+      //show submit button
       $("#submit-feedback-row").css({ display: "flex" });
     } else {
+      //hide submit button
       $("#submit-feedback-row").hide();
     }
   }, [feedbackData]);
 
   useEffect(() => {
     if (!isEqual(formData, originalData)) {
+      //changed
       $("#submit-row").css({ display: "flex" });
     } else {
-      console.log("not changed");
+      //not changed
       $("#submit-row").hide();
     }
   }, [formData, originalData]);
@@ -169,6 +175,7 @@ const Account = () => {
           "change_password",
           "confirm_password",
         ].map((field) => {
+          //set input type
           const type = field.includes("password")
             ? "password"
             : field === "phone"

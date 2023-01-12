@@ -28,6 +28,8 @@ const Login = ({ show, setShow, races }) => {
 
   const handleClick = (e) => {
     const { id } = e.target;
+
+    //form animations
     switch (id) {
       case "signup-switch":
         const { checked } = e.target;
@@ -98,6 +100,7 @@ const Login = ({ show, setShow, races }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { username, password, email, action } = state;
+
     if (action === "Recover Account") {
       try {
         await axios.post("api/user/reset", { email });
@@ -116,10 +119,13 @@ const Login = ({ show, setShow, races }) => {
         });
       }
     } else {
+      //check if user is signing up or logging in
       const signup = $("#signup-switch").prop("checked");
       const stayLoggedIn = $("#stay-logged-in").prop("checked");
       let res;
+
       try {
+        //either signup or login
         res = signup
           ? await axios.post("api/user/signup", {
               email,
@@ -144,13 +150,17 @@ const Login = ({ show, setShow, races }) => {
         });
         return;
       }
+
       const { user } = res.data;
+
       setContext((prev) => ({
         ...prev,
         stayLoggedIn: stayLoggedIn.toString(),
         user,
         loggedIn: "true",
       }));
+
+      //store user in local or session storage
       if (stayLoggedIn) {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("loggedIn", "true");
@@ -160,6 +170,7 @@ const Login = ({ show, setShow, races }) => {
         sessionStorage.setItem("loggedIn", "true");
         sessionStorage.setItem("stayLoggedIn", "false");
       }
+
       const message = user.first_name
         ? `${user.first_name} ${user.last_name} logged in`
         : `${user.username} logged in`;
@@ -169,6 +180,7 @@ const Login = ({ show, setShow, races }) => {
         transition: Flip,
       });
     }
+
     handleClose();
   };
 
@@ -252,7 +264,6 @@ const Login = ({ show, setShow, races }) => {
                 inline
               />
             </Col>
-            {/* <Col className="d-flex align-items-center"></Col> */}
           </Row>
         </Form>
       </Modal.Body>

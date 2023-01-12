@@ -10,15 +10,20 @@ const History = () => {
   useEffect(() => {
     const getHistory = async (table) => {
       if (!participant) return;
+
       const { user_id } = participant;
       const { data } = await axios.get(`/participant/${user_id}`);
       if (!data) return;
+
       const { races } = data;
       if (!data.user_id || !races?.length) return;
+
       const history = [];
+
       races?.forEach((race) => {
         const { attendance, id } = race;
         if (!attendance) return;
+        
         attendance.forEach((a) => {
           let { date, mileage, pace, duration } = a;
           date = DateTime.fromISO(date).toFormat("MM/dd/yyyy");

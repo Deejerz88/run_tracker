@@ -20,7 +20,7 @@ import {
 } from "react-icons/bs/index.esm.js";
 import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
 import { MdManageAccounts } from "react-icons/md/index.esm.js";
-// import $ from "jquery";
+import { DateTime } from "luxon";
 
 const Profile = () => {
   const [state, setState] = useState({
@@ -39,12 +39,13 @@ const Profile = () => {
   });
 
   const [Context, setContext] = useContext(AppContext);
-  let { user, participant, race, date } = Context;
+  let { user, participant } = Context;
   console.log("Profile Context", Context);
 
   const navigate = useNavigate();
 
   if (!participant.user_id) {
+    //get participant if not in context
     const user_id = Number(window.location.pathname.split("/")[2]);
     (async () => {
       const { data } = await axios.get(`/participant/${user_id}`);
@@ -54,9 +55,8 @@ const Profile = () => {
   }
 
   const handleClick = (e) => {
-    let { id } = e.target;
-    const card = e.target.closest(".card");
-    id = card.id;
+    const card = e.target.id.closest(".card");
+    const { id } = card;
     if (id === "phone-card") {
       const phone = participant.phone;
       if (phone) {
@@ -71,12 +71,31 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    const { race, date } = Context;
+    console.log("race", race);
+    const selectedRace = document.getElementById('checkin-race')
+    console.log("selectedRace", selectedRace);
+    if (!race.id) {
+      setContext((prev) => ({
+        ...prev,
+        race: { id: 2190, name: "Team Playmakers", type: "club" },
+      }))
+    }
     if (!participant.user_id || !race.id) return;
     if (race.name === "Team Playmakers") {
+      //set default start times
+      const { weekdayLong } = DateTime.local();
+      const startTime = weekdayLong === "Saturday" ? 8 : 18;
+      setState((prev) => ({
+        ...prev,
+        start: DateTime.local().set({ hour: startTime, minute: 0 }).toMillis(),
+      }));
     }
     const thisRace = participant.races?.find((r) => r?.id === race.id);
+    console.log("thisRace", thisRace);
     if (!thisRace) {
       if (!participant.avgMileage) return;
+
       setState({
         mileage: participant.avgMileage,
         pace: participant.avgPace,
@@ -88,13 +107,22 @@ const Profile = () => {
     }
 
     const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
-
+    console.log("todaysAttendance", todaysAttendance);
     if (!todaysAttendance) {
+      let start = null;
+      console.log("no attendance", race);
+      if (race.name === "Team Playmakers") {
+        //set default start times
+        const { weekdayLong } = DateTime.local();
+        const startTime = weekdayLong === "Saturday" ? 8 : 18;
+        console.log("weekdayLong", weekdayLong, "startTime", startTime);
+        start = DateTime.local().set({ hour: startTime, minute: 0 }).toMillis();
+      }
       setState({
         mileage: thisRace.avgMileage,
         pace: thisRace.avgPace,
         duration: thisRace.avgDuration,
-        start: null,
+        start,
         finish: null,
       });
       return;
@@ -112,8 +140,7 @@ const Profile = () => {
       start,
       finish,
     });
-  }, [participant, race, date]);
-
+  }, [participant, Context, setContext]);
 
   return (
     <>
@@ -134,7 +161,7 @@ const Profile = () => {
               className="d-flex align-items-center justify-content-center"
               onClick={() => {
                 console.log("redirecting to home");
-               navigate("/")
+                navigate("/");
               }}
               id="home-col"
             >
