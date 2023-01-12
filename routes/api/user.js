@@ -25,7 +25,12 @@ router.post("/", async (req, res) => {
   let user = await Participant.findOne({ email });
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  user = { ...user, first_name, last_name, phone, username, password };
+  user.first_name = first_name;
+  user.last_name = last_name;
+  user.phone = phone;
+  user.username = username;
+  user.password = password;
+
   
   if (password) {
     console.log("changing password", password);

@@ -119,7 +119,7 @@ raceSchema.pre("save", function (next) {
 participantSchema.pre("save", function (next) {
 
   //update password hash
-  if (this.isModified("password"))
+  if (this.password && this.isModified("password"))
     this.password = bcrypt.hashSync(this.password, 10);
   
   //update username_lower and email_lower for queries

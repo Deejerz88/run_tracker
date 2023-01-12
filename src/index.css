@@ -3,8 +3,8 @@ body {
   font-family: "Roboto Slab", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: url("/public/assets/images/background.webp") repeat;
-  background-size: 100%;
+  background: url("/public/assets/images/background.webp") fixed repeat;
+  background-size: cover;
 }
 
 code {
