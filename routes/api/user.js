@@ -31,7 +31,6 @@ router.post("/", async (req, res) => {
   user.username = username;
   user.password = password;
 
-  
   if (password) {
     console.log("changing password", password);
     user.password = password;
@@ -68,7 +67,7 @@ router.post("/signup", async (req, res) => {
     clubParticipants.club_members.find(
       (participant) => participant.user.email === email
     ) || {};
-  
+
   if (!participant.user) {
     let promises = [];
     races?.forEach((race) => {
@@ -110,7 +109,7 @@ router.post("/signup", async (req, res) => {
 
   if (!participant.user)
     participant.user = { user_id: Math.floor(Math.random() * 1000000) };
-  
+
   let newUser = {};
 
   try {
@@ -134,28 +133,32 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  try {
+    const user = await Participant.findOne({
+      username_lower: username.toLowerCase(),
+    });
 
-  const user = await Participant.findOne({
-    username_lower: username.toLowerCase(),
-  });
+    if (!user)
+      return res
+        .status(401)
+        .json({ error: "Incorrect username or password. Please try again!" });
 
-  if (!user)
-    return res
-      .status(401)
-      .json({ error: "Incorrect username or password. Please try again!" });
+    const validPassword = Participant.checkPassword(password, user.password);
 
-  const validPassword = Participant.checkPassword(password, user.password);
+    if (!validPassword)
+      return res
+        .status(401)
+        .json({ error: "Incorrect username or password. Please try again!" });
 
-  if (!validPassword)
-    return res
-      .status(401)
-      .json({ error: "Incorrect username or password. Please try again!" });
-
-  req.session.save(() => {
-    req.session.user = user;
-    req.session.loggedIn = true;
-    res.json({ user, message: "You are now logged in!" });
-  });
+    req.session.save(() => {
+      req.session.user = user;
+      req.session.loggedIn = true;
+      res.json({ user, message: "You are now logged in!" });
+    });
+  } catch (err) {
+    console.log("err", err);
+    res.status(500).json(err);
+  }
 });
 
 router.post("/logout", (req, res) => {
