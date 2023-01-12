@@ -19,7 +19,7 @@ const handleChange = ({
   console.log("value", value);
   if (group === "checkin") {
     if (type === "race") {
-      const race = races.find((r) => r.name === value);
+      const race = races?.find((r) => r.name === value);
       setContext((prevState) => ({
         ...prevState,
         race,

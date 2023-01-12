@@ -74,7 +74,7 @@ const Profile = () => {
     if (!participant.user_id || !race.id) return;
     if (race.name === "Team Playmakers") {
     }
-    const thisRace = participant.races.find((r) => r?.id === race.id);
+    const thisRace = participant.races?.find((r) => r?.id === race.id);
     if (!thisRace) {
       if (!participant.avgMileage) return;
       setState({

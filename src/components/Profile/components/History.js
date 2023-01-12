@@ -14,9 +14,9 @@ const History = () => {
       const { data } = await axios.get(`/participant/${user_id}`);
       if (!data) return;
       const { races } = data;
-      if (!data.user_id || !races.length) return;
+      if (!data.user_id || !races?.length) return;
       const history = [];
-      races.forEach((race) => {
+      races?.forEach((race) => {
         const { attendance, id } = race;
         if (!attendance) return;
         attendance.forEach((a) => {
@@ -53,6 +53,7 @@ const History = () => {
         return value + " (" + count + " attended)";
       },
       columnCalcs: "group",
+      columnDefaults: {},
       columns: [
         {
           title: "ID",
@@ -79,6 +80,8 @@ const History = () => {
             return `${total.toFixed(1)}<br/>${avg?.toFixed(1) || null}`;
           },
           bottomCalcFormatter: "html",
+          editable: true,
+          editor: "number",
         },
         {
           title: "Pace",
@@ -128,6 +131,7 @@ const History = () => {
     table.on("tableBuilt", () => {
       getHistory(table);
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -47,7 +47,7 @@ const Filters = ({ races }) => {
   useEffect(() => {
     const { race } = Context;
     document.getElementById("race-select").options.selectedIndex =
-      races.findIndex((r) => r.id === race.id);
+      races?.findIndex((r) => r.id === race.id);
   }, [Context, races]);
 
   const nameFilter = ({ data, name }) => {
@@ -80,7 +80,6 @@ const Filters = ({ races }) => {
       tableFilters.splice(filterInd, 1);
       table.setFilter(tableFilters);
     }
-
   }, [name]);
 
   useEffect(() => {
@@ -111,7 +110,7 @@ const Filters = ({ races }) => {
               aria-label="race-select"
               onChange={handleChange}
             >
-              {races.map((r) => (
+              {races?.map((r) => (
                 <option
                   key={r.id}
                   value={`${r.id}-${r.type}`}

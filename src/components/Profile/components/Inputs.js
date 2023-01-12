@@ -37,13 +37,13 @@ const Inputs = ({ state, setState }) => {
   }, []);
 
   useEffect(() => {
-    if (!races.length > 1) return;
+    if (!races?.length > 1) return;
     setSelectedRace(Context.race.name ? Context.race : races[1]);
   }, [races, Context]);
 
   useEffect(() => {
     if (!selectedRace || !participant.races) return;
-    const participantRace = participant.races.find(
+    const participantRace = participant.races?.find(
       (r) => r.id === selectedRace.id
     );
     if (!participantRace || !participantRace.attendance) return;
@@ -118,7 +118,7 @@ const Inputs = ({ state, setState }) => {
                 })
               }
             >
-              {races.map((race, i) => (
+              {races?.map((race, i) => (
                 <option key={i}>{race.name}</option>
               ))}
             </Form.Select>

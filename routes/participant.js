@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
     update._id = doc._id;
     const { races } = doc;
     console.log("races", races);
-    let race = races.find((r) => r.id === raceUpdate.id);
+    let race = races?.find((r) => r.id === raceUpdate.id);
     console.log("race", race);
     if (race) {
       const { attendance } = race;
@@ -143,7 +143,7 @@ router.post("/", async (req, res) => {
       update.races = [...update.races, races];
     } else {
       race = raceUpdate;
-      races.push(race);
+      races?.push(race);
     }
     console.log("doc save", doc);
     await doc.updateOne(update);

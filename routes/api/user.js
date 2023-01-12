@@ -73,7 +73,7 @@ router.post("/signup", async (req, res) => {
   if (!participant.user) {
     // let partnerParticipants = [];
     let promises = [];
-    races.forEach((race) => {
+    races?.forEach((race) => {
       const { id, type, eventIds } = race;
       console.log("id", id, "type", type, "eventIds", eventIds);
       if (type === "club") return;

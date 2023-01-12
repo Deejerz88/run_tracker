@@ -118,7 +118,7 @@ participantSchema.pre("save", function (next) {
   this.username_lower = this.username?.toLowerCase() || "";
   this.email_lower = this.email?.toLowerCase() || "";
   this.avgMileage = this.totalMileage / this.totalAttendance;
-  if (this.races.length) {
+  if (this.races?.length) {
     this.totalAttendance = _.sumBy(this.races, "totalAttendance");
     this.totalMileage = _.sumBy(this.races, "totalMileage");
     const durationMinutes = _.sumBy(this.races, (r) => {
