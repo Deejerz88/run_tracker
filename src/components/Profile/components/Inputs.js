@@ -219,7 +219,7 @@ const Inputs = ({ state, setState }) => {
                           id={`mileage-target-${inOut}`}
                           type="number"
                           step={0.1}
-                          value={state.mileage?.toFixed(1) || 3}
+                          value={state.mileage || 3}
                           onChange={(e) => handleChange({ e, state, setState })}
                           name={inOut}
                         />
