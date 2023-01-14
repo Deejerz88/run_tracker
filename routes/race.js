@@ -5,7 +5,6 @@ import "dotenv/config";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-
   const { data } = await axios.get(`https://runsignup.com/rest/races`, {
     params: {
       api_key: process.env.RSU_KEY,
@@ -26,7 +25,11 @@ router.get("/", async (req, res) => {
     };
   });
 
-  races?.unshift({ id: 2190, name: "Team Playmakers", type: "club" });
+  races?.unshift(
+    { id: 2190, name: "Team Playmakers", type: "club" },
+    
+  );
+
   res.json(races);
 });
 

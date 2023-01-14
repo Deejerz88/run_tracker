@@ -78,6 +78,21 @@ router.get("/:type/:raceId", async (req, res) => {
     },
   });
 
+  if (raceId === "2190") {
+    const { data: triData } = await axios.get(
+      "https://runsignup.com/rest/club/1131/members",
+      {
+        params: {
+          api_key: process.env.RSU_KEY,
+          api_secret: process.env.RSU_SECRET,
+          format: "json",
+          results_per_page: 2500,
+        },
+      }
+    );
+    data = { ...data, club_members: triData.club_members };
+  }
+
   mp = type === "race" ? mp : "club_members";
 
   let participants = [];
