@@ -6,7 +6,7 @@ import {
   History,
   Contact,
   Account,
-  // Goals,
+  Goals,
 } from "./components/index.js";
 import "./style.css";
 import { AppContext } from "../../App.js";
@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BsCheck2All,
   BsCalendar2Week,
-  // BsTrophy,
+  BsTrophy,
 } from "react-icons/bs/index.esm.js";
 import { TbDeviceWatchStats } from "react-icons/tb/index.esm.js";
 import { MdManageAccounts } from "react-icons/md/index.esm.js";

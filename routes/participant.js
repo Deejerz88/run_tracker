@@ -3,7 +3,6 @@ import axios from "axios";
 import mongoose from "mongoose";
 import { Participant } from "../schemas/index.js";
 import "dotenv/config";
-import _ from "lodash";
 
 const router = express.Router();
 

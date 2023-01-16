@@ -80,7 +80,7 @@ const Goals = () => {
     $("#goal-form").height($("#goal-form").height() + size);
   };
 
-  const handleSelect = (e) => {
+  const handleChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
     switch (name) {
@@ -102,12 +102,13 @@ const Goals = () => {
           [name]: value,
         }));
         if (!state.race) {
+          //overall
           showRow(3);
         } else if (name !== "race") {
           if (value === "Finish") {
-            hideRow(4);
+            hideRow([4, 5]);
           } else {
-            showRow(4);
+            showRow([4, 5]);
           }
         }
         break;
@@ -156,7 +157,8 @@ const Goals = () => {
         }, 0);
       }
     } else if (id === "add-goal-date") {
-      $(e.target).hide();
+      console.log(e.target);
+      $(e.target).toggle();
       setState((prevState) => ({
         ...prevState,
         date: DateTime.local().toISODate(),
@@ -198,7 +200,7 @@ const Goals = () => {
             id="goal-race"
             name="race"
             value={state.race}
-            onChange={handleSelect}
+            onChange={handleChange}
           >
             {raceList.map((race, i) => (
               <option key={i}>{race.name}</option>
@@ -217,7 +219,7 @@ const Goals = () => {
             id="goal-category"
             name="category"
             value={state.category}
-            onChange={handleSelect}
+            onChange={handleChange}
           >
             {["", "Mileage", "Average Pace", "Duration", "Finish"].map(
               (category) => {
@@ -240,7 +242,7 @@ const Goals = () => {
           type="number"
           name="target"
           value={state.mileage}
-          onChange={handleSelect}
+          onChange={handleChange}
           className=""
         />
       </FloatingLabel>
@@ -321,19 +323,19 @@ const Goals = () => {
             onClick={handleClick}
             name="add"
           >
-            <BsPlusLg /> Goal Date
+            <BsPlusLg /> Complete By
           </Button>
           <InputGroup
             id="date-group"
-            style={{ display: state.date ? "" : "none" }}
+            // style={{ display: state.date ? "" : "none" }}
           >
-            <FloatingLabel label="Goal Date">
+            <FloatingLabel label="Complete By">
               <Form.Control
                 id="goal-date"
                 type="date"
                 name="goal-date"
                 value={state.date}
-                onChange={handleSelect}
+                onChange={handleChange}
               />
             </FloatingLabel>
           </InputGroup>
@@ -354,7 +356,7 @@ const Goals = () => {
               id="goal-type"
               name="type"
               className="w-25"
-              onClick={handleSelect}
+              onClick={handleChange}
             >
               {["overall", "race"].map((type, i) => {
                 return (
@@ -401,9 +403,7 @@ const Goals = () => {
                     <GoalDate />
                   )
                 ) : (
-                  {
-                    /* <GoalDate /> */
-                  }
+                  <GoalDate />
                 )}
               </Col>
             </Row>
@@ -444,7 +444,7 @@ const Goals = () => {
           </Col>
         </Row>
       </Form>
-      {/* <div id="goal-table" className="mt-3" /> */}
+      <div id="goal-table" className="mt-5" />
     </>
   );
 };
