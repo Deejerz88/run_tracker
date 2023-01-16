@@ -11,6 +11,8 @@ import $ from "jquery";
 import {
   BsFillCheckCircleFill,
   BsXCircleFill,
+  BsFillPlusCircleFill,
+  BsFillDashCircleFill,
 } from "react-icons/bs/index.esm.js";
 import { Button } from "react-bootstrap";
 import { AppContext } from "../../App.js";
@@ -22,6 +24,8 @@ const ParticipantTable = () => {
   const [races, setRaces] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [Context, setContext] = useContext(AppContext);
+  const [showCollapse, setShowCollapse] = useState(false);
+
   const { user } = Context;
   const navigate = useNavigate();
 
@@ -86,7 +90,11 @@ const ParticipantTable = () => {
     const value = cell.getValue() || "";
     const data = cell.getRow().getData();
     const { checkedOut, checkedIn } = data;
-    return checkedOut && checkedIn ? `<b>${value}</b>` : value ?  `<em>${value}</em>` : '';
+    return checkedOut && checkedIn
+      ? `<b>${value}</b>`
+      : value
+      ? `<em>${value}</em>`
+      : "";
   };
 
   useEffect(() => {
@@ -128,12 +136,12 @@ const ParticipantTable = () => {
       layout: "fitColumns",
       placeholder: "No Participants",
       responsiveLayout: "collapse",
-      responsiveLayoutCollapseStartOpen: true,
+      responsiveLayoutCollapseStartOpen: false,
       responsiveLayoutCollapseFormatter: (data) => {
         let div = document.createElement("div");
-        div.style.display = 'flex';
+        div.style.display = "flex";
         data.forEach((col) => {
-          console.log('col value',  typeof col.value)
+          console.log("col value", typeof col.value);
           div.innerHTML += col.value
             ? `<div class='col'><b>${col.title}:</b> ${col.value} </div>`
             : `<div class='col'><b>No ${col.title}</b></div> `;
@@ -156,7 +164,26 @@ const ParticipantTable = () => {
       index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: false },
-        { formatter: "responsiveCollapse", headerSort: false, maxWidth: 30 },
+        {
+          formatter: "responsiveCollapse",
+          headerSort: false,
+          maxWidth: 45,
+          titleFormatter: (column) => {
+            return renderToString(
+              showCollapse ? <BsFillDashCircleFill /> : <BsFillPlusCircleFill />
+            );
+          },
+          titleFormatterParams: {
+            showCollapse,
+          },
+          headerClick: (e, column) => {
+            $(".tabulator-responsive-collapse-toggle").each((i, el) =>
+              el.click()
+            );
+            setShowCollapse(!showCollapse);
+            table.redraw(true);
+          },
+        },
         {
           title: "Name",
           field: "name",
