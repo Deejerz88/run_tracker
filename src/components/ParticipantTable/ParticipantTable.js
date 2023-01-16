@@ -164,7 +164,7 @@ const ParticipantTable = () => {
           mutator: (value, data) => {
             return `${data.first_name} ${data.last_name}`;
           },
-          minWidth: 200,
+          minWidth: 160,
           widthGrow: 2,
         },
         {
