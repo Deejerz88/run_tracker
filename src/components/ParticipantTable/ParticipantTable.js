@@ -29,7 +29,7 @@ const ParticipantTable = () => {
 
   const getRaces = async () => {
     const { data } = await axios.get("/race");
-    console.log('data', data)
+    console.log("data", data);
     return data;
   };
 
@@ -86,7 +86,7 @@ const ParticipantTable = () => {
     const value = cell.getValue() || "";
     const data = cell.getRow().getData();
     const { checkedOut, checkedIn } = data;
-    return checkedOut && checkedIn ? `<b>${value}</b>` : `<em>${value}</em>`;
+    return checkedOut && checkedIn ? `<b>${value}</b>` : value ?  `<em>${value}</em>` : '';
   };
 
   useEffect(() => {
@@ -127,7 +127,19 @@ const ParticipantTable = () => {
       },
       layout: "fitColumns",
       placeholder: "No Participants",
-      responsiveLayout: "hide",
+      responsiveLayout: "collapse",
+      responsiveLayoutCollapseStartOpen: true,
+      responsiveLayoutCollapseFormatter: (data) => {
+        let div = document.createElement("div");
+        div.style.display = 'flex';
+        data.forEach((col) => {
+          console.log('col value',  typeof col.value)
+          div.innerHTML += col.value
+            ? `<div class='col'><b>${col.title}:</b> ${col.value} </div>`
+            : `<div class='col'><b>No ${col.title}</b></div> `;
+        });
+        return div;
+      },
       height: "100%",
       pagination: true,
       paginationSize: 25,
@@ -144,12 +156,24 @@ const ParticipantTable = () => {
       index: "user_id",
       columns: [
         { title: "ID", field: "user_id", visible: false },
+        { formatter: "responsiveCollapse", headerSort: false, maxWidth: 30 },
+        {
+          title: "Name",
+          field: "name",
+          visible: true,
+          mutator: (value, data) => {
+            return `${data.first_name} ${data.last_name}`;
+          },
+          minWidth: 200,
+          widthGrow: 5,
+        },
         {
           title: "First",
           field: "first_name",
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
           responsive: 0,
           minWidth: 100,
+          visible: false,
         },
         {
           title: "Last",
@@ -157,11 +181,12 @@ const ParticipantTable = () => {
           formatter: (cell) => `<b>${cell.getValue()}</b>`,
           responsive: 0,
           minWidth: 100,
+          visible: false,
         },
         {
           title: "In",
           field: "checkedIn",
-          maxWidth: 90,
+          maxWidth: 105,
           minWidth: 70,
           hozAlign: "center",
           sorter: "boolean",
@@ -173,8 +198,8 @@ const ParticipantTable = () => {
         {
           title: "Out",
           field: "checkedOut",
-          maxWidth: 90,
-          minWidth: 80,
+          maxWidth: 105,
+          minWidth: 90,
           hozAlign: "center",
           headerHozAlign: "center",
           sorter: "boolean",
@@ -215,14 +240,6 @@ const ParticipantTable = () => {
           mutator: startFinishMutator,
           formatter: startFinishFormatter,
           responsive: 3,
-        },
-        {
-          title: "Name",
-          field: "name",
-          visible: false,
-          mutator: (value, data) => {
-            return `${data.first_name} ${data.last_name}`;
-          },
         },
       ],
     });
