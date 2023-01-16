@@ -39,8 +39,7 @@ const Account = () => {
   const handleChange = (e) => {
     const form = e.target.form;
     let { id, value } = e.target;
-    let key = id.replace(/ /g, "_");
-    key = key.toLowerCase();
+    let key = id.replace(/ /g, "_").toLowerCase();
 
     if (id === "phone") {
       //format phone number
@@ -61,7 +60,7 @@ const Account = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("submit");
+    console.log("submit", formData);
     const form = e.target;
     if (form.id === "account-form") {
       if (formData.change_password !== formData.confirm_password) {
@@ -140,26 +139,6 @@ const Account = () => {
     }
   };
 
-  useEffect(() => {
-    const { subject, message } = feedbackData;
-    if (subject && message) {
-      //show submit button
-      $("#submit-feedback-row").css({ display: "flex" });
-    } else {
-      //hide submit button
-      $("#submit-feedback-row").hide();
-    }
-  }, [feedbackData]);
-
-  useEffect(() => {
-    if (!isEqual(formData, originalData)) {
-      //changed
-      $("#submit-row").css({ display: "flex" });
-    } else {
-      //not changed
-      $("#submit-row").hide();
-    }
-  }, [formData, originalData]);
 
   return (
     <>
@@ -214,7 +193,10 @@ const Account = () => {
             </Form.Group>
           );
         })}
-        <Row id="submit-row">
+        <Row
+          id="submit-row"
+          style={{ display: isEqual(formData, originalData) ? "none" : "flex" }}
+        >
           <Col className="d-flex justify-content-end">
             <Button variant="outline-danger" type="submit">
               Submit
@@ -265,7 +247,13 @@ const Account = () => {
           </Col>
         </Form.Group>
 
-        <Row id="submit-feedback-row">
+        <Row
+          id="submit-feedback-row"
+          style={{
+            display:
+              feedbackData.subject && feedbackData.message ? "flex" : "none",
+          }}
+        >
           <Col className="d-flex justify-content-end">
             <Button variant="outline-danger" type="submit">
               Submit

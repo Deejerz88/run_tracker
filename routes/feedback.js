@@ -2,20 +2,18 @@ import express from "express";
 import mongoose from "mongoose";
 import { Feedback } from "../schemas/index.js";
 import sgMail from "@sendgrid/mail";
+import dbConnect from "../dbConnect/dbConnect.js";
 import "dotenv/config";
 
 const router = express.Router();
 
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-router.post("/", async (req, res) => {
+router.post("/", dbConnect,async (req, res) => {
   const { subject, message, anonymous, race, participant } = req.body;
   const { user_id, email, first_name, last_name } = participant;
   console.log("race", race);
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  
   //create feedback in db
   const feedback = new Feedback({ user_id, subject, message });
   await feedback.save();

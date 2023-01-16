@@ -5,6 +5,7 @@ import sgMail from "@sendgrid/mail";
 import Pusher from "pusher";
 import "dotenv/config";
 import mongoose from "mongoose";
+import dbConnect from "../../dbConnect/dbConnect.js";
 import _ from "lodash";
 
 const pusher = new Pusher({
@@ -19,7 +20,7 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", dbConnect, async (req, res) => {
   const { first_name, last_name, email, phone, password, username } = req.body;
 
   let user = await Participant.findOne({ email });
@@ -39,12 +40,7 @@ router.post("/", async (req, res) => {
   res.json({ user });
 });
 
-router.post("/signup", async (req, res) => {
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
+router.post("/signup", dbConnect, async (req, res) => {
   let { username, email, password, races } = req.body;
   let user;
 
@@ -131,7 +127,7 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", dbConnect, async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await Participant.findOne({
@@ -161,7 +157,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", dbConnect, (req, res) => {
   if (req.session.loggedIn) {
     req.session.destroy(() => {
       res.status(204).end();

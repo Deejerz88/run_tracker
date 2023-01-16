@@ -106,7 +106,7 @@ const Profile = () => {
       return;
     }
 
-    const todaysAttendance = thisRace.attendance.find((a) => a.date === date);
+    const todaysAttendance = thisRace.attendance?.find((a) => a.date === date);
     console.log("todaysAttendance", todaysAttendance);
     if (!todaysAttendance) {
       let start = null;
@@ -208,7 +208,7 @@ const Profile = () => {
             >
               <History />
             </Tab>
-            {/* {user?.user_id === participant.user_id && (
+            {user?.user_id === participant.user_id && (
               <Tab
                 eventKey="goals"
                 title={
@@ -219,7 +219,7 @@ const Profile = () => {
               >
                 <Goals />
               </Tab>
-            )} */}
+            )}
             {user?.user_id === participant.user_id ? (
               <Tab
                 eventKey="account"

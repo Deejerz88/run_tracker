@@ -2,18 +2,13 @@ import express from "express";
 import axios from "axios";
 import mongoose from "mongoose";
 import { Participant } from "../schemas/index.js";
+import dbConnect from "../dbConnect/dbConnect.js";
 import "dotenv/config";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
+router.get("/", dbConnect, async (req, res) => {
   const participants = await Participant.find({}).lean();
-
   res.json(participants);
 });
 
@@ -30,15 +25,9 @@ router.get("/all", async (req, res) => {
   res.json(participants.data);
 });
 
-router.get("/:user_id", async (req, res) => {
+router.get("/:user_id", dbConnect, async (req, res) => {
   const { user_id } = req.params;
-
   if (!user_id) return res.json({});
-
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
 
   let participant = await Participant.findOne({ user_id })
     .lean()
@@ -77,7 +66,6 @@ router.get("/:type/:raceId", async (req, res) => {
     },
   });
 
-  console.log("data", data[0]);
 
   if (raceId === "2190") {
     const { data: triData } = await axios.get(
@@ -91,10 +79,8 @@ router.get("/:type/:raceId", async (req, res) => {
         },
       }
     );
-    console.log("triData", triData[0]);
     data.club_members = [...data.club_members, ...triData.club_members];
   }
-  console.log("data", data.length);
   mp = type === "race" ? mp : "club_members";
 
   let participants = [];
@@ -118,16 +104,11 @@ router.get("/:type/:raceId", async (req, res) => {
   res.json(participants);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", dbConnect, async (req, res) => {
   const update = req.body;
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
   console.log("update", update);
-  mongoose.set("strictQuery", false);
-  mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
 
   let doc = await Participant.findOne({ user_id: update.user_id });
   console.log("attendanceUpdate", attendanceUpdate);

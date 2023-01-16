@@ -48,39 +48,30 @@ const settingsSchema = new Schema({
   defaultFields: [String],
 });
 
-const participantSchema = new Schema(
-  {
-    user_id: { type: Number, index: true, unique: true },
-    username: { type: String },
-    username_lower: { type: String, index: true },
-    email: { type: String, unique: true },
-    settings: settingsSchema,
-    email_lower: { type: String, index: true },
-    phone: String,
-    password: String,
-    first_name: String,
-    last_name: String,
-    totalAttendance: Number,
-    totalMileage: Number,
-    avgMileage: Number,
-    avgDuration: durationSchema,
-    totalDuration: durationSchema,
-    avgPace: paceSchema,
-    races: [raceSchema],
-    goals: {
-      mileage: Number,
-      duration: durationSchema,
-      pace: paceSchema,
-    },
+const participantSchema = new Schema({
+  user_id: { type: Number, index: true, unique: true },
+  username: { type: String },
+  username_lower: { type: String, index: true },
+  email: { type: String, unique: true },
+  settings: settingsSchema,
+  email_lower: { type: String, index: true },
+  phone: String,
+  password: String,
+  first_name: String,
+  last_name: String,
+  totalAttendance: Number,
+  totalMileage: Number,
+  avgMileage: Number,
+  avgDuration: durationSchema,
+  totalDuration: durationSchema,
+  avgPace: paceSchema,
+  races: [raceSchema],
+  goals: {
+    mileage: Number,
+    duration: durationSchema,
+    pace: paceSchema,
   },
-  {
-    statics: {
-      async checkPassword(password, hash) {
-        return await bcrypt.compare(password, hash);
-      },
-    },
-  }
-);
+});
 
 raceSchema.pre("save", function (next) {
   //calculate totals
@@ -116,12 +107,16 @@ raceSchema.pre("save", function (next) {
   next();
 });
 
-participantSchema.pre("save", function (next) {
+participantSchema.statics.checkPassword = async function (password, hash) {
+  console.log('password', password, 'hash', hash)
+  return await bcrypt.compare(password, hash);
+};
 
+participantSchema.pre("save", function (next) {
   //update password hash
   if (this.password && this.isModified("password"))
     this.password = bcrypt.hashSync(this.password, 10);
-  
+
   //update username_lower and email_lower for queries
   this.username_lower = this.username?.toLowerCase() || "";
   this.email_lower = this.email?.toLowerCase() || "";

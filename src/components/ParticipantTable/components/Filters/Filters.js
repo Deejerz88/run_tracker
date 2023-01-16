@@ -10,14 +10,18 @@ import {
 } from "react-bootstrap";
 import "./style.css";
 import { Tabulator } from "tabulator-tables";
-import { MdOutlineClear } from "react-icons/md/index.esm.js";
+import {
+  MdOutlineClear,
+  MdOutlineAllInclusive,
+} from "react-icons/md/index.esm.js";
+import { BsCheck2Circle, BsXCircle } from "react-icons/bs/index.esm.js";
 import { AppContext } from "../../../../App.js";
 
 const Filters = ({ races }) => {
   //filter by name and checked in true/false
   const [name, setName] = useState("");
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [checkedOut, setCheckedOut] = useState(false);
+  const [checkedIn, setCheckedIn] = useState("both");
+  const [checkedOut, setCheckedOut] = useState("both");
   const [Context, setContext] = useContext(AppContext);
 
   const handleChange = (e) => {
@@ -28,9 +32,9 @@ const Filters = ({ races }) => {
     if (id === "name-filter") {
       setName(value);
     } else if (name === "checkedIn") {
-      setCheckedIn(!checkedIn);
+      setCheckedIn(checkedIn === "both" ? true : checkedIn ? false : "both");
     } else if (name === "checkedOut") {
-      setCheckedOut(!checkedOut);
+      setCheckedOut(checkedOut === "both" ? true : checkedOut ? false : "both");
     } else if (id === "race-select") {
       const [raceId, type] = value.split("-");
       const eventIds = selectedOptions[0].dataset.eventids;
@@ -48,11 +52,11 @@ const Filters = ({ races }) => {
 
   useEffect(() => {
     const { race } = Context;
-    console.log('races', races)
+    console.log("races", races);
     if (!races)
-    //change race input when context changes
-    document.getElementById("race-select").options.selectedIndex =
-      races?.findIndex((r) => r.id === race.id);
+      //change race input when context changes
+      document.getElementById("race-select").options.selectedIndex =
+        races?.findIndex((r) => r.id === race.id);
   }, [Context, races]);
 
   const nameFilter = ({ data, name }) => {
@@ -96,20 +100,26 @@ const Filters = ({ races }) => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
 
-    if (checkedIn) {
-      table.addFilter("checkedIn", "=", true);
-      setCheckedOut(false);
-    } else table.removeFilter("checkedIn", "=", true);
+    const filters = table.getFilters().filter((f) => f.field === "checkedIn");
+    filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
+
+    if (checkedIn === "both") return;
+
+    checkedIn ? table.addFilter("checkedIn", "=", true) : table.addFilter("checkedIn", "=", false);
+
   }, [checkedIn]);
 
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
 
-    if (checkedOut) {
-      table.addFilter("checkedOut", "=", true);
-      setCheckedIn(false);
-    } else table.removeFilter("checkedOut", "=", true);
+    const filters = table.getFilters().filter((f) => f.field === "checkedOut");
+    filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
+
+    if (checkedOut === "both") return;
+
+    checkedOut ? table.addFilter("checkedOut", "=", true) : table.addFilter("checkedOut", "=", false);
+
   }, [checkedOut]);
 
   return (
@@ -122,15 +132,16 @@ const Filters = ({ races }) => {
               aria-label="race-select"
               onChange={handleChange}
             >
-              {races && races.map((r) => (
-                <option
-                  key={r.id}
-                  value={`${r.id}-${r.type}`}
-                  data-eventids={r.eventIds}
-                >
-                  {r.name}
-                </option>
-              ))}
+              {races &&
+                races.map((r) => (
+                  <option
+                    key={r.id}
+                    value={`${r.id}-${r.type}`}
+                    data-eventids={r.eventIds}
+                  >
+                    {r.name}
+                  </option>
+                ))}
             </Form.Select>
           </FloatingLabel>
           <FloatingLabel label="Date">
@@ -168,30 +179,37 @@ const Filters = ({ races }) => {
               </InputGroup>
             </Col>
             <Col className="d-flex justify-content-center align-items-center">
-              <ButtonGroup
-                id="checkin-group"
-                className="h-50"
+              <Button
+                id="checked-in"
+                name="checkedIn"
+                checked={checkedIn}
                 onClick={handleChange}
               >
-                <Button
-                  id="checked-in"
-                  name="checkedIn"
-                  variant="light"
-                  checked={checkedIn}
-                  className={checkedIn ? "active " : ""}
-                >
-                  Checked In
-                </Button>
-                <Button
-                  id="checked-out"
-                  name="checkedOut"
-                  variant="light"
-                  checked={checkedOut}
-                  className={checkedOut ? "active" : ""}
-                >
-                  Checked Out
-                </Button>
-              </ButtonGroup>
+                {checkedIn && checkedIn !== "both" ? (
+                  <BsCheck2Circle />
+                ) : checkedIn === "both" ? (
+                  <MdOutlineAllInclusive size="1.2em" />
+                ) : (
+                  <BsXCircle />
+                )}{" "}
+                Checked In
+              </Button>
+              <Button
+                id="checked-out"
+                name="checkedOut"
+                checked={checkedOut}
+                className="active"
+                onClick={handleChange}
+              >
+                {checkedOut && checkedOut !== "both" ? (
+                  <BsCheck2Circle />
+                ) : checkedOut === "both" ? (
+                  <MdOutlineAllInclusive size="1.2em" />
+                ) : (
+                  <BsXCircle />
+                )}{" "}
+                Checked Out
+              </Button>
             </Col>
           </Row>
         </Form>

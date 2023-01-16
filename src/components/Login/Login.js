@@ -260,13 +260,13 @@ const Login = ({ show, setShow, races }) => {
                 id="stay-logged-in"
                 type="checkbox"
                 label="Keep me logged in"
-                className=""
+                className={state.action === "Recover Account" ? "d-none" : ""}
                 inline
               />
             </Col>
           </Row>
         </Form>
-      </Modal.Body>
+      </Modal.Body> 
     </Modal>
   );
 };
