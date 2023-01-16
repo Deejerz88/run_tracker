@@ -105,8 +105,9 @@ const Filters = ({ races }) => {
 
     if (checkedIn === "both") return;
 
-    checkedIn ? table.addFilter("checkedIn", "=", true) : table.addFilter("checkedIn", "=", false);
-
+    checkedIn
+      ? table.addFilter("checkedIn", "=", true)
+      : table.addFilter("checkedIn", "=", false);
   }, [checkedIn]);
 
   useEffect(() => {
@@ -118,8 +119,9 @@ const Filters = ({ races }) => {
 
     if (checkedOut === "both") return;
 
-    checkedOut ? table.addFilter("checkedOut", "=", true) : table.addFilter("checkedOut", "=", false);
-
+    checkedOut
+      ? table.addFilter("checkedOut", "=", true)
+      : table.addFilter("checkedOut", "=", false);
   }, [checkedOut]);
 
   return (
@@ -182,8 +184,10 @@ const Filters = ({ races }) => {
               <Button
                 id="checked-in"
                 name="checkedIn"
+                variant="light"
                 checked={checkedIn}
                 onClick={handleChange}
+                className={`${checkedIn}-btn`}
               >
                 {checkedIn && checkedIn !== "both" ? (
                   <BsCheck2Circle />
@@ -197,9 +201,10 @@ const Filters = ({ races }) => {
               <Button
                 id="checked-out"
                 name="checkedOut"
+                variant="light"
                 checked={checkedOut}
-                className="active"
                 onClick={handleChange}
+                className={`${checkedOut}-btn`}
               >
                 {checkedOut && checkedOut !== "both" ? (
                   <BsCheck2Circle />
