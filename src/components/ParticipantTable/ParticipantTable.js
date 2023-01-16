@@ -165,7 +165,7 @@ const ParticipantTable = () => {
             return `${data.first_name} ${data.last_name}`;
           },
           minWidth: 200,
-          widthGrow: 5,
+          widthGrow: 2,
         },
         {
           title: "First",
