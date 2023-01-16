@@ -66,7 +66,6 @@ router.get("/:type/:raceId", async (req, res) => {
     },
   });
 
-
   if (raceId === "2190") {
     const { data: triData } = await axios.get(
       "https://runsignup.com/rest/club/1131/members",
@@ -140,8 +139,13 @@ router.post("/", dbConnect, async (req, res) => {
 
     update.races = doc.races;
     console.log("update", update);
-    await doc.updateOne(update);
-    res.json(update);
+    try {
+      await doc.updateOne(update);
+      res.json(update);
+    } catch (e) {
+      console.log("e", e);
+      res.status(500).json("error");
+    }
   } else {
     //create new participant
     doc = new Participant(update);
