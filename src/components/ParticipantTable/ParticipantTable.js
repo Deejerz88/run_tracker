@@ -24,7 +24,6 @@ const ParticipantTable = () => {
   const [races, setRaces] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [Context, setContext] = useContext(AppContext);
-  const [showCollapse, setShowCollapse] = useState(false);
 
   const { user } = Context;
   const navigate = useNavigate();
@@ -108,6 +107,18 @@ const ParticipantTable = () => {
     );
   }, [Context]);
 
+  // useEffect(() => {
+  //   console.log("showCollapse", showCollapse);
+  //   const toggle = $("#collapse-toggle");
+  //   const collapsed = toggle.data("collapsed");
+  //   console.log('collapsed', collapsed)
+  //   toggle.html(
+  //     collapsed
+  //       ? renderToString(<BsFillDashCircleFill />)
+  //       : renderToString(<BsFillPlusCircleFill />)
+  //   );
+  // }, [showCollapse]);
+
   useEffect(() => {
     //set race options, default race, and context
     getRaces().then((data) => {
@@ -169,19 +180,23 @@ const ParticipantTable = () => {
           headerSort: false,
           maxWidth: 45,
           titleFormatter: (column) => {
-            return renderToString(
-              showCollapse ? <BsFillDashCircleFill /> : <BsFillPlusCircleFill />
-            );
-          },
-          titleFormatterParams: {
-            showCollapse,
+            return `<div id='collapse-toggle' data-collapsed='true'>${renderToString(
+              <BsFillPlusCircleFill />
+            )}</div>`;
           },
           headerClick: (e, column) => {
+            const toggle = $("#collapse-toggle");
+            const collapsed = toggle.data("collapsed");
+            console.log("collapsed", collapsed);
+            toggle.html(
+              collapsed
+              ? renderToString(<BsFillDashCircleFill />)
+              : renderToString(<BsFillPlusCircleFill />)
+              );
+              $("#collapse-toggle").data("collapsed", !collapsed);
             $(".tabulator-responsive-collapse-toggle").each((i, el) =>
               el.click()
             );
-            setShowCollapse(!showCollapse);
-            table.redraw(true);
           },
         },
         {
