@@ -19,13 +19,13 @@ import $ from "jquery";
 const Inputs = ({ state, setState }) => {
   const [activeKey, setActiveKey] = useState("in");
   const [races, setRaces] = useState([]);
-  const [Context, setContext] = useContext(AppContext);
-  const [selectedRace, setSelectedRace] = useState(Context.race);
   const [checkedIn, setCheckedIn] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(Context.date);
-  const { participant } = Context;
   const [showGroup, setShowGroup] = useState({});
   const [defaults, setDefaults] = useState([]);
+  const [Context, setContext] = useContext(AppContext);
+  const [selectedRace, setSelectedRace] = useState(Context.race);
+  const [selectedDate, setSelectedDate] = useState(Context.date);
+  const { participant } = Context;
 
   const today = DateTime.local().toISODate();
 
@@ -58,6 +58,23 @@ const Inputs = ({ state, setState }) => {
   }, [participant.races, selectedDate, selectedRace]);
 
   useEffect(() => {
+    setState({
+      mileage: 3,
+      pace: {
+        minutes: 10,
+        seconds: 0,
+      },
+      duration: {
+        hours: 0,
+        minutes: 30,
+        seconds: 0,
+      },
+      start: null,
+      finish: null,
+    });
+  }, [selectedDate, setState]);
+
+  useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
   }, [checkedIn]);
 
@@ -81,7 +98,7 @@ const Inputs = ({ state, setState }) => {
       } else {
         //show group
         $(`.${name}`).toggleClass("hidden");
-        setShowGroup({ ...showGroup, [name]: !showGroup[name] });
+        setShowGroup({ ...showGroup, [name]: !showGroup[name] }); //toggle group
       }
     } else if (id === "default-fields") {
       if (e.target.checked)
@@ -239,7 +256,7 @@ const Inputs = ({ state, setState }) => {
                           return (
                             <FloatingLabel key={type} label={type}>
                               <Form.Control
-                                id={`${group}-${type}-${inOut}`}
+                                id={`${group}-${type}-${inOut}`} // pace-minutes-in, etc.
                                 type="number"
                                 step={type === "seconds" ? 5 : 1}
                                 value={
@@ -305,10 +322,13 @@ const Inputs = ({ state, setState }) => {
           id="default-fields"
           label="Default Fields"
           className="align-self-center "
-          checked={isEqual(
-            Object.keys(showGroup).filter((g) => showGroup[g]),
-            defaults
-          )}
+          checked={
+            //check if defaults are same as showGroup
+            isEqual(
+              Object.keys(showGroup).filter((g) => showGroup[g]), // filter out false values
+              defaults
+            )
+          }
           onChange={handleClick}
           inline
         />

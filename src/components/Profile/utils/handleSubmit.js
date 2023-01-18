@@ -18,7 +18,7 @@ const handleSubmit = async ({
 }) => {
   e.preventDefault();
   e.stopPropagation();
-  const activeKey = $("#checkInOut").attr("name");
+  const activeKey = $("#checkInOut").attr("name"); //in or out
   console.log("selectedRace", selectedRace);
 
   if (activeKey === "out" && !checkedIn) {
@@ -26,7 +26,7 @@ const handleSubmit = async ({
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,
     });
-    return;
+    return; 
   } else if (
     activeKey === "in" &&
     state.duration?.hours >= 1 &&
@@ -42,7 +42,7 @@ const handleSubmit = async ({
   let fields = $(`input[name=${activeKey}]`);
   //filter out fields that are not being shown
   fields = fields.filter((i, field) => {
-    const group = field.id.split("-")[0];
+    const group = field.id.split("-")[0]; // duration, pace, mileage, start, finish
     return showGroup[group] || group === "start" || group === "finish";
   });
   if (!fields) return;
@@ -59,7 +59,7 @@ const handleSubmit = async ({
 
   fields.each((i, field) => {
     const { id, value } = field;
-    const [group, type] = id.split("-");
+    const [group, type] = id.split("-"); //duration-hours, pace-minutes, etc
 
     data[group][type] =
       group === "start" || group === "finish"
@@ -72,35 +72,6 @@ const handleSubmit = async ({
 
   console.log("participant races", participant.races);
 
-  // let thisRace = participant.races.length;
-  //   ? participant.races.find((r) => r.id === selectedRace.id)
-  //   : null;
-
-  // let thisAttendance = thisRace
-  //   ? thisRace.attendance.find((a) => a.date === selectedDate)
-  //   : null;
-
-  // if (!thisRace) {
-  //   participant.races.push({
-  //     ...selectedRace,
-  //     attendance: [
-  //       {
-  //         date: selectedDate,
-  //         pace,
-  //         duration,
-  //         start: start.time,
-  //         finish: finish.actual || finish.target,
-  //         mileage: mileage.actual || mileage.target,
-  //         checkedIn: state.checkedIn,
-  //         checkedOut: state.checkedOut,
-  //         [`checked${startCase(activeKey)}`]: true,
-  //       },
-  //     ],
-  //   });
-  // } else {
-  //   participant.races = []
-
-  // }
 
   participant.races = [
     {

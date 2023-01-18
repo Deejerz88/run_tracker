@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import {
   Row,
   Col,
@@ -10,20 +10,11 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import { BsPlusLg } from "react-icons/bs/index.esm.js";
-import $ from "jquery";
+import $, { data } from "jquery";
 import { startCase } from "lodash";
-import { Tabulator } from "tabulator-tables";
-// import { AppContext } from "../../../App.js";
-import { DateTime } from "luxon";
-// import {
-//   Race,
-//   Category,
-//   Mileage,
-//   Pace,
-//   Duration,
-//   Target,
-//   GoalDate,
-// } from "./GoalInputs.js";
+import { TabulatorFull as Tabulator } from "tabulator-tables";
+import { AppContext } from "../../../App.js";
+import { DateTime, Duration as DurationLux } from "luxon";
 
 const Goals = () => {
   const [state, setState] = useState({
@@ -43,9 +34,9 @@ const Goals = () => {
     date: null,
   });
   const [races, setRaces] = useState([]);
-  // const [Context, setContext] = useContext(AppContext);
-  // const { participant } = Context;
-
+  const [Context, setContext] = useContext(AppContext);
+  const [participant, setParticipant] = useState(Context.participant);
+  console.log("participant", participant);
   const resetState = (type) => {
     setState({
       type: type || "",
@@ -65,7 +56,7 @@ const Goals = () => {
     });
   };
 
-  const hideRow = (rows) => {
+  const hideRow = useCallback((rows) => {
     rows = typeof rows === "number" ? [rows] : rows;
     rows.forEach(async (row) => {
       $(`#goal-row-${row}`).css({ marginLeft: 2000, opacity: 0 });
@@ -73,9 +64,9 @@ const Goals = () => {
         $(`#goal-row-${row}`).hide();
       }, 500);
     });
-  };
+  }, []);
 
-  const showRow = (rows) => {
+  const showRow = useCallback((rows) => {
     rows = typeof rows === "number" ? [rows] : rows;
     rows.forEach(async (row) => {
       $(`#goal-row-${row}`).css({ display: "flex" });
@@ -83,7 +74,8 @@ const Goals = () => {
         $(`#goal-row-${row}`).css({ marginLeft: 0, opacity: 1 });
       }, 0);
     });
-  };
+    if (rows[0] !== 1) growForm(85 * rows.length);
+  }, []);
 
   const growForm = (size) => {
     $("#goal-form").height($("#goal-form").height() + size);
@@ -96,28 +88,24 @@ const Goals = () => {
       case "type":
         if (state.type === "none" || !state.type) {
           showRow(2);
-          growForm(75);
+          // growForm(75);
         }
         resetState(value);
-        hideRow([3, 4]);
-        $("#goal-form").height(200);
+        hideRow([3, 4, 5]);
+        $("#goal-form").height(185);
         break;
       case "race":
       case "category":
-        if (!state[name] || (name === "category" && state[name] === "Finish"))
-          growForm(75);
         setState((prevState) => ({
           ...prevState,
           [name]: value,
         }));
-        if (!state.race) {
-          //overall
-          showRow(3);
-        } else if (name === "category" && value === "Finish") {
-          hideRow([4, 5]);
-        } else {
-          showRow([4, 5]);
-        }
+        // if (!state.race ) {
+        //   //overall
+        //   showRow([3]);
+        // } else if (name === "category") {
+        //   value === "Finish" ? hideRow([4, 5]) : showRow([4, 5]);
+        // }
         break;
       case "date":
         setState((prevState) => ({
@@ -129,6 +117,17 @@ const Goals = () => {
         break;
     }
   };
+
+  useEffect(() => {
+    if (state.race) showRow(3);
+  }, [state.race, showRow]);
+
+  useEffect(() => {
+    if (!state.category) return;
+
+    if (!state.race) showRow([3, 4]);
+    else state.category === "Finish" ? hideRow([4, 5]) : showRow([4, 5]);
+  }, [state.category, state.race, hideRow, showRow]);
 
   const handleBlur = (e) => {
     e.preventDefault();
@@ -156,16 +155,28 @@ const Goals = () => {
       e.target.select();
     } else if (id === "add-goal") {
       if (!state.category) {
+        //new goal
         resetState();
         showRow(1);
         $("#reset-goal").css({ display: "block" });
         setTimeout(() => {
           $("#reset-goal").css({ opacity: 1 });
         }, 0);
+      } else {
+        //submit goal
+        const { type, race, category, date } = state;
+        const target =
+          category === "Average Pace" ? "pace" : state[category].toLowerCase();
+        const data = {
+          type,
+          race,
+          category,
+          [target]: state[category],
+          date,
+        };
       }
     } else if (id === "add-goal-date") {
       console.log(e.target);
-      $(e.target).toggle();
       setState((prevState) => ({
         ...prevState,
         date: DateTime.local().toISODate(),
@@ -187,29 +198,235 @@ const Goals = () => {
       const { data: races } = await axios.get("/race");
       setRaces(races);
     })();
-    // new Tabulator("#goal-table", {
-    //   layout: "fitColumns",
-    //   columns: [
-    //     { title: "Type", field: "type" },
-    //     { title: "Race" },
-    //     { title: "Category", field: "category" },
-    //     { title: "Target", field: "target" },
-    //   ],
-    // });
   }, []);
+
+  useEffect(() => {
+    const table = new Tabulator("#goal-table", {
+      layout: "fitColumns",
+      height: "100%",
+      placeholder: "No Goals yet!",
+      columns: [
+        {
+          title: "Type",
+          field: "type",
+          formatter: (cell) => startCase(cell.getValue()),
+        },
+        {
+          title: "Race",
+          field: "race",
+          formatter: (cell) => cell.getValue().name,
+        },
+        {
+          title: "Target",
+          field: "target",
+          mutator: (value, data) => data[data.category],
+          formatter: (cell) => {
+            console.log("value", cell.getValue());
+            const { category } = cell.getRow().getData();
+            if (category === "pace") {
+              const { minutes, seconds } = cell.getValue();
+              const value = DurationLux.fromObject({
+                minutes,
+                seconds,
+              }).toFormat("m:ss");
+              return `<b>${startCase(category)}:</b> ${value}`;
+            }
+            return `<b>${startCase(category)}:</b> ${cell.getValue()}`;
+          },
+        },
+        {
+          title: "Progress",
+          field: "progress",
+          mutator: (value, data) => {
+            const { type, race, category, target } = data;
+            const { id } = race;
+            if (type === "race") {
+              const targetRace = participant.races.find((r) => r.id === id);
+              console.log("targetRace", targetRace)
+              if (!targetRace) return 0;
+              if (category === "mileage") {
+                return targetRace.mileage / target;
+              }
+            }
+            return 50
+          },
+          formatter: "progress",
+          formatterParams: {
+            min: 0,
+            max: data.target,
+          },
+        },
+        { title: "Category", field: "category", visible: false },
+        { title: "Mileage", field: "mileage", visible: false },
+        { title: "Pace", field: "pace", visible: false },
+        { title: "Duration", field: "duration", visible: false },
+        { title: "Date", field: "date", visible: false },
+      ],
+    });
+    table.on("tableBuilt", () => {
+      console.log("goals", participant.goals);
+      table.setData(participant.goals);
+      table.redraw(true);
+    });
+  }, [participant.goals]);
+
+  const Race = () => {
+    const raceList = ["", ...races];
+    return (
+      <>
+        <FloatingLabel label="Race / Team">
+          <Form.Select
+            id="goal-race"
+            name="race"
+            value={state.race}
+            onChange={handleChange}
+          >
+            {raceList.map((race, i) => (
+              <option key={i}>{race.name}</option>
+            ))}
+          </Form.Select>
+        </FloatingLabel>
+      </>
+    );
+  };
+
+  const Category = () => {
+    return (
+      <>
+        <FloatingLabel label="Category">
+          <Form.Select
+            id="goal-category"
+            name="category"
+            value={state.category}
+            onChange={handleChange}
+          >
+            {["", "Mileage", "Average Pace", "Duration", "Finish"].map(
+              (category) => {
+                if (state.type === "overall" && category === "Finish")
+                  return null;
+                else return <option key={category}>{category}</option>;
+              }
+            )}
+          </Form.Select>
+        </FloatingLabel>
+      </>
+    );
+  };
+
+  const Mileage = () => {
+    return (
+      <FloatingLabel label="Miles">
+        <Form.Control
+          id="mileage"
+          type="number"
+          name="target"
+          value={state.mileage}
+          onChange={handleChange}
+          className=""
+        />
+      </FloatingLabel>
+    );
+  };
+
+  const Pace = () => {
+    return (
+      <InputGroup>
+        {["minutes", "seconds"].map((type, i) => {
+          return (
+            <FloatingLabel key={type} label={type}>
+              <Form.Control
+                id={`pace-${type}`}
+                type="number"
+                name="target"
+                step={type === "seconds" ? 5 : 1}
+                defaultValue={
+                  state.pace[type] && type === "seconds"
+                    ? Math.round(state.pace[type])
+                    : state.pace[type]
+                }
+                onBlur={handleBlur}
+              />
+            </FloatingLabel>
+          );
+        })}
+      </InputGroup>
+    );
+  };
+
+  const Duration = () => {
+    return (
+      <InputGroup>
+        {["hours", "minutes", "seconds"].map((type, i) => {
+          return (
+            <FloatingLabel key={type} label={type}>
+              <Form.Control
+                id={`duration-${type}`}
+                type="number"
+                name="target"
+                step={type === "seconds" ? 5 : 1}
+                defaultValue={
+                  state.duration.seconds && type === "seconds"
+                    ? Math.round(state.duration[type])
+                    : state.duration[type]
+                }
+                onBlur={handleBlur}
+              />
+            </FloatingLabel>
+          );
+        })}
+      </InputGroup>
+    );
+  };
+
+  const Target = () => {
+    return {
+      Mileage: <Mileage />,
+      "Average Pace": <Pace />,
+      Duration: <Duration />,
+    }[state.category];
+  };
+
+  const GoalDate = () => {
+    return (
+      <>
+        <Button
+          id="add-goal-date"
+          variant="outline-danger"
+          onClick={handleClick}
+          name="add"
+          style={{ display: state.date ? "none" : "" }}
+        >
+          <BsPlusLg /> Complete By
+        </Button>
+        <FloatingLabel
+          id="date-group"
+          style={{ display: state.date ? "" : "none" }}
+          label="Complete By"
+        >
+          <Form.Control
+            id="goal-date"
+            type="date"
+            name="goal-date"
+            value={state.date}
+            onChange={handleChange}
+          />
+        </FloatingLabel>
+      </>
+    );
+  };
 
   return (
     <>
       <Form id="goal-form" onClick={handleClick} className="mb-3">
         <Row id="goal-row-1" className=" ">
-          <Col xs={2} md={1} className="d-flex justify-content-start">
+          <Col xs={2} className="d-flex justify-content-start">
             <h2 className="styled-title goal-number">1</h2>
           </Col>
-          <Col xs={10} md={11} className="d-flex align-items-center">
+          <Col xs={10} className="d-flex align-items-center">
             <ButtonGroup
               id="goal-type"
               name="type"
-              className="w-25"
+              className="w-50"
               onClick={handleChange}
             >
               {["overall", "race"].map((type, i) => {
@@ -223,7 +440,7 @@ const Goals = () => {
                     name="type"
                     className={state.type === type ? "active" : ""}
                   >
-                    {startCase(type)}
+                    {`${startCase(type)}${type === "race" ? " / Team" : ""}`}
                   </Button>
                 );
               })}
@@ -234,26 +451,35 @@ const Goals = () => {
           const race = state.type === "race";
           return (
             <Row key={i} id={`goal-row-${i}`} className=" ">
-              <Col xs={2} md={1} className="d-flex justify-content-start">
+              <Col xs={2} className="d-flex justify-content-start">
                 <h2 className="styled-title goal-number">{i}</h2>
               </Col>
-              <Col xs={10} md={11}></Col>
+              <Col xs={10}>
+                {i === 2 ? (
+                  race ? (
+                    <Race />
+                  ) : (
+                    <Category />
+                  )
+                ) : i === 3 ? (
+                  race ? (
+                    <Category />
+                  ) : (
+                    <Target />
+                  )
+                ) : i === 4 ? (
+                  race ? (
+                    <Target />
+                  ) : (
+                    <GoalDate />
+                  )
+                ) : (
+                  <GoalDate />
+                )}
+              </Col>
             </Row>
           );
         })}
-        {/* <GoalDate /> */}
-        <Button
-          id="add-goal-date"
-          variant="outline-danger"
-          onClick={handleClick}
-          name="add"
-          style={{
-            display: state.category || state.type === 'none'  ? "block" : "none",
-            opacity: state.category || state.type === 'none'? 1 : 0,
-          }}
-        >
-          <BsPlusLg /> Complete By
-        </Button>
         <Row
           id="add-goal-row"
           className=""
@@ -288,7 +514,11 @@ const Goals = () => {
           </Col>
         </Row>
       </Form>
-      {/* <div id="goal-table" className="mt-5" /> */}
+      <Row id="goal-table-row" className="mt-5">
+        <Col>
+          <div id="goal-table" className="mt-5" />
+        </Col>
+      </Row>
     </>
   );
 };

@@ -17,7 +17,7 @@ const handleChange = ({
   if (group === "checkin") {
     if (type === "race") {
       const race = races?.find((r) => r.name === value);
-      console.log('race change', race)
+      console.log("race change", race);
       setContext((prevState) => ({
         ...prevState,
         race,
@@ -30,7 +30,6 @@ const handleChange = ({
       }));
       setSelectedDate(value);
     }
-
     return;
   }
 
@@ -42,6 +41,11 @@ const handleChange = ({
     ...state,
   };
 
+  console.log("update", update);
+
+  update.duration = update.duration || { hours: 0, minutes: 0, seconds: 0 };
+  update.pace = update.pace || { minutes: 0, seconds: 0 };
+
   delete update.duration._id;
   delete update.pace._id;
 
@@ -51,15 +55,16 @@ const handleChange = ({
     const groupDuration = Duration.fromObject(update[group])
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
-    
+
     update[group] = groupDuration;
-  } else
-    //mileage or start/finish
+  }
+  //mileage or start/finish
+  else
     update[group] =
       group === "mileage"
         ? Number(value)
         : DateTime.fromFormat(value, "HH:mm").toMillis();
-  
+
   if (group !== "start" && group !== "finish") {
     //pace, duration, or mileage
     group === "duration"
@@ -74,28 +79,24 @@ const handleChange = ({
             Duration.fromObject(update.pace).as("seconds") * update.mileage,
         })
           .shiftTo("hours", "minutes", "seconds")
-        .toObject());
-    
+          .toObject());
+
     update.finish = startTime.plus(update.duration).toMillis();
   } else if (group === "finish") {
     let finish = DateTime.fromMillis(update.finish);
-    console.log('finish', finish)
     update.duration = finish
       .diff(startTime, ["hours", "minutes", "seconds"])
       .toObject();
-    
-    console.log('duration', update.duration)
-    
+
     const currPace =
       Duration.fromObject(update.duration).as("seconds") / update.mileage || 1;
-      console.log('currPace', currPace)
-    
+
     update.pace = Duration.fromObject({
       seconds: currPace,
     })
       .shiftTo("minutes", "seconds")
       .toObject();
-    
+
     update.finish = finish.toMillis();
   } else if (group === "start") {
     update.finish = DateTime.fromMillis(update.start)

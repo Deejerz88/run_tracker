@@ -37,15 +37,20 @@ const raceSchema = new Schema({
   avgMileage: Number,
   avgDuration: durationSchema,
   attendance: [attendanceSchema],
-  goals: {
-    mileage: Number,
-    duration: durationSchema,
-    pace: paceSchema,
-  },
 });
 
 const settingsSchema = new Schema({
   defaultFields: [String],
+});
+
+const goalSchema = new Schema({
+  type: String,
+  race: { id: Number, name: String },
+  category: String,
+  mileage: Number,
+  duration: durationSchema,
+  pace: paceSchema,
+  date: String,
 });
 
 const participantSchema = new Schema({
@@ -59,56 +64,24 @@ const participantSchema = new Schema({
   password: String,
   first_name: String,
   last_name: String,
-  totalAttendance: Number,
-  totalMileage: Number,
-  avgMileage: Number,
-  avgDuration: durationSchema,
-  totalDuration: durationSchema,
-  avgPace: paceSchema,
-  races: [raceSchema],
-  goals: {
-    mileage: Number,
-    duration: durationSchema,
-    pace: paceSchema,
+  totalAttendance: { type: Number, default: () => 0 },
+  totalMileage: { type: Number, default: () => 0 },
+  avgMileage: { type: Number, default: () => 0 },
+  avgDuration: {
+    type: durationSchema,
+    default: () => ({ hours: 0, minutes: 0, seconds: 0 }),
   },
-});
-
-raceSchema.pre("save", function (next) {
-  //calculate totals
-  this.totalAttendance = this.attendance.length;
-
-  this.totalMileage = _.sumBy(this.attendance, "mileage");
-
-  const durationMinutes = _.sumBy(this.attendance, (a) => {
-    const { hours, minutes, seconds } = a.duration;
-    return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-  });
-
-  this.avgMileage = this.totalMileage / this.totalAttendance;
-
-  if (durationMinutes) {
-    this.avgPace = Duration.fromObject({
-      minutes: durationMinutes / this.totalMileage,
-    })
-      .shiftTo("minutes", "seconds")
-      .toObject();
-    this.totalDuration = Duration.fromObject({
-      minutes: durationMinutes,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-    this.avgDuration = Duration.fromObject({
-      minutes: durationMinutes / this.totalAttendance,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-  }
-
-  next();
+  totalDuration: {
+    type: durationSchema,
+    default: () => ({ hours: 0, minutes: 0, seconds: 0 }),
+  },
+  avgPace: { type: paceSchema, default: () => ({ minutes: 0, seconds: 0 }) },
+  races: [raceSchema],
+  goals: [goalSchema],
 });
 
 participantSchema.statics.checkPassword = async function (password, hash) {
-  console.log('password', password, 'hash', hash)
+  console.log("password", password, "hash", hash);
   return await bcrypt.compare(password, hash);
 };
 
@@ -120,40 +93,17 @@ participantSchema.pre("save", function (next) {
   //update username_lower and email_lower for queries
   this.username_lower = this.username?.toLowerCase() || "";
   this.email_lower = this.email?.toLowerCase() || "";
+  next();
+});
 
-  //calculate totals
-  this.avgMileage = this.totalMileage / this.totalAttendance;
+participantSchema.pre("updateOne", function (next) {
+  //update password hash
+  if (this.password && this.isModified("password"))
+    this.password = bcrypt.hashSync(this.password, 10);
 
-  if (this.races && this.races.length) {
-    this.totalAttendance = _.sumBy(this.races, "totalAttendance");
-
-    this.totalMileage = _.sumBy(this.races, "totalMileage");
-
-    const durationMinutes = _.sumBy(this.races, (r) => {
-      if (!r.totalDuration) return 0;
-      const { hours, minutes, seconds } = r.totalDuration;
-      return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-    });
-
-    if (durationMinutes) {
-      this.avgPace = Duration.fromObject({
-        minutes: durationMinutes / this.totalMileage,
-      })
-        .shiftTo("minutes", "seconds")
-        .toObject();
-      this.totalDuration = Duration.fromObject({
-        minutes: durationMinutes,
-      })
-        .shiftTo("hours", "minutes", "seconds")
-        .toObject();
-      this.avgDuration = Duration.fromObject({
-        minutes: durationMinutes / this.totalAttendance,
-      })
-        .shiftTo("hours", "minutes", "seconds")
-        .toObject();
-    }
-  }
-
+  //update username_lower and email_lower for queries
+  this.username_lower = this.username?.toLowerCase() || "";
+  this.email_lower = this.email?.toLowerCase() || "";
   next();
 });
 

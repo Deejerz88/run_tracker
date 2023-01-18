@@ -32,26 +32,6 @@
   font-size: 1.2em;
 }
 
-#history-table .tabulator-row.tabulator-group {
-  background-color: #ED1C24;
-  color: white;
-  font-weight: bold;
-  -webkit-text-stroke: 0.25px black;
-  font-size: 1.2em;
-}
-
-#history-table.tabulator .tabulator-header{
-     border-bottom: 3px solid black
-}
-
-#history-table .tabulator-col-content {
-  color: white;
-  background-color: rgba(0, 0, 0, 0.9);
-  -webkit-text-stroke: 0.15px white;
-  font-size: 1.2em;
-  height: 100%
-}
-
 .check, .ex{
   background-color: white;
   border-radius: 50%;
@@ -76,10 +56,7 @@
   height: 25px;
 }
 
-#history-table.tabulator .tabulator-tableholder .tabulator-table .tabulator-row.tabulator-calcs{
-  background: rgba(0, 0, 0, 0.9) !important;
-  color: white;
-}
+
 
 .tabulator .tabulator-footer .tabulator-page:disabled {
   background-color: #000000;

@@ -73,13 +73,13 @@ const Profile = () => {
   useEffect(() => {
     const { race, date } = Context;
     console.log("race", race);
-    const selectedRace = document.getElementById('checkin-race')
+    const selectedRace = document.getElementById("checkin-race");
     console.log("selectedRace", selectedRace);
     if (!race.id) {
       setContext((prev) => ({
         ...prev,
         race: { id: 2190, name: "Team Playmakers", type: "club" },
-      }))
+      }));
     }
     if (!participant.user_id || !race.id) return;
     if (race.name === "Team Playmakers") {
@@ -208,7 +208,7 @@ const Profile = () => {
             >
               <History />
             </Tab>
-            {/* {user?.user_id === participant.user_id && (
+            {user?.user_id === participant.user_id && (
               <Tab
                 eventKey="goals"
                 title={
@@ -219,7 +219,7 @@ const Profile = () => {
               >
                 <Goals />
               </Tab>
-            )} */}
+            )}
             {user?.user_id === participant.user_id ? (
               <Tab
                 eventKey="account"
