@@ -1,10 +1,8 @@
 import express from "express";
 import axios from "axios";
-import mongoose from "mongoose";
 import { Participant } from "../schemas/index.js";
 import dbConnect from "../dbConnect/dbConnect.js";
 import { Duration } from "luxon";
-import _ from "lodash";
 import "dotenv/config";
 
 const router = express.Router();
@@ -139,12 +137,20 @@ router.post("/", dbConnect, async (req, res) => {
       } else attendance.push(attendanceUpdate);
     } else races.push(raceUpdate);
 
+    update.races = doc.races;
+
+    try {
+      await doc.updateOne(update);
+    } catch (e) {
+      console.log("e", e);
+    }
+
     //use aggregation to calculate totals
 
     const [raceTotals] = await Participant.aggregate([
       {
         $match: {
-          user_id: 907365,
+          user_id: update.user_id,
         },
       },
       {
@@ -152,7 +158,7 @@ router.post("/", dbConnect, async (req, res) => {
       },
       {
         $match: {
-          "races.id": 2190,
+          "races.id": raceUpdate.id,
         },
       },
       {
@@ -167,14 +173,23 @@ router.post("/", dbConnect, async (req, res) => {
           paceSeconds: {
             $avg: "$races.attendance.pace.seconds",
           },
-          durationHours: {
+          avgDurationHours: {
             $avg: "$races.attendance.duration.hours",
           },
-          durationMinutes: {
+          avgDurationMinutes: {
             $avg: "$races.attendance.duration.minutes",
           },
-          durationSeaconds: {
+          avgDurationSeconds: {
             $avg: "$races.attendance.duration.seconds",
+          },
+          totalDurationHours: {
+            $sum: "$races.attendance.duration.hours",
+          },
+          totalDurationMinutes: {
+            $sum: "$races.attendance.duration.minutes",
+          },
+          totalDurationSeconds: {
+            $sum: "$races.attendance.duration.seconds",
           },
         },
       },
@@ -183,33 +198,43 @@ router.post("/", dbConnect, async (req, res) => {
     console.log("raceTotals", raceTotals);
 
     const {
+      totalAttendance,
+      totalMileage,
+      avgMileage,
       paceMinutes,
       paceSeconds,
-      durationHours,
-      durationMinutes,
-      durationSeconds,
+      avgDurationHours,
+      avgDurationMinutes,
+      avgDurationSeconds,
+      totalDurationHours,
+      totalDurationMinutes,
+      totalDurationSeconds,
     } = raceTotals;
 
-    try {
-      raceTotals.duration = Duration.fromObject({
-        hours: durationHours,
-        minutes: durationMinutes,
-        seconds: durationSeconds,
-      }).toObject();
-    } catch (error) {
-      console.log("error", error);
-    }
+    race = update.races.find((r) => r.id === raceUpdate.id);
 
-    try {
-      raceTotals.pace = Duration.fromObject({
-        minutes: paceMinutes,
-        seconds: paceSeconds,
-      }).toObject();
-    } catch (error) {
-      console.log("error", error);
-    }
+    race.totalAttendance = totalAttendance;
+    race.totalMileage = totalMileage;
+    race.avgMileage = avgMileage;
 
-    update = { ...update, ...raceTotals };
+    race.avgDuration = Duration.fromObject({
+      hours: avgDurationHours,
+      minutes: avgDurationMinutes,
+      seconds: avgDurationSeconds,
+    }).toObject();
+
+    race.totalDuration = Duration.fromObject({
+      hours: totalDurationHours,
+      minutes: totalDurationMinutes,
+      seconds: totalDurationSeconds,
+    }).toObject();
+
+    race.avgPace = Duration.fromObject({
+      minutes: paceMinutes,
+      seconds: paceSeconds,
+    }).toObject();
+
+    console.log("update", race);
 
     const [totals] = await Participant.aggregate([
       {
@@ -243,74 +268,6 @@ router.post("/", dbConnect, async (req, res) => {
     update.totalAttendance = totals.totalAttendance;
     update.totalMileage = totals.totalMileage;
     update.avgMileage = totals.avgMileage;
-
-    // console.log("update", update);
-
-    // const updatedRace = races.find((r) => r.id === raceUpdate.id);
-    // console.log("updatedRace", updatedRace);
-    // //calculate race totals
-    // updatedRace.totalAttendance = updatedRace.attendance.length;
-
-    // updatedRace.totalMileage = _.sumBy(updatedRace.attendance, "mileage");
-
-    // const durationMinutes = _.sumBy(updatedRace.attendance, (a) => {
-    //   const { hours, minutes, seconds } = a.duration;
-    //   return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-    // });
-
-    // updatedRace.avgMileage =
-    //   updatedRace.totalMileage / updatedRace.totalAttendance;
-
-    // if (durationMinutes) {
-    //   updatedRace.avgPace = Duration.fromObject({
-    //     minutes: durationMinutes / updatedRace.totalMileage,
-    //   })
-    //     .shiftTo("minutes", "seconds")
-    //     .toObject();
-    //   updatedRace.totalDuration = Duration.fromObject({
-    //     minutes: durationMinutes,
-    //   })
-    //     .shiftTo("hours", "minutes", "seconds")
-    //     .toObject();
-    //   updatedRace.avgDuration = Duration.fromObject({
-    //     minutes: durationMinutes / updatedRace.totalAttendance,
-    //   })
-    //     .shiftTo("hours", "minutes", "seconds")
-    //     .toObject();
-    // }
-    // console.log("updatedRace", updatedRace);
-    update.races = doc.races;
-
-    //calculate participant totals
-
-    // update.totalAttendance = _.sumBy(update.races, "totalAttendance");
-
-    // update.totalMileage = _.sumBy(update.races, "totalMileage") || 0;
-
-    // const updateDurationMinutes = _.sumBy(update.races, (r) => {
-    //   if (!r.totalDuration) return 0;
-    //   const { hours, minutes, seconds } = r.totalDuration;
-    //   return Duration.fromObject({ hours, minutes, seconds }).as("minutes");
-    // });
-
-    // if (updateDurationMinutes) {
-    //   update.avgPace = Duration.fromObject({
-    //     minutes: updateDurationMinutes / update.totalMileage,
-    //   })
-    //     .shiftTo("minutes", "seconds")
-    //     .toObject();
-    //   update.totalDuration = Duration.fromObject({
-    //     minutes: updateDurationMinutes,
-    //   })
-    //     .shiftTo("hours", "minutes", "seconds")
-    //     .toObject();
-    //   update.avgDuration = Duration.fromObject({
-    //     minutes: updateDurationMinutes / update.totalAttendance,
-    //   })
-    //     .shiftTo("hours", "minutes", "seconds")
-    //     .toObject();
-    // }
-    // update.avgMileage = update.totalMileage / update.totalAttendance;
 
     console.log("update", update);
     try {

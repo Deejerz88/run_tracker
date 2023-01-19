@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-import _ from "lodash";
-import { Duration } from "luxon";
 import bcrypt from "bcrypt";
 const { Schema } = mongoose;
 
@@ -85,7 +83,7 @@ participantSchema.statics.checkPassword = async function (password, hash) {
   return await bcrypt.compare(password, hash);
 };
 
-participantSchema.pre("save", function (next) {
+participantSchema.pre("save", async function (next) {
   //update password hash
   if (this.password && this.isModified("password"))
     this.password = bcrypt.hashSync(this.password, 10);
@@ -93,6 +91,7 @@ participantSchema.pre("save", function (next) {
   //update username_lower and email_lower for queries
   this.username_lower = this.username?.toLowerCase() || "";
   this.email_lower = this.email?.toLowerCase() || "";
+
   next();
 });
 

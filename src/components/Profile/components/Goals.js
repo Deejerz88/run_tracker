@@ -34,8 +34,8 @@ const Goals = () => {
     date: null,
   });
   const [races, setRaces] = useState([]);
-  const [Context, setContext] = useContext(AppContext);
-  const [participant, setParticipant] = useState(Context.participant);
+  const [Context] = useContext(AppContext);
+  const [participant] = useState(Context.participant);
   console.log("participant", participant);
   const resetState = (type) => {
     setState({
@@ -174,6 +174,7 @@ const Goals = () => {
           [target]: state[category],
           date,
         };
+        console.log("data", data);
       }
     } else if (id === "add-goal-date") {
       console.log(e.target);
@@ -202,6 +203,7 @@ const Goals = () => {
 
   useEffect(() => {
     const table = new Tabulator("#goal-table", {
+      data: participant.goals,
       layout: "fitColumns",
       height: "100%",
       placeholder: "No Goals yet!",
@@ -242,13 +244,13 @@ const Goals = () => {
             const { id } = race;
             if (type === "race") {
               const targetRace = participant.races.find((r) => r.id === id);
-              console.log("targetRace", targetRace)
+              console.log("targetRace", targetRace);
               if (!targetRace) return 0;
               if (category === "mileage") {
                 return targetRace.mileage / target;
               }
             }
-            return 50
+            return 50;
           },
           formatter: "progress",
           formatterParams: {
@@ -264,11 +266,9 @@ const Goals = () => {
       ],
     });
     table.on("tableBuilt", () => {
-      console.log("goals", participant.goals);
-      table.setData(participant.goals);
-      table.redraw(true);
+      console.log("goals table built");
     });
-  }, [participant.goals]);
+  }, [participant.goals, participant.races]);
 
   const Race = () => {
     const raceList = ["", ...races];
