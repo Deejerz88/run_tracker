@@ -404,7 +404,7 @@ const Goals = () => {
                 minutes,
                 seconds,
               }).toFormat("m:ss");
-              return `<b>${startCase(category)}:</b> ${value}`;
+              return `<b>${startCase(category)}:</b><br/> ${value}`;
             } else if (category === "duration") {
               const { hours, minutes, seconds } = cell.getValue();
               const value = DurationLux.fromObject({
@@ -412,8 +412,8 @@ const Goals = () => {
                 minutes,
                 seconds,
               }).toFormat("h:mm:ss");
-              return `<b>${startCase(category)}:</b> ${value}`;
-            } else return `<b>${startCase(category)}:</b> ${cell.getValue()}`;
+              return `<b>${startCase(category)}:</b><br/> ${value}`;
+            } else return `<b>${startCase(category)}:</b> <br/>${cell.getValue()}`;
           },
         },
         {
