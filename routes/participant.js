@@ -250,21 +250,35 @@ router.post("/", dbConnect, async (req, res) => {
         $unwind: "$races",
       },
       {
-        $unwind: "$races.attendance",
-      },
-      {
-        $group: {
-          _id: "$user_id",
-          totalAttendance: { $sum: 1 },
-          totalMileage: { $sum: "$races.attendance.mileage" },
-        },
-      },
-      {
         $project: {
-          _id: 0,
-          totalAttendance: 1,
-          totalMileage: 1,
-          avgMileage: { $divide: ["$totalMileage", "$totalAttendance"] },
+          _id: "$_id",
+          totalAttendance: { $sum: "$races.totalAttendance" },
+          totalMileage: { $sum: "$races.totalMileage" },
+          avgMileage: { $avg: "$races.avgMileage" },
+          paceMinutes: {
+            $avg: "$races.avgPace.minutes",
+          },
+          paceSeconds: {
+            $avg: "$races.avgPace.seconds",
+          },
+          avgDurationHours: {
+            $avg: "$races.avgDuration.hours",
+          },
+          avgDurationMinutes: {
+            $avg: "$races.avgDuration.minutes",
+          },
+          avgDurationSeconds: {
+            $avg: "$races.avgDuration.seconds",
+          },
+          totalDurationHours: {
+            $sum: "$races.totalDuration.hours",
+          },
+          totalDurationMinutes: {
+            $sum: "$races.totalDuration.minutes",
+          },
+          totalDurationSeconds: {
+            $sum: "$races.totalDuration.seconds",
+          },
         },
       },
     ]);
@@ -274,6 +288,26 @@ router.post("/", dbConnect, async (req, res) => {
     update.totalAttendance = totals.totalAttendance;
     update.totalMileage = totals.totalMileage;
     update.avgMileage = totals.avgMileage;
+    update.avgDuration = Duration.fromObject({
+      hours: totals.avgDurationHours,
+      minutes: totals.avgDurationMinutes,
+      seconds: totals.avgDurationSeconds,
+    })
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
+    update.totalDuration = Duration.fromObject({
+      hours: totals.totalDurationHours,
+      minutes: totals.totalDurationMinutes,
+      seconds: totals.totalDurationSeconds,
+    })
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
+    update.avgPace = Duration.fromObject({
+      minutes: totals.paceMinutes,
+      seconds: totals.paceSeconds,
+    })
+      .shiftTo("minutes", "seconds")
+      .toObject();
 
     console.log("update", update);
     try {
@@ -293,8 +327,9 @@ router.post("/", dbConnect, async (req, res) => {
 
 router.post("/goal", dbConnect, async (req, res) => {
   const { user_id, goal } = req.body;
+  console.log("user_id", user_id, "goal", goal);
   let doc = await Participant.findOne({ user_id });
-  if (!doc) return res.status(500).json("error");
+  if (!doc) return res.status(409).json("no participant found");
   console.log("doc", doc);
   doc.goals.push(goal);
   await doc.save();

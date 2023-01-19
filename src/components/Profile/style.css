@@ -487,3 +487,56 @@ label[for="acknowledged"] {
   background: rgba(0, 0, 0, 0.9) !important;
   color: white;
 }
+
+.progress-cont {
+  display: flex !important;
+  align-items: center;
+  height: 100%;
+}
+
+.mileage-progress,
+.duration-progress {
+  /* background-color: #0a9e14; */
+  /* box-shadow: inset 0 3px 5px #b00c0c; */
+  border-radius: 5px;
+  height: 30px;
+  align-self: center;
+  display: flex;
+}
+.mileage-progress-label {
+  font-weight: bold;
+  color: black;
+  width: 75px;
+  margin-left: 50px;
+}
+
+.duration-progress-label {
+  /* font-size: 0.9em; */
+  font-weight: bold;
+  color: black;
+  width: 100px;
+  margin-left: 10px;
+}
+
+.tabulator-cell[tabulator-field="progress"] {
+  padding: 0;
+}
+
+.pace-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pace-badge > span {
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.progress-button {
+  width: 90% !important;
+}
+
+.progress-button > button {
+  font-weight: bold;
+}

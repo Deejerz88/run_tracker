@@ -10,11 +10,13 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import { BsPlusLg } from "react-icons/bs/index.esm.js";
-import $, { data } from "jquery";
+import $ from "jquery";
 import { startCase } from "lodash";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { AppContext } from "../../../App.js";
 import { DateTime, Duration as DurationLux } from "luxon";
+import { renderToString } from "react-dom/server";
+import { toast } from "react-toastify";
 
 const Goals = () => {
   const [state, setState] = useState({
@@ -125,12 +127,13 @@ const Goals = () => {
   useEffect(() => {
     if (!state.category) return;
 
-    if (!state.race) showRow([3, 4]);
-    else state.category === "Finish" ? hideRow([4, 5]) : showRow([4, 5]);
+    if (!state.race) showRow([3]);
+    else state.category === "Finish" ? hideRow([4]) : showRow([4]);
   }, [state.category, state.race, hideRow, showRow]);
 
   const handleBlur = (e) => {
     e.preventDefault();
+    console.log("state", state);
     const { id, value } = e.target;
     const [group, field] = id.split("-");
     group === "mileage"
@@ -147,7 +150,7 @@ const Goals = () => {
         }));
   };
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     const { type, id } = e.target;
@@ -164,17 +167,39 @@ const Goals = () => {
         }, 0);
       } else {
         //submit goal
-        const { type, race, category, date } = state;
+        let { type, race, category, date } = state;
+        race = races.find((r) => r.name === race);
+        category =
+          category.split(" ")[1]?.toLowerCase() || category.toLowerCase();
+        console.log("category", category, state, "race", race);
         const target =
-          category === "Average Pace" ? "pace" : state[category].toLowerCase();
+          category === "Average Pace" ? "pace" : category.toLowerCase();
         const data = {
-          type,
-          race,
-          category,
-          [target]: state[category],
-          date,
+          user_id: participant.user_id,
+          goal: {
+            type,
+            race,
+            category,
+            [target]: state[category.toLowerCase()],
+            date,
+          },
         };
         console.log("data", data);
+        const { data: goal } = await axios.post("/participant/goal", data);
+        console.log("goal", goal);
+        const table = Tabulator.findTable("#goal-table")[0];
+        table.addRow(data.goal);
+        resetState();
+        hideRow([2, 3, 4, 5]);
+        $("#goal-form").height(100);
+        $("#reset-goal").css({ opacity: 0 });
+        setTimeout(() => {
+          $("#reset-goal").css({ display: "none" });
+        }, 300);
+        toast.success("Goal added!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
       }
     } else if (id === "add-goal-date") {
       console.log(e.target);
@@ -200,75 +225,6 @@ const Goals = () => {
       setRaces(races);
     })();
   }, []);
-
-  useEffect(() => {
-    const table = new Tabulator("#goal-table", {
-      data: participant.goals,
-      layout: "fitColumns",
-      height: "100%",
-      placeholder: "No Goals yet!",
-      columns: [
-        {
-          title: "Type",
-          field: "type",
-          formatter: (cell) => startCase(cell.getValue()),
-        },
-        {
-          title: "Race",
-          field: "race",
-          formatter: (cell) => cell.getValue().name,
-        },
-        {
-          title: "Target",
-          field: "target",
-          mutator: (value, data) => data[data.category],
-          formatter: (cell) => {
-            console.log("value", cell.getValue());
-            const { category } = cell.getRow().getData();
-            if (category === "pace") {
-              const { minutes, seconds } = cell.getValue();
-              const value = DurationLux.fromObject({
-                minutes,
-                seconds,
-              }).toFormat("m:ss");
-              return `<b>${startCase(category)}:</b> ${value}`;
-            }
-            return `<b>${startCase(category)}:</b> ${cell.getValue()}`;
-          },
-        },
-        {
-          title: "Progress",
-          field: "progress",
-          mutator: (value, data) => {
-            const { type, race, category, target } = data;
-            const { id } = race;
-            if (type === "race") {
-              const targetRace = participant.races.find((r) => r.id === id);
-              console.log("targetRace", targetRace);
-              if (!targetRace) return 0;
-              if (category === "mileage") {
-                return targetRace.mileage / target;
-              }
-            }
-            return 50;
-          },
-          formatter: "progress",
-          formatterParams: {
-            min: 0,
-            max: data.target,
-          },
-        },
-        { title: "Category", field: "category", visible: false },
-        { title: "Mileage", field: "mileage", visible: false },
-        { title: "Pace", field: "pace", visible: false },
-        { title: "Duration", field: "duration", visible: false },
-        { title: "Date", field: "date", visible: false },
-      ],
-    });
-    table.on("tableBuilt", () => {
-      console.log("goals table built");
-    });
-  }, [participant.goals, participant.races]);
 
   const Race = () => {
     const raceList = ["", ...races];
@@ -320,8 +276,8 @@ const Goals = () => {
           id="mileage"
           type="number"
           name="target"
-          value={state.mileage}
-          onChange={handleChange}
+          defaultValue={state.mileage}
+          onBlur={handleBlur}
           className=""
         />
       </FloatingLabel>
@@ -415,6 +371,419 @@ const Goals = () => {
     );
   };
 
+  useEffect(() => {
+    const table = new Tabulator("#goal-table", {
+      layout: "fitColumns",
+      height: "100%",
+      placeholder: "No Goals yet!",
+      columns: [
+        {
+          title: "Type",
+          field: "type",
+          formatter: (cell) => startCase(cell.getValue()),
+          visible: false,
+        },
+        {
+          title: "Race / Team",
+          field: "race",
+          formatter: (cell) =>
+            cell.getData().type === "race"
+              ? cell.getValue()?.name || cell.getData()
+              : "Overall",
+        },
+        {
+          title: "Target",
+          field: "target",
+          mutator: (value, data) => data[data.category],
+          formatter: (cell) => {
+            console.log("value", cell.getValue());
+            const { category } = cell.getRow().getData();
+            if (category === "pace") {
+              const { minutes, seconds } = cell.getValue();
+              const value = DurationLux.fromObject({
+                minutes,
+                seconds,
+              }).toFormat("m:ss");
+              return `<b>${startCase(category)}:</b> ${value}`;
+            } else if (category === "duration") {
+              const { hours, minutes, seconds } = cell.getValue();
+              const value = DurationLux.fromObject({
+                hours,
+                minutes,
+                seconds,
+              }).toFormat("h:mm:ss");
+              return `<b>${startCase(category)}:</b> ${value}`;
+            } else return `<b>${startCase(category)}:</b> ${cell.getValue()}`;
+          },
+        },
+        {
+          title: "Progress",
+          field: "progress",
+          width: 150,
+          mutator: (value, data) => {
+            let { type, race, category, target } = data;
+            console.log("progress target", target);
+            if (type === "race") {
+              if (!race) return 0;
+              const { id } = race;
+              const targetRace = participant.races.find((r) => r.id === id);
+              console.log("targetRace", targetRace);
+              if (!targetRace) {
+                return renderToString(
+                  <Row className="h-100 justify-content-center align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button variant="success" className="">
+                        No Data
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              }
+              if (category === "mileage") {
+                return (targetRace.totalMileage / target) * 100;
+              } else if (category === "pace") {
+                console.log("pace mutator", category, targetRace.avgPace);
+                const { minutes: currentMinutes, seconds: currentSeconds } =
+                  targetRace.avgPace || {};
+                if (!currentMinutes && !currentSeconds) return 0;
+                const currentPace = DurationLux.fromObject({
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).shiftTo("seconds");
+                delete target._id;
+                const targetPace =
+                  DurationLux.fromObject(target).shiftTo("seconds");
+                console.log(
+                  "currentPace",
+                  currentPace,
+                  "targetPace",
+                  targetPace
+                );
+                const difference = currentPace.minus(targetPace);
+
+                console.log("difference", difference);
+
+                return difference.as("seconds");
+              } else if (category === "duration") {
+                const {
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                } = targetRace.totalDuration || {};
+                if (!currentHours && !currentMinutes && !currentSeconds)
+                  return 0;
+                const currentDuration = DurationLux.fromObject({
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).as("seconds");
+                delete target._id;
+                const targetDuration =
+                  DurationLux.fromObject(target).as("seconds");
+                console.log(
+                  "currentDuration",
+                  currentDuration,
+                  "targetDuration",
+                  targetDuration
+                );
+
+                return (currentDuration / targetDuration) * 100;
+              }
+            } else {
+              if (category === "mileage") {
+                return (participant.totalMileage / target) * 100;
+              } else if (category === "pace") {
+                const { minutes: currentMinutes, seconds: currentSeconds } =
+                  participant.avgPace || {};
+                if (!currentMinutes && !currentSeconds) return 0;
+                const currentPace = DurationLux.fromObject({
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).shiftTo("seconds");
+                delete target._id;
+                const targetPace =
+                  DurationLux.fromObject(target).shiftTo("seconds");
+                console.log(
+                  "currentPace",
+                  currentPace,
+                  "targetPace",
+                  targetPace
+                );
+                const difference = currentPace.minus(targetPace);
+
+                console.log("difference", difference);
+
+                return difference.as("seconds");
+              } else if (category === "duration") {
+                const {
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                } = participant.totalDuration || {};
+                if (!currentHours && !currentMinutes && !currentSeconds)
+                  return 0;
+                const currentDuration = DurationLux.fromObject({
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).as("seconds");
+                delete target._id;
+                const targetDuration =
+                  DurationLux.fromObject(target).as("seconds");
+                console.log(
+                  "currentDuration",
+                  currentDuration,
+                  "targetDuration",
+                  targetDuration
+                );
+
+                return (currentDuration / targetDuration) * 100;
+              }
+            }
+            return 0;
+          },
+          formatter: (cell) => {
+            const { type, category, race, target } = cell.getRow().getData();
+            let value = cell.getValue();
+            if (type === "race") {
+              if (!race) return;
+              const { id } = race;
+              const targetRace = participant.races.find((r) => r.id === id);
+              console.log("targetRace", targetRace);
+              if (!targetRace) {
+                return renderToString(
+                  <Row className="h-100 justify-content-center align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button variant="success" className="">
+                        No Data
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              }
+              if (category === "mileage") {
+                const { totalMileage } = targetRace;
+                value = value > 100 ? 100 : value;
+                return renderToString(
+                  <Row className="h-100 justify-content-center align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant="success"
+                        style={{ width: `${value}%` }}
+                        className={
+                          value === 0
+                            ? "d-none"
+                            : value === 100
+                            ? "rounded"
+                            : ""
+                        }
+                      >
+                        {value > 66
+                          ? `${totalMileage} / ${target}`
+                          : value > 33
+                          ? totalMileage
+                          : ``}
+                      </Button>
+                      <Button
+                        variant="danger"
+                        style={{ width: `${100 - value}%` }}
+                        className={
+                          value === 100
+                            ? "d-none"
+                            : value === 0
+                            ? "rounded"
+                            : ""
+                        }
+                      >
+                        {value > 66
+                          ? ""
+                          : value > 33
+                          ? target
+                          : `${totalMileage} / ${target}`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              } else if (category === "pace") {
+                const difference = DurationLux.fromObject({ seconds: value })
+                  .shiftTo("minutes", "seconds")
+                  .toObject();
+                console.log("pace difference", difference);
+                const { minutes, seconds } = difference;
+                const sign = minutes < 0 || seconds < 0 ? "- " : "+ ";
+                return renderToString(
+                  <Row className="justify-content-center h-100 align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant={
+                          minutes < 0 || seconds < 0 ? "success" : "danger"
+                        }
+                        style={{ width: `${Math.abs(value)}%` }}
+                      >
+                        {`${sign}${Math.abs(minutes)}m ${Math.abs(
+                          seconds.toFixed(0)
+                        )}s`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              } else if (category === "duration") {
+                const { totalDuration } = targetRace;
+                const {
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                } = totalDuration || {};
+                const currentDuration = DurationLux.fromObject({
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).shiftTo("seconds");
+                const targetDuration =
+                  DurationLux.fromObject(target).shiftTo("seconds");
+
+                const difference = currentDuration.minus(targetDuration);
+
+                const { hours, minutes, seconds } = difference
+                  .shiftTo("hours", "minutes", "seconds")
+                  .toObject();
+
+                const sign = minutes >= 0 ? "+" : "-";
+                return renderToString(
+                  <Row className="justify-content-center h-100 align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant={minutes < 0 ? "danger" : "success"}
+                        style={{ width: `${Math.abs(value)}%` }}
+                      >
+                        {sign}
+                        {hours ? `${Math.abs(hours)}h ` : ""}
+                        {minutes ? `${Math.abs(minutes)}m ` : ""}
+                        {`${Math.abs(seconds.toFixed(0))}s`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              }
+            } else {
+              if (category === "mileage") {
+                const { totalMileage } = participant;
+                value = value > 100 ? 100 : value;
+                console.log("mileage value", value);
+                return renderToString(
+                  <Row className="h-100 justify-content-center align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant="success"
+                        style={{ width: `${value}%` }}
+                        className={
+                          value === 0
+                            ? "d-none"
+                            : value === 100
+                            ? "rounded"
+                            : ""
+                        }
+                      >
+                        {value > 66
+                          ? `${totalMileage} / ${target}`
+                          : value > 33
+                          ? totalMileage
+                          : ``}
+                      </Button>
+                      <Button
+                        variant="danger"
+                        style={{ width: `${100 - value}%` }}
+                        className={
+                          value === 100
+                            ? "d-none"
+                            : value === 0
+                            ? "rounded"
+                            : ""
+                        }
+                      >
+                        {value > 66
+                          ? ""
+                          : value > 33
+                          ? target
+                          : `${totalMileage} / ${target}`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              } else if (category === "pace") {
+                const difference = DurationLux.fromObject({ seconds: value })
+                  .shiftTo("minutes", "seconds")
+                  .toObject();
+                console.log("pace difference", difference);
+                const { minutes, seconds } = difference;
+                const sign = minutes < 0 || seconds < 0 ? "- " : "+ ";
+                return renderToString(
+                  <Row className="justify-content-center h-100 align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant={
+                          minutes < 0 || seconds < 0 ? "success" : "danger"
+                        }
+                        style={{ width: `${Math.abs(value)}%` }}
+                      >
+                        {`${sign}${Math.abs(minutes)}m ${Math.abs(seconds.toFixed(0))}s`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              } else if (category === "duration") {
+                const {
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                } = participant.totalDuration || {};
+                const currentDuration = DurationLux.fromObject({
+                  hours: currentHours,
+                  minutes: currentMinutes,
+                  seconds: currentSeconds,
+                }).shiftTo("seconds");
+                const targetDuration =
+                  DurationLux.fromObject(target).shiftTo("seconds");
+
+                const difference = currentDuration.minus(targetDuration);
+
+                const { hours, minutes, seconds } = difference
+                  .shiftTo("hours", "minutes", "seconds")
+                  .toObject();
+
+                const sign = minutes >= 0 ? "+" : "-";
+                return renderToString(
+                  <Row className="justify-content-center h-100 align-items-center">
+                    <ButtonGroup className="progress-button">
+                      <Button
+                        variant={minutes < 0 ? "danger" : "success"}
+                        style={{ width: `${Math.abs(value)}%` }}
+                      >
+                        {sign}
+                        {hours ? `${Math.abs(hours)}h ` : ""}
+                        {minutes ? `${Math.abs(minutes)}m ` : ""}
+                        {`${Math.abs(seconds.toFixed(0))}s`}
+                      </Button>
+                    </ButtonGroup>
+                  </Row>
+                );
+              }
+            }
+          },
+        },
+        { title: "Category", field: "category", visible: false },
+        { title: "Mileage", field: "mileage", visible: false },
+        { title: "Pace", field: "pace", visible: false },
+        { title: "Duration", field: "duration", visible: false },
+        { title: "Date", field: "date", visible: false },
+      ],
+    });
+    table.on("tableBuilt", () => {
+      console.log("goals table built");
+      table.setData(participant.goals);
+    });
+  }, [participant]);
+
   return (
     <>
       <Form id="goal-form" onClick={handleClick} className="mb-3">
@@ -426,7 +795,7 @@ const Goals = () => {
             <ButtonGroup
               id="goal-type"
               name="type"
-              className="w-50"
+              className="w-75"
               onClick={handleChange}
             >
               {["overall", "race"].map((type, i) => {
@@ -447,7 +816,7 @@ const Goals = () => {
             </ButtonGroup>
           </Col>
         </Row>
-        {[2, 3, 4, 5].map((i) => {
+        {[2, 3, 4].map((i) => {
           const race = state.type === "race";
           return (
             <Row key={i} id={`goal-row-${i}`} className=" ">
