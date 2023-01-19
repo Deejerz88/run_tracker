@@ -221,18 +221,24 @@ router.post("/", dbConnect, async (req, res) => {
       hours: avgDurationHours,
       minutes: avgDurationMinutes,
       seconds: avgDurationSeconds,
-    }).toObject();
+    })
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
 
     race.totalDuration = Duration.fromObject({
       hours: totalDurationHours,
       minutes: totalDurationMinutes,
       seconds: totalDurationSeconds,
-    }).toObject();
+    })
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
 
     race.avgPace = Duration.fromObject({
       minutes: paceMinutes,
       seconds: paceSeconds,
-    }).toObject();
+    })
+      .shiftTo("minutes", "seconds")
+      .toObject();
 
     console.log("update", race);
 
