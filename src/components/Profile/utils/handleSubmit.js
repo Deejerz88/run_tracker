@@ -26,7 +26,7 @@ const handleSubmit = async ({
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,
     });
-    return; 
+    return;
   } else if (
     activeKey === "in" &&
     state.duration?.hours >= 1 &&
@@ -61,17 +61,18 @@ const handleSubmit = async ({
     const { id, value } = field;
     const [group, type] = id.split("-"); //duration-hours, pace-minutes, etc
 
-    data[group][type] =
-      group === "start" || group === "finish"
-        ? DateTime.fromFormat(value, "HH:mm").toMillis()
-        : Number(value);
+    if (group !== "mileage")
+      data[group][type] =
+        group === "start" || group === "finish"
+          ? DateTime.fromFormat(value, "HH:mm").toMillis()
+          : Number(value);
+    else data[group] = Number(value);
   });
 
   const { pace, duration, start, finish, mileage } = data;
   console.log("data", data);
 
   console.log("participant races", participant.races);
-
 
   participant.races = [
     {
@@ -83,7 +84,7 @@ const handleSubmit = async ({
           duration,
           start: start.time,
           finish: finish.time,
-          mileage: mileage.actual || mileage.target,
+          mileage,
           checkedIn: state.checkedIn,
           checkedOut: state.checkedOut,
           [`checked${startCase(activeKey)}`]: true,

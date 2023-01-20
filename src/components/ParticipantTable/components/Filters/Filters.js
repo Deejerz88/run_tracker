@@ -16,13 +16,37 @@ import {
 } from "react-icons/md/index.esm.js";
 import { BsCheck2Circle, BsXCircle } from "react-icons/bs/index.esm.js";
 import { AppContext } from "../../../../App.js";
+import _ from "lodash";
+import { Duration } from "luxon";
 
-const Filters = ({ races }) => {
+const Filters = ({ races, tableData }) => {
   //filter by name and checked in true/false
   const [name, setName] = useState("");
   const [checkedIn, setCheckedIn] = useState("both");
   const [checkedOut, setCheckedOut] = useState("both");
   const [Context, setContext] = useContext(AppContext);
+  const [count, setCount] = useState({
+    in: tableData.length,
+    out: tableData.length,
+  });
+  const [stats, setStats] = useState({
+    totalMileage: 0,
+  });
+
+  const getCount = (table) => {
+    table = table || Tabulator.findTable("#participant-table")[0];
+    if (!table) return { in: 0, out: 0 };
+    const data = table.getData("active");
+    const inCount = checkedIn
+      ? data.filter((d) => d.checkedIn).length
+      : data.filter((d) => !d.checkedIn).length;
+
+    const outCount = checkedOut
+      ? data.filter((d) => d.checkedOut).length
+      : data.filter((d) => !d.checkedOut).length;
+
+    return { in: inCount, out: outCount };
+  };
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -49,6 +73,37 @@ const Filters = ({ races }) => {
       table.setData();
     }
   };
+
+  useEffect(() => {
+    const { race } = Context;
+    const races = tableData
+      .map(
+        (p) =>
+          p.races
+            ?.filter((r) => r.id === race.id)[0]
+            ?.attendance?.filter((a) => a.date === Context.date)[0]
+      )
+      .filter((r) => r);
+    console.log("race", races);
+    const totalMileage = races.reduce((a, b) => a + b.mileage || 0, 0);
+    let totalDuration = races.reduce((acc, curr) => {
+      delete curr.duration._id;
+      const duration = Duration.fromObject(curr.duration || { hours: 0 }).as(
+        "seconds"
+      );
+      return acc + duration;
+    }, 0);
+    totalDuration = Duration.fromObject({ seconds: totalDuration })
+      .shiftTo("hours", "minutes", "seconds")
+      .toObject();
+    const { hours, minutes, seconds } = totalDuration;
+    totalDuration = `${hours ? hours + "h" : ""} ${
+      minutes ? minutes + "m" : ""
+    } ${seconds + "s"}`;
+    console.log("totalMileage", totalMileage, "totalDuration", totalDuration);
+    setStats({ totalMileage, totalDuration });
+    setCount(getCount());
+  }, [tableData]);
 
   useEffect(() => {
     const { race } = Context;
@@ -103,11 +158,12 @@ const Filters = ({ races }) => {
     const filters = table.getFilters().filter((f) => f.field === "checkedIn");
     filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
 
-    if (checkedIn === "both") return;
+    if (checkedIn !== "both")
+      checkedIn
+        ? table.addFilter("checkedIn", "=", true)
+        : table.addFilter("checkedIn", "=", false);
 
-    checkedIn
-      ? table.addFilter("checkedIn", "=", true)
-      : table.addFilter("checkedIn", "=", false);
+    setCount(getCount(table));
   }, [checkedIn]);
 
   useEffect(() => {
@@ -117,11 +173,12 @@ const Filters = ({ races }) => {
     const filters = table.getFilters().filter((f) => f.field === "checkedOut");
     filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
 
-    if (checkedOut === "both") return;
+    if (checkedOut !== "both")
+      checkedOut
+        ? table.addFilter("checkedOut", "=", true)
+        : table.addFilter("checkedOut", "=", false);
 
-    checkedOut
-      ? table.addFilter("checkedOut", "=", true)
-      : table.addFilter("checkedOut", "=", false);
+    setCount(getCount(table));
   }, [checkedOut]);
 
   return (
@@ -157,7 +214,7 @@ const Filters = ({ races }) => {
           </FloatingLabel>
         </InputGroup>
       </Row>
-      <Row className="mx-2 mb-3">
+      <Row className="mx-2">
         <Form>
           <Row id="filter-row-2">
             <Col>
@@ -180,7 +237,8 @@ const Filters = ({ races }) => {
                 </Button>
               </InputGroup>
             </Col>
-            <Col className="d-flex justify-content-center align-items-center">
+
+            <Col className="d-flex justify-content-center align-items-center mb-3">
               <Button
                 id="checked-in"
                 name="checkedIn"
@@ -196,7 +254,7 @@ const Filters = ({ races }) => {
                 ) : (
                   <BsXCircle />
                 )}{" "}
-                Checked In
+                Checked In: {count.in}
               </Button>
               <Button
                 id="checked-out"
@@ -213,11 +271,19 @@ const Filters = ({ races }) => {
                 ) : (
                   <BsXCircle />
                 )}{" "}
-                Checked Out
+                Checked Out: {count.out}
               </Button>
             </Col>
           </Row>
         </Form>
+        <ButtonGroup id="table-stats" className="mb-2 ">
+          <Button variant="light" className="stat-button">
+            <b>Total Miles:</b> {stats.totalMileage}
+          </Button>
+          <Button variant="light" className="stat-button">
+            <b>Total Duration:</b> {stats.totalDuration}
+          </Button>
+        </ButtonGroup>
       </Row>
     </>
   );

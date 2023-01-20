@@ -24,6 +24,7 @@ const ParticipantTable = () => {
   const [races, setRaces] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [Context, setContext] = useContext(AppContext);
+  const [tableData, setTableData] = useState([]);
 
   const { user } = Context;
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ const ParticipantTable = () => {
     return checkedOut && checkedIn
       ? `<b>${value}</b>`
       : value
-      ? `<em>${value}</em>`
+      ? `<i>${value}</i>`
       : "";
   };
 
@@ -142,7 +143,9 @@ const ParticipantTable = () => {
           );
           return { ...d, ...participant };
         });
-        return _.uniqBy(updated, "user_id");
+        const data = _.uniqBy(updated, "user_id");
+        setTableData(data);
+        return data;
       },
       layout: "fitColumns",
       placeholder: "No Participants",
@@ -190,10 +193,10 @@ const ParticipantTable = () => {
             console.log("collapsed", collapsed);
             toggle.html(
               collapsed
-              ? renderToString(<BsFillDashCircleFill />)
-              : renderToString(<BsFillPlusCircleFill />)
-              );
-              $("#collapse-toggle").data("collapsed", !collapsed);
+                ? renderToString(<BsFillDashCircleFill />)
+                : renderToString(<BsFillPlusCircleFill />)
+            );
+            $("#collapse-toggle").data("collapsed", !collapsed);
             $(".tabulator-responsive-collapse-toggle").each((i, el) =>
               el.click()
             );
@@ -363,8 +366,8 @@ const ParticipantTable = () => {
         {Context.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
       <Login show={showLogin} setShow={setShowLogin} races={races} />
-      <Filters races={races} />
-      <div className="m-3 " id="participant-table" />
+      <Filters races={races} tableData={tableData} Context={Context} />
+      <div className="mx-3 " id="participant-table" />
     </>
   );
 };

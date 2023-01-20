@@ -93,47 +93,28 @@ router.get("/:type/:raceId", async (req, res) => {
 
 router.post("/checkin", dbConnect, async (req, res) => {
   let update = req.body;
+  delete update._id;
   const raceUpdate = update.races[0];
-  const attendanceUpdate = raceUpdate.attendance[0];
-  console.log("update", update);
+  // const attendanceUpdate = raceUpdate.attendance[0];
+  let doc = await Participant.findOne({ user_id: update.user_id }).lean();
+  console.log("doc", doc);
 
-  let doc = await Participant.findOne({ user_id: update.user_id });
-  console.log("attendanceUpdate", attendanceUpdate);
   if (doc) {
-    update._id = doc._id;
-    const { races } = doc;
+    update = { ...doc, ...update };
+    console.log("update", update);
 
-    let race = races?.find((r) => r.id === raceUpdate.id);
-    console.log("race", race);
+    // const { races } = update;
 
-    //update race
-    if (race) {
-      const { attendance } = race;
-      const thisAttendance = attendance?.find(
-        (a) => a.date === attendanceUpdate.date
-      );
-
-      //update attendance
-      if (thisAttendance) {
-        thisAttendance.start = attendanceUpdate.start || thisAttendance.start;
-        thisAttendance.finish =
-          attendanceUpdate.finish || thisAttendance.finish;
-        thisAttendance.checkedIn =
-          attendanceUpdate.checkedIn || thisAttendance.checkedIn;
-        thisAttendance.checkedOut =
-          attendanceUpdate.checkedOut || thisAttendance.checkedOut;
-      } else attendance.push(attendanceUpdate);
-    } else races.push(raceUpdate);
-
-    update.races = doc.races;
+    // let race = races?.find((r) => r.id === raceUpdate.id);
+    // console.log("race", race);
 
     try {
-      await doc.updateOne(update);
+      await Participant.updateOne({ user_id: update.user_id }, update);
     } catch (e) {
       console.log("e", e);
     }
 
-    race = update.races.find((r) => r.id === raceUpdate.id);
+    let race = update.races.find((r) => r.id === raceUpdate.id);
 
     //use aggregation to calculate totals
 
@@ -208,7 +189,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
 
     console.log("update", update);
     try {
-      await doc.updateOne(update);
+      await Participant.updateOne({ user_id: update.user_id }, update);
       res.json(update);
     } catch (e) {
       console.log("e", e);
