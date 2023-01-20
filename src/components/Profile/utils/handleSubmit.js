@@ -98,7 +98,7 @@ const handleSubmit = async ({
 
   try {
     let { data: newParticipant } = await axios.post(
-      "/participant",
+      "/participant/checkin",
       participant
     );
 

@@ -94,15 +94,13 @@ const Profile = () => {
     const thisRace = participant.races?.find((r) => r?.id === race.id);
     console.log("thisRace", thisRace);
     if (!thisRace) {
-      if (!participant.avgMileage) return;
-
-      setState({
-        mileage: participant.avgMileage,
-        pace: participant.avgPace,
-        duration: participant.avgDuration,
+      setState((prev) => ({
+        mileage: participant.avgMileage || prev.mileage,
+        pace: participant.avgPace || prev.pace,
+        duration: participant.avgDuration || prev.duration,
         start: null,
         finish: null,
-      });
+      }));
       return;
     }
 
@@ -118,28 +116,28 @@ const Profile = () => {
         console.log("weekdayLong", weekdayLong, "startTime", startTime);
         start = DateTime.local().set({ hour: startTime, minute: 0 }).toMillis();
       }
-      setState({
-        mileage: thisRace.avgMileage,
-        pace: thisRace.avgPace,
-        duration: thisRace.avgDuration,
+      setState((prev) => ({
+        mileage: thisRace.avgMileage || prev.mileage,
+        pace: thisRace.avgPace || prev.pace,
+        duration: thisRace.avgDuration || prev.duration,
         start,
         finish: null,
-      });
+      }));
       return;
     }
 
     const { mileage, pace, duration, start, finish, checkedIn, checkedOut } =
       todaysAttendance;
 
-    setState({
-      mileage,
-      pace,
-      duration,
-      checkedIn,
-      checkedOut,
-      start,
-      finish,
-    });
+    setState((prev) => ({
+      mileage: mileage || prev.mileage,
+      pace: pace || prev.pace,
+      duration: duration || prev.duration,
+      checkedIn: checkedIn || prev.checkedIn,
+      checkedOut: checkedOut || prev.checkedOut,
+      start: start || prev.start,
+      finish: finish || prev.finish,
+    }));
   }, [participant, Context, setContext]);
 
   return (

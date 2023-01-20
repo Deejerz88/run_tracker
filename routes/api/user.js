@@ -4,8 +4,7 @@ import { Participant } from "../../schemas/index.js";
 import sgMail from "@sendgrid/mail";
 import Pusher from "pusher";
 import "dotenv/config";
-import mongoose from "mongoose";
-import dbConnect from "../../dbConnect/dbConnect.js";
+import dbConnect from "../../utils/dbConnect.js";
 import _ from "lodash";
 
 const pusher = new Pusher({
@@ -25,12 +24,7 @@ router.post("/", dbConnect, async (req, res) => {
 
   let user = await Participant.findOne({ email });
   if (!user) return res.status(404).json({ error: "User not found" });
-
-  user.first_name = first_name;
-  user.last_name = last_name;
-  user.phone = phone;
-  user.username = username;
-  user.password = password;
+  user = { ...user, first_name, last_name, email, phone, username };
 
   if (password) {
     console.log("changing password", password);

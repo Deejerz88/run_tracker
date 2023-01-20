@@ -1,8 +1,9 @@
 import express from "express";
 import axios from "axios";
 import { Participant } from "../schemas/index.js";
-import dbConnect from "../dbConnect/dbConnect.js";
+import dbConnect from "../utils/dbConnect.js";
 import { Duration } from "luxon";
+import { raceTotals, userTotals } from "../utils/index.js";
 import "dotenv/config";
 
 const router = express.Router();
@@ -10,19 +11,6 @@ const router = express.Router();
 router.get("/", dbConnect, async (req, res) => {
   const participants = await Participant.find({}).lean();
   res.json(participants);
-});
-
-router.get("/all", async (req, res) => {
-  const participants = await axios.get("https://runsignup.com/rest/users", {
-    params: {
-      api_key: process.env.RSU_KEY,
-      api_secret: process.env.RSU_SECRET,
-      format: "json",
-      results_per_page: 2500,
-    },
-  });
-
-  res.json(participants.data);
 });
 
 router.get("/:user_id", dbConnect, async (req, res) => {
@@ -103,7 +91,7 @@ router.get("/:type/:raceId", async (req, res) => {
   res.json(participants);
 });
 
-router.post("/", dbConnect, async (req, res) => {
+router.post("/checkin", dbConnect, async (req, res) => {
   let update = req.body;
   const raceUpdate = update.races[0];
   const attendanceUpdate = raceUpdate.attendance[0];
@@ -145,57 +133,9 @@ router.post("/", dbConnect, async (req, res) => {
       console.log("e", e);
     }
 
+    race = update.races.find((r) => r.id === raceUpdate.id);
+
     //use aggregation to calculate totals
-
-    const [raceTotals] = await Participant.aggregate([
-      {
-        $match: {
-          user_id: update.user_id,
-        },
-      },
-      {
-        $unwind: "$races",
-      },
-      {
-        $match: {
-          "races.id": raceUpdate.id,
-        },
-      },
-      {
-        $project: {
-          _id: "$_id",
-          totalAttendance: { $size: "$races.attendance" },
-          totalMileage: { $sum: "$races.attendance.mileage" },
-          avgMileage: { $avg: "$races.attendance.mileage" },
-          paceMinutes: {
-            $avg: "$races.attendance.pace.minutes",
-          },
-          paceSeconds: {
-            $avg: "$races.attendance.pace.seconds",
-          },
-          avgDurationHours: {
-            $avg: "$races.attendance.duration.hours",
-          },
-          avgDurationMinutes: {
-            $avg: "$races.attendance.duration.minutes",
-          },
-          avgDurationSeconds: {
-            $avg: "$races.attendance.duration.seconds",
-          },
-          totalDurationHours: {
-            $sum: "$races.attendance.duration.hours",
-          },
-          totalDurationMinutes: {
-            $sum: "$races.attendance.duration.minutes",
-          },
-          totalDurationSeconds: {
-            $sum: "$races.attendance.duration.seconds",
-          },
-        },
-      },
-    ]);
-
-    console.log("raceTotals", raceTotals);
 
     const {
       totalAttendance,
@@ -209,9 +149,7 @@ router.post("/", dbConnect, async (req, res) => {
       totalDurationHours,
       totalDurationMinutes,
       totalDurationSeconds,
-    } = raceTotals;
-
-    race = update.races.find((r) => r.id === raceUpdate.id);
+    } = await raceTotals({ update, raceUpdate });
 
     race.totalAttendance = totalAttendance;
     race.totalMileage = totalMileage;
@@ -240,48 +178,7 @@ router.post("/", dbConnect, async (req, res) => {
       .shiftTo("minutes", "seconds")
       .toObject();
 
-    console.log("update", race);
-
-    const [totals] = await Participant.aggregate([
-      {
-        $match: { user_id: update.user_id },
-      },
-      {
-        $unwind: "$races",
-      },
-      {
-        $project: {
-          _id: "$_id",
-          totalAttendance: { $sum: "$races.totalAttendance" },
-          totalMileage: { $sum: "$races.totalMileage" },
-          avgMileage: { $avg: "$races.avgMileage" },
-          paceMinutes: {
-            $avg: "$races.avgPace.minutes",
-          },
-          paceSeconds: {
-            $avg: "$races.avgPace.seconds",
-          },
-          avgDurationHours: {
-            $avg: "$races.avgDuration.hours",
-          },
-          avgDurationMinutes: {
-            $avg: "$races.avgDuration.minutes",
-          },
-          avgDurationSeconds: {
-            $avg: "$races.avgDuration.seconds",
-          },
-          totalDurationHours: {
-            $sum: "$races.totalDuration.hours",
-          },
-          totalDurationMinutes: {
-            $sum: "$races.totalDuration.minutes",
-          },
-          totalDurationSeconds: {
-            $sum: "$races.totalDuration.seconds",
-          },
-        },
-      },
-    ]);
+    const totals = await userTotals({ update });
 
     console.log("totals", totals);
 
