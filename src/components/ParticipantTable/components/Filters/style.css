@@ -26,8 +26,10 @@
 #checked-out.true-btn,
 #checked-in.true-btn:focus,
 #checked-out.true-btn:focus {
+  font-size: 0.95em;
+
   background-color: green;
-  margin: 0 16px;
+  margin: 0 5px;
   color: white;
   font-weight: bold;
   border: none;
@@ -37,10 +39,10 @@
 #checked-in.false-btn,
 #checked-out.false-btn,
 #checked-in.false-btn:focus,
-#checked-out.false-btn:focus
- {
+#checked-out.false-btn:focus {
+  font-size: 0.95em;
   background-color: red;
-  margin: 0 16px;
+  margin: 0 5px;
   color: white;
   font-weight: bold;
   border: none;
@@ -52,16 +54,12 @@
 #checked-in.both-btn:focus,
 #checked-out.both-btn:focus {
   background-color: #ffffff;
-  margin: 0 16px;
+  font-size: 0.95em;
+  margin: 0 5px;
   color: #ed1c24;
   font-weight: bold;
   border: none;
   box-shadow: 0px 0px 5px #838181, inset 0 0 3px #c8c6c673;
-}
-
-#checked-in {
-  border-right: 1px solid #ddd;
-  /* background-color: red */
 }
 
 .accordion-button:focus {
