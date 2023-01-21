@@ -52,7 +52,7 @@ const handleSubmit = async ({
   const data = {
     duration: {},
     pace: {},
-    mileage: {},
+    mileage: null,
     finish: {},
     start: { time: state.start },
   };

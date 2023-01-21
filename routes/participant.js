@@ -112,7 +112,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
     try {
       if (!race) {
         doc.races.push(raceUpdate);
-        await doc.save();
+        doc = await doc.save();
         console.log("doc.racs", doc.races);
         race = doc.races.find((r) => r.id === raceUpdate.id);
         console.log("new race", race);
@@ -126,13 +126,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
           doc = await doc.save();
           race = doc.races.find((r) => r.id === raceUpdate.id);
         } else {
-          attendance.mileage = attendanceUpdate.mileage;
-          attendance.duration = attendanceUpdate.duration;
-          attendance.pace = attendanceUpdate.pace;
-          attendance.checkedIn = attendanceUpdate.checkedIn;
-          attendance.checkedOut = attendanceUpdate.checkedOut;
-          attendance.start = attendanceUpdate.start;
-          attendance.finish = attendanceUpdate.finish;
+          attendance = { ...attendance, ...attendanceUpdate };
           doc = await doc.save();
           race = doc.races.find((r) => r.id === raceUpdate.id);
           console.log("new race", race, race.attendance);
