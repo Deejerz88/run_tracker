@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import {
   Row,
   Col,
@@ -16,7 +16,7 @@ import {
 } from "react-icons/md/index.esm.js";
 import { BsCheck2Circle, BsXCircle } from "react-icons/bs/index.esm.js";
 import { AppContext } from "../../../../App.js";
-import _ from "lodash";
+// import _ from "lodash";
 import { Duration } from "luxon";
 
 const Filters = ({ races, tableData }) => {
@@ -33,20 +33,23 @@ const Filters = ({ races, tableData }) => {
     totalMileage: 0,
   });
 
-  const getCount = (table) => {
-    table = table || Tabulator.findTable("#participant-table")[0];
-    if (!table) return { in: 0, out: 0 };
-    const data = table.getData("active");
-    const inCount = checkedIn
-      ? data.filter((d) => d.checkedIn).length
-      : data.filter((d) => !d.checkedIn).length;
+  const getCount = useCallback(
+    (table) => {
+      table = table || Tabulator.findTable("#participant-table")[0];
+      if (!table) return { in: 0, out: 0 };
+      const data = table.getData("active");
+      const inCount = checkedIn
+        ? data.filter((d) => d.checkedIn).length
+        : data.filter((d) => !d.checkedIn).length;
 
-    const outCount = checkedOut
-      ? data.filter((d) => d.checkedOut).length
-      : data.filter((d) => !d.checkedOut).length;
+      const outCount = checkedOut
+        ? data.filter((d) => d.checkedOut).length
+        : data.filter((d) => !d.checkedOut).length;
 
-    return { in: inCount, out: outCount };
-  };
+      return { in: inCount, out: outCount };
+    },
+    [checkedIn, checkedOut]
+  );
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -93,6 +96,7 @@ const Filters = ({ races, tableData }) => {
       );
       return acc + duration;
     }, 0);
+    console.log("totalDuration", totalDuration)
     totalDuration = Duration.fromObject({ seconds: totalDuration })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
@@ -103,7 +107,7 @@ const Filters = ({ races, tableData }) => {
     console.log("totalMileage", totalMileage, "totalDuration", totalDuration);
     setStats({ totalMileage, totalDuration });
     setCount(getCount());
-  }, [tableData]);
+  }, [Context, getCount, tableData]);
 
   useEffect(() => {
     const { race } = Context;
@@ -164,7 +168,7 @@ const Filters = ({ races, tableData }) => {
         : table.addFilter("checkedIn", "=", false);
 
     setCount(getCount(table));
-  }, [checkedIn]);
+  }, [checkedIn, getCount]);
 
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
@@ -179,7 +183,7 @@ const Filters = ({ races, tableData }) => {
         : table.addFilter("checkedOut", "=", false);
 
     setCount(getCount(table));
-  }, [checkedOut]);
+  }, [checkedOut, getCount]);
 
   return (
     <>

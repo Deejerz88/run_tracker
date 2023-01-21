@@ -155,7 +155,7 @@ const ParticipantTable = () => {
         let div = document.createElement("div");
         div.style.display = "flex";
         data.forEach((col) => {
-          console.log("col value", typeof col.value);
+          // console.log("col value", typeof col.value);
           div.innerHTML += col.value
             ? `<div class='col'><b>${col.title}:</b> ${col.value} </div>`
             : `<div class='col'><b>No ${col.title}</b></div> `;

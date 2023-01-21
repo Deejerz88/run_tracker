@@ -5,6 +5,7 @@ import dbConnect from "../utils/dbConnect.js";
 import { Duration } from "luxon";
 import { raceTotals, userTotals } from "../utils/index.js";
 import "dotenv/config";
+import _ from "lodash";
 
 const router = express.Router();
 
@@ -95,27 +96,51 @@ router.post("/checkin", dbConnect, async (req, res) => {
   let update = req.body;
   delete update._id;
   const raceUpdate = update.races[0];
-  // const attendanceUpdate = raceUpdate.attendance[0];
-  let doc = await Participant.findOne({ user_id: update.user_id }).lean();
+  let doc = await Participant.findOne({ user_id: update.user_id });
   console.log("doc", doc);
 
   if (doc) {
-    update = { ...doc, ...update };
+    // update = { ...doc, ...update };
+    // update = _.merge(doc, update);
+    const attendanceUpdate = raceUpdate.attendance[0];
     console.log("update", update);
 
-    // const { races } = update;
+    const { races } = doc;
 
-    // let race = races?.find((r) => r.id === raceUpdate.id);
-    // console.log("race", race);
-
+    let race = races?.find((r) => r.id === raceUpdate.id);
+    console.log("race", race);
     try {
-      await Participant.updateOne({ user_id: update.user_id }, update);
+      if (!race) {
+        doc.races.push(raceUpdate);
+        await doc.save();
+        console.log("doc.racs", doc.races);
+        race = doc.races.find((r) => r.id === raceUpdate.id);
+        console.log("new race", race);
+      } else {
+        let attendance = race.attendance?.find(
+          (a) => a.date === attendanceUpdate.date
+        );
+
+        if (!attendance) {
+          race.attendance.push(attendanceUpdate);
+          doc = await doc.save();
+          race = doc.races.find((r) => r.id === raceUpdate.id);
+        } else {
+          attendance.mileage = attendanceUpdate.mileage;
+          attendance.duration = attendanceUpdate.duration;
+          attendance.pace = attendanceUpdate.pace;
+          attendance.checkedIn = attendanceUpdate.checkedIn;
+          attendance.checkedOut = attendanceUpdate.checkedOut;
+          attendance.start = attendanceUpdate.start;
+          attendance.finish = attendanceUpdate.finish;
+          doc = await doc.save();
+          race = doc.races.find((r) => r.id === raceUpdate.id);
+          console.log("new race", race, race.attendance);
+        }
+      }
     } catch (e) {
-      console.log("e", e);
+      console.log("update error", e);
     }
-
-    let race = update.races.find((r) => r.id === raceUpdate.id);
-
     //use aggregation to calculate totals
 
     const {
@@ -159,42 +184,51 @@ router.post("/checkin", dbConnect, async (req, res) => {
       .shiftTo("minutes", "seconds")
       .toObject();
 
+    doc = await doc.save();
+
     const totals = await userTotals({ update });
 
     console.log("totals", totals);
 
-    update.totalAttendance = totals.totalAttendance;
-    update.totalMileage = totals.totalMileage;
-    update.avgMileage = totals.avgMileage;
-    update.avgDuration = Duration.fromObject({
+    doc.totalAttendance = totals.totalAttendance;
+    doc.totalMileage = totals.totalMileage;
+    doc.avgMileage = totals.avgMileage;
+    doc.avgDuration = Duration.fromObject({
       hours: totals.avgDurationHours,
       minutes: totals.avgDurationMinutes,
       seconds: totals.avgDurationSeconds,
     })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
-    update.totalDuration = Duration.fromObject({
+    doc.totalDuration = Duration.fromObject({
       hours: totals.totalDurationHours,
       minutes: totals.totalDurationMinutes,
       seconds: totals.totalDurationSeconds,
     })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
-    update.avgPace = Duration.fromObject({
+    doc.avgPace = Duration.fromObject({
       minutes: totals.paceMinutes,
       seconds: totals.paceSeconds,
     })
       .shiftTo("minutes", "seconds")
       .toObject();
 
-    console.log("update", update);
+    // console.log("update", update);
     try {
-      await Participant.updateOne({ user_id: update.user_id }, update);
-      res.json(update);
+      await doc.save();
+      res.json(doc);
     } catch (e) {
-      console.log("e", e);
-      res.status(500).json("error");
+      console.log("checkin save err", e);
+      res.status(500).json("error checking in");
     }
+    // try {
+    //   await Participant.updateOne({ user_id: update.user_id }, update);
+    //   res.json(update);
+    // } catch (e) {
+    //   console.log("e", e);
+    //   res.status(500).json("error");
+    // }
   } else {
     //create new participant
     doc = new Participant(update);
