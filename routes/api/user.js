@@ -39,7 +39,9 @@ router.post("/signup", dbConnect, async (req, res) => {
   let user;
 
   user = await Participant.findOne({ email });
-  if (user) return res.status(409).json({ error: "User already exists" });
+  
+  if (user.user_id)
+    return res.status(409).json({ error: "User already exists" });
 
   let { data: clubParticipants } = await axios.get(
     "https://runsignup.com/rest/club/2190/members",
