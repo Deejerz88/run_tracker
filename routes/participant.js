@@ -96,138 +96,132 @@ router.post("/checkin", dbConnect, async (req, res) => {
   let update = req.body;
   delete update._id;
   const raceUpdate = update.races[0];
-  let doc = await Participant.findOne({ user_id: update.user_id });
-  console.log("doc", doc);
+  let doc;
+  try {
+    doc = await Participant.findOne({ user_id: update.user_id });
 
-  if (doc) {
-    // update = { ...doc, ...update };
-    // update = _.merge(doc, update);
-    const attendanceUpdate = raceUpdate.attendance[0];
-    console.log("update", update);
+    if (doc) {
+      // update = { ...doc, ...update };
+      // update = _.merge(doc, update);
+      const attendanceUpdate = raceUpdate.attendance[0];
+      console.log("update", update);
 
-    const { races } = doc;
+      const { races } = doc;
 
-    let race = races?.find((r) => r.id === raceUpdate.id);
-    console.log("race", race);
-    try {
-      if (!race) {
-        doc.races.push(raceUpdate);
-        doc = await doc.save();
-        console.log("doc.racs", doc.races);
-        race = doc.races.find((r) => r.id === raceUpdate.id);
-        console.log("new race", race);
-      } else {
-        let attendance = race.attendance?.find(
-          (a) => a.date === attendanceUpdate.date
-        );
-
-        if (!attendance) {
-          race.attendance.push(attendanceUpdate);
+      let race = races?.find((r) => r.id === raceUpdate.id);
+      console.log("race", race);
+      try {
+        if (!race) {
+          doc.races.push(raceUpdate);
           doc = await doc.save();
+          console.log("doc.racs", doc.races);
           race = doc.races.find((r) => r.id === raceUpdate.id);
+          console.log("new race", race);
         } else {
-          attendance = { ...attendance, ...attendanceUpdate };
-          doc = await doc.save();
-          race = doc.races.find((r) => r.id === raceUpdate.id);
-          console.log("new race", race, race.attendance);
+          let attendance = race.attendance?.find(
+            (a) => a.date === attendanceUpdate.date
+          );
+
+          if (!attendance) {
+            race.attendance.push(attendanceUpdate);
+            doc = await doc.save();
+            race = doc.races.find((r) => r.id === raceUpdate.id);
+          } else {
+            attendance = { ...attendance, ...attendanceUpdate };
+            doc = await doc.save();
+            race = doc.races.find((r) => r.id === raceUpdate.id);
+            console.log("new race", race, race.attendance);
+          }
         }
+        //use aggregation to calculate totals
+
+        const {
+          totalAttendance,
+          totalMileage,
+          avgMileage,
+          paceMinutes,
+          paceSeconds,
+          avgDurationHours,
+          avgDurationMinutes,
+          avgDurationSeconds,
+          totalDurationHours,
+          totalDurationMinutes,
+          totalDurationSeconds,
+        } = await raceTotals({ update, raceUpdate });
+
+        race.totalAttendance = totalAttendance;
+        race.totalMileage = totalMileage;
+        race.avgMileage = avgMileage;
+
+        race.avgDuration = Duration.fromObject({
+          hours: avgDurationHours,
+          minutes: avgDurationMinutes,
+          seconds: avgDurationSeconds,
+        })
+          .shiftTo("hours", "minutes", "seconds")
+          .toObject();
+
+        race.totalDuration = Duration.fromObject({
+          hours: totalDurationHours,
+          minutes: totalDurationMinutes,
+          seconds: totalDurationSeconds,
+        })
+          .shiftTo("hours", "minutes", "seconds")
+          .toObject();
+
+        race.avgPace = Duration.fromObject({
+          minutes: paceMinutes,
+          seconds: paceSeconds,
+        })
+          .shiftTo("minutes", "seconds")
+          .toObject();
+
+        doc = await doc.save();
+
+        const totals = await userTotals({ update });
+
+        console.log("totals", totals);
+
+        doc.totalAttendance = totals.totalAttendance;
+        doc.totalMileage = totals.totalMileage;
+        doc.avgMileage = totals.avgMileage;
+        doc.avgDuration = Duration.fromObject({
+          hours: totals.avgDurationHours,
+          minutes: totals.avgDurationMinutes,
+          seconds: totals.avgDurationSeconds,
+        })
+          .shiftTo("hours", "minutes", "seconds")
+          .toObject();
+        doc.totalDuration = Duration.fromObject({
+          hours: totals.totalDurationHours,
+          minutes: totals.totalDurationMinutes,
+          seconds: totals.totalDurationSeconds,
+        })
+          .shiftTo("hours", "minutes", "seconds")
+          .toObject();
+        doc.avgPace = Duration.fromObject({
+          minutes: totals.paceMinutes,
+          seconds: totals.paceSeconds,
+        })
+          .shiftTo("minutes", "seconds")
+          .toObject();
+
+        // console.log("update", update);
+        await doc.save();
+        res.json(doc);
+      } catch (e) {
+        console.log("checkin save err", e);
+        res.status(500).json("error checking in");
       }
-    } catch (e) {
-      console.log("update error", e);
+    } else {
+      //create new participant
+      doc = new Participant(update);
+      const newParticipant = await doc.save();
+      res.json(newParticipant);
     }
-    //use aggregation to calculate totals
-
-    const {
-      totalAttendance,
-      totalMileage,
-      avgMileage,
-      paceMinutes,
-      paceSeconds,
-      avgDurationHours,
-      avgDurationMinutes,
-      avgDurationSeconds,
-      totalDurationHours,
-      totalDurationMinutes,
-      totalDurationSeconds,
-    } = await raceTotals({ update, raceUpdate });
-
-    race.totalAttendance = totalAttendance;
-    race.totalMileage = totalMileage;
-    race.avgMileage = avgMileage;
-
-    race.avgDuration = Duration.fromObject({
-      hours: avgDurationHours,
-      minutes: avgDurationMinutes,
-      seconds: avgDurationSeconds,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-
-    race.totalDuration = Duration.fromObject({
-      hours: totalDurationHours,
-      minutes: totalDurationMinutes,
-      seconds: totalDurationSeconds,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-
-    race.avgPace = Duration.fromObject({
-      minutes: paceMinutes,
-      seconds: paceSeconds,
-    })
-      .shiftTo("minutes", "seconds")
-      .toObject();
-
-    doc = await doc.save();
-
-    const totals = await userTotals({ update });
-
-    console.log("totals", totals);
-
-    doc.totalAttendance = totals.totalAttendance;
-    doc.totalMileage = totals.totalMileage;
-    doc.avgMileage = totals.avgMileage;
-    doc.avgDuration = Duration.fromObject({
-      hours: totals.avgDurationHours,
-      minutes: totals.avgDurationMinutes,
-      seconds: totals.avgDurationSeconds,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-    doc.totalDuration = Duration.fromObject({
-      hours: totals.totalDurationHours,
-      minutes: totals.totalDurationMinutes,
-      seconds: totals.totalDurationSeconds,
-    })
-      .shiftTo("hours", "minutes", "seconds")
-      .toObject();
-    doc.avgPace = Duration.fromObject({
-      minutes: totals.paceMinutes,
-      seconds: totals.paceSeconds,
-    })
-      .shiftTo("minutes", "seconds")
-      .toObject();
-
-    // console.log("update", update);
-    try {
-      await doc.save();
-      res.json(doc);
-    } catch (e) {
-      console.log("checkin save err", e);
-      res.status(500).json("error checking in");
-    }
-    // try {
-    //   await Participant.updateOne({ user_id: update.user_id }, update);
-    //   res.json(update);
-    // } catch (e) {
-    //   console.log("e", e);
-    //   res.status(500).json("error");
-    // }
-  } else {
-    //create new participant
-    doc = new Participant(update);
-    const newParticipant = await doc.save();
-    res.json(newParticipant);
+  } catch (e) {
+    console.log("e", e);
+    res.status(500).json("error");
   }
 });
 
