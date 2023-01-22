@@ -89,7 +89,7 @@
 }
 
 #table-stats > .stat-button {
-  box-shadow: 0px 0px 8px #424141d6, inset 0 0 5px 5px #c2212195;
+  box-shadow: 0 0 12px #555252, inset 0 0 5px 5px #c2212195;
   border: none;
   background-color: #ed1c24;
   color: white;

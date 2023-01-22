@@ -9,15 +9,13 @@ const Coaches = ({ tableData }) => {
 
   useEffect(() => {
     if (!tableData.length) return;
-    console.log(tableData);
     const coachData = [];
     tableData.forEach((participant) => {
       let club_member_num = participant.club_member_num?.toLowerCase();
       if (!club_member_num) return;
-      console.log("club_member_num", club_member_num);
       let coach =
         club_member_num.startsWith("c") || club_member_num.startsWith("a");
-      console.log("coach", participant.name, club_member_num, coach);
+
       if (coach) {
         const type = club_member_num.startsWith("c")
           ? "Coach"
@@ -26,7 +24,10 @@ const Coaches = ({ tableData }) => {
           : "Ambassador";
         coachData.push({ name: participant.name, type });
       }
-      coachData.sort((a, b) => b.type.localeCompare(a.type));
+      const sortOrder = ["Coach", "Advisory Coach", "Ambassador"];
+      coachData.sort(
+        (a, b) => sortOrder.indexOf(a.type) - sortOrder.indexOf(b.type)
+      );
       setCoaches(coachData);
     });
   }, [tableData]);
