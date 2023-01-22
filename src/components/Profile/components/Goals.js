@@ -363,7 +363,7 @@ const Goals = () => {
             id="goal-date"
             type="date"
             name="goal-date"
-            value={state.date}
+            value={state.date || ""}
             onChange={handleChange}
           />
         </FloatingLabel>
@@ -413,7 +413,8 @@ const Goals = () => {
                 seconds,
               }).toFormat("h:mm:ss");
               return `<b>${startCase(category)}:</b><br/> ${value}`;
-            } else return `<b>${startCase(category)}:</b> <br/>${cell.getValue()}`;
+            } else
+              return `<b>${startCase(category)}:</b> <br/>${cell.getValue()}`;
           },
         },
         {
@@ -726,7 +727,9 @@ const Goals = () => {
                         }
                         style={{ width: `${Math.abs(value)}%` }}
                       >
-                        {`${sign}${Math.abs(minutes)}m ${Math.abs(seconds.toFixed(0))}s`}
+                        {`${sign}${Math.abs(minutes)}m ${Math.abs(
+                          seconds.toFixed(0)
+                        )}s`}
                       </Button>
                     </ButtonGroup>
                   </Row>

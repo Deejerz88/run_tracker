@@ -83,27 +83,31 @@ participantSchema.statics.checkPassword = async function (password, hash) {
   return await bcrypt.compare(password, hash);
 };
 
+const participantPreSave = async function (doc) {
+  return new Promise((resolve, reject) => {
+    try {
+      //hash password if it is modified
+      if (doc.password && doc.isModified("password"))
+        doc.password = bcrypt.hashSync(doc.password, 10);
+
+      //update username_lower and email_lower for queries
+      doc.username_lower = doc.username?.toLowerCase() || "";
+      doc.email_lower = doc.email?.toLowerCase() || "";
+      resolve();
+    } catch (err) {
+      console.log("err", err);
+      reject(err);
+    }
+  });
+};
+
 participantSchema.pre("save", async function (next) {
-  //update password hash
-  if (this.password && this.isModified("password"))
-    this.password = bcrypt.hashSync(this.password, 10);
-
-  //update username_lower and email_lower for queries
-  this.username_lower = this.username?.toLowerCase() || "";
-  this.email_lower = this.email?.toLowerCase() || "";
-
-  next();
+  await participantPreSave(this);
 });
 
-participantSchema.pre("updateOne", function (next) {
-  //update password hash
-  if (this.password && this.isModified("password"))
-    this.password = bcrypt.hashSync(this.password, 10);
-
-  //update username_lower and email_lower for queries
-  this.username_lower = this.username?.toLowerCase() || "";
-  this.email_lower = this.email?.toLowerCase() || "";
-  next();
+participantSchema.pre("updateOne", async function (next) {
+  const update = this.getUpdate();
+  await participantPreSave(update);
 });
 
 export default mongoose.model("Participant", participantSchema, "Participant");

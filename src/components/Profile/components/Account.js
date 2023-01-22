@@ -71,6 +71,7 @@ const Account = () => {
         });
         return;
       }
+      console.log('formData', formData)
       try {
         await axios.post("/api/user", formData);
         $("#change_password").val("");

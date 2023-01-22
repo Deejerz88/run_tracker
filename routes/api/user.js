@@ -21,11 +21,11 @@ const router = express.Router();
 
 router.post("/", dbConnect, async (req, res) => {
   const update = req.body;
-
+  console.log("update", update);
   let user = await Participant.findOne({ email: update.email });
   if (!user) return res.status(404).json({ error: "User not found" });
-
-  await user.update(update);
+  console.log("update", update);
+  await user.updateOne(update);
   res.json({ user });
 });
 
