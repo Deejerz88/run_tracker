@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { renderToString } from "react-dom/server";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import "tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
-import { Filters } from "./index.js";
+import { Filters, Coaches } from "./index.js";
 import { Login } from "../index.js";
 import axios from "axios";
 import _ from "lodash";
@@ -60,13 +60,13 @@ const ParticipantTable = () => {
     const thisRace = _.find(data.races, (r) => r.name === selectedRace) || {};
     const selectedDate = $(`#race-date`).val();
     //check if attendance exists for race & date
-    const bool = _.find(
+    const attendance = _.find(
       thisRace.attendance,
       (a) => a.date === selectedDate
     ) || {
       [field]: false,
     };
-    return bool[field];
+    return attendance[field]; //ex
   };
 
   const startFinishMutator = (value, data, type, mutatorParams, component) => {
@@ -96,6 +96,43 @@ const ParticipantTable = () => {
       ? `<i>${value}</i>`
       : "";
   };
+
+  const toggleCollapse = useCallback(() => {
+    const toggle = $("#collapse-toggle");
+    const collapsed = toggle.data("collapsed");
+    console.log("collapsed", collapsed);
+    toggle.html(
+      collapsed
+        ? renderToString(<BsFillDashCircleFill />)
+        : renderToString(<BsFillPlusCircleFill />)
+    );
+    $(".tabulator-responsive-collapse").each(
+      (i, el) => (el.style.display = collapsed ? "" : "none")
+    );
+    $(
+      ".tabulator-responsive-collapse-toggle-open"
+    ).each((i, el) => {
+      (el.style.display = collapsed ? "none" : "initial");
+      $(el).data("collapsed", !collapsed);
+    });
+    $(
+      ".tabulator-responsive-collapse-toggle-close"
+    ).each((i, el) => {
+      (el.style.display = collapsed ? "initial" : "none")
+      $(el).data("collapsed", collapsed);
+    }
+    );
+    $("#collapse-toggle").data("collapsed", !collapsed);
+  }, []);
+
+  // const toggleCellCollapse = useCallback((e) => {
+  //   const target = $(e.target);
+  //   const collapsed = target.data("collapsed");
+  //   target.css("display", collapsed ? "none" : "");
+  // target.data("collapsed", !collapsed);
+  // }, []);
+
+
 
   useEffect(() => {
     //set table data when race context changes
@@ -188,18 +225,10 @@ const ParticipantTable = () => {
             )}</div>`;
           },
           headerClick: (e, column) => {
-            const toggle = $("#collapse-toggle");
-            const collapsed = toggle.data("collapsed");
-            console.log("collapsed", collapsed);
-            toggle.html(
-              collapsed
-                ? renderToString(<BsFillDashCircleFill />)
-                : renderToString(<BsFillPlusCircleFill />)
-            );
-            $("#collapse-toggle").data("collapsed", !collapsed);
-            $(".tabulator-responsive-collapse-toggle").each((i, el) =>
-              el.click()
-            );
+            toggleCollapse();
+          },
+          cellClick: (e, cell) => {
+            // toggleCellCollapse(e);
           },
         },
         {
@@ -321,6 +350,7 @@ const ParticipantTable = () => {
 
   return (
     <>
+      <Coaches tableData={tableData} />
       <Button
         id="check-in"
         variant="danger"
@@ -366,7 +396,12 @@ const ParticipantTable = () => {
         {Context.loggedIn === "true" ? "Log Out" : "Log In"}
       </Button>
       <Login show={showLogin} setShow={setShowLogin} races={races} />
-      <Filters races={races} tableData={tableData} Context={Context} />
+      <Filters
+        races={races}
+        tableData={tableData}
+        Context={Context}
+        toggleCollapse={toggleCollapse}
+      />
       <div className="mx-3 " id="participant-table" />
     </>
   );

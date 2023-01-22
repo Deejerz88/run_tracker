@@ -19,7 +19,7 @@ import { AppContext } from "../../../../App.js";
 // import _ from "lodash";
 import { Duration } from "luxon";
 
-const Filters = ({ races, tableData }) => {
+const Filters = ({ races, tableData, toggleCollapse }) => {
   //filter by name and checked in true/false
   const [name, setName] = useState("");
   const [checkedIn, setCheckedIn] = useState("both");
@@ -79,6 +79,7 @@ const Filters = ({ races, tableData }) => {
 
   useEffect(() => {
     const { race } = Context;
+    //get attendances with Context.date
     const races = tableData
       .map(
         (p) =>
@@ -87,8 +88,12 @@ const Filters = ({ races, tableData }) => {
             ?.attendance?.filter((a) => a.date === Context.date)[0]
       )
       .filter((r) => r);
-    console.log("race", races);
-    const totalMileage = races.reduce((a, b) => a + b.mileage || 0, 0);
+    //get total mileage and duration
+    const totalMileage = races.reduce(
+      (acc, curr) => acc + curr.mileage || 0,
+      0
+    );
+
     let totalDuration = races.reduce((acc, curr) => {
       delete curr.duration._id;
       const duration = Duration.fromObject(curr.duration || { hours: 0 }).as(
@@ -96,15 +101,18 @@ const Filters = ({ races, tableData }) => {
       );
       return acc + duration;
     }, 0);
-    console.log("totalDuration", totalDuration)
+
     totalDuration = Duration.fromObject({ seconds: totalDuration })
       .shiftTo("hours", "minutes", "seconds")
       .toObject();
+
     const { hours, minutes, seconds } = totalDuration;
+
+    //create string for display
     totalDuration = `${hours ? hours + "h" : ""} ${
       minutes ? minutes + "m" : ""
     } ${seconds + "s"}`;
-    console.log("totalMileage", totalMileage, "totalDuration", totalDuration);
+
     setStats({ totalMileage, totalDuration });
     setCount(getCount());
   }, [Context, getCount, tableData]);
@@ -125,7 +133,7 @@ const Filters = ({ races, tableData }) => {
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
-
+    //get current name filter
     const tableFilters = table.getFilters();
     const filterInd = tableFilters.findIndex((f) => f.value === "name");
 
@@ -159,6 +167,7 @@ const Filters = ({ races, tableData }) => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
 
+    //remove current checkedIn filter
     const filters = table.getFilters().filter((f) => f.field === "checkedIn");
     filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
 
@@ -168,12 +177,14 @@ const Filters = ({ races, tableData }) => {
         : table.addFilter("checkedIn", "=", false);
 
     setCount(getCount(table));
-  }, [checkedIn, getCount]);
+    toggleCollapse();
+  }, [checkedIn, getCount, toggleCollapse]);
 
   useEffect(() => {
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table) return;
 
+    //remove current checkedOut filter
     const filters = table.getFilters().filter((f) => f.field === "checkedOut");
     filters.forEach((f) => table.removeFilter(f.field, f.type, f.value));
 
@@ -183,7 +194,8 @@ const Filters = ({ races, tableData }) => {
         : table.addFilter("checkedOut", "=", false);
 
     setCount(getCount(table));
-  }, [checkedOut, getCount]);
+    toggleCollapse();
+  }, [checkedOut, getCount, toggleCollapse]);
 
   return (
     <>

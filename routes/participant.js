@@ -5,7 +5,6 @@ import dbConnect from "../utils/dbConnect.js";
 import { Duration } from "luxon";
 import { raceTotals, userTotals } from "../utils/index.js";
 import "dotenv/config";
-import _ from "lodash";
 
 const router = express.Router();
 
@@ -86,9 +85,11 @@ router.get("/:type/:raceId", async (req, res) => {
       last_name,
       email,
       phone,
+      club_member_num: participant.club_member_num,
     };
   });
 
+  console.log("participants", participants[0]);
   res.json(participants);
 });
 
@@ -114,9 +115,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
         if (!race) {
           doc.races.push(raceUpdate);
           doc = await doc.save();
-          console.log("doc.racs", doc.races);
           race = doc.races.find((r) => r.id === raceUpdate.id);
-          console.log("new race", race);
         } else {
           let attendance = race.attendance?.find(
             (a) => a.date === attendanceUpdate.date
@@ -133,8 +132,8 @@ router.post("/checkin", dbConnect, async (req, res) => {
             console.log("new race", race, race.attendance);
           }
         }
-        //use aggregation to calculate totals
 
+        //use aggregation to calculate totals
         const {
           totalAttendance,
           totalMileage,

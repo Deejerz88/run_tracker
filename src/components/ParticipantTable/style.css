@@ -1,4 +1,5 @@
-#participant-table, #history-table {
+#participant-table,
+#history-table {
   border-radius: 5px;
   border: none;
   box-shadow: 0 0 10px #555252;
@@ -9,20 +10,17 @@
   box-shadow: none;
 }
 
-
-
 .tabulator-row.tabulator-selectable:hover {
   background-color: #ef000068;
 
   color: white;
   font-weight: bold;
-  -webkit-text-stroke: 0.10px black;
+  -webkit-text-stroke: 0.1px black;
   font-size: 1.1em;
 }
 
-#participant-table.tabulator .tabulator-header{
-   border-bottom: 3px solid black
-
+#participant-table.tabulator .tabulator-header {
+  border-bottom: 3px solid black;
 }
 
 #participant-table .tabulator-col-content {
@@ -32,33 +30,98 @@
   font-size: 1.2em;
 }
 
-.check, .ex{
+.check,
+.ex {
   background-color: white;
   border-radius: 50%;
 }
 
-.tabulator .tabulator-footer{
-  background-color: #ED1C24
+.tabulator .tabulator-footer {
+  background-color: #ed1c24;
 }
 
-.tabulator .tabulator-footer .tabulator-page.active{
+.tabulator .tabulator-footer .tabulator-page.active {
   background-color: #fdfafa;
   font-weight: bold;
-  color: #ED1C24;
+  color: #ed1c24;
 }
 
-.tabulator .tabulator-footer .tabulator-page:not(.active){
+.tabulator .tabulator-footer .tabulator-page:not(.active) {
   background-color: #000000;
   color: #fffdfd;
 }
 
-#footer{
+#footer {
   height: 25px;
 }
-
-
 
 .tabulator .tabulator-footer .tabulator-page:disabled {
   background-color: #000000;
   color: #fffdfd;
+}
+
+#show-coaches {
+  background-color: #ed1c24;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 10px #555252;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+#login {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #ed1c24;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 5px #555252;
+  transition: 0.2s all ease-out;
+}
+
+#login:hover {
+  background-color: #ed1c24;
+  transform: scale(1.1);
+  box-shadow: 0px 0px 5px #838181, inset 0 0 5px hsla(0, 2%, 78%, 0.797);
+}
+
+#login:active {
+  background-color: #ed1c24;
+  transform: scale(1.05);
+  box-shadow: 0px 0px 3px #545353, inset 0 0 3px hsla(0, 2%, 78%, 0.503);
+}
+
+.close-modal {
+  color: #dc3545;
+  font-size: 2em;
+  /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
+  user-select: none;
+  margin: 0 20px;
+  transition: 0.1s all ease-out;
+  /* filter: drop-shadow(0 0 2px rgba(255, 254, 254, 0.752)); */
+  /* background-color: white; */
+  /* border-radius: 15%; */
+  /* box-shadow: 0 0 3px rgba(165, 165, 165, 0.989); */
+}
+
+.close-modal:hover {
+  color: #ff3b4f;
+  /* -webkit-text-stroke: 0.1px rgba(0, 0, 0, 0.141); */
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.65));
+
+  user-select: none;
+  margin: 0 20px;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.close-modal:active {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.809));
 }
