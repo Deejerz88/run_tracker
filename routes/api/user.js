@@ -20,17 +20,12 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 const router = express.Router();
 
 router.post("/", dbConnect, async (req, res) => {
-  const { first_name, last_name, email, phone, password, username } = req.body;
+  const update = req.body;
 
-  let user = await Participant.findOne({ email });
+  let user = await Participant.findOne({ email: update.email });
   if (!user) return res.status(404).json({ error: "User not found" });
-  user = { ...user, first_name, last_name, email, phone, username };
 
-  if (password) {
-    console.log("changing password", password);
-    user.password = password;
-  }
-  await user.save();
+  await user.update(update);
   res.json({ user });
 });
 
@@ -39,8 +34,8 @@ router.post("/signup", dbConnect, async (req, res) => {
   let user;
 
   user = await Participant.findOne({ email });
-  
-  if (user.user_id)
+
+  if (user?.user_id)
     return res.status(409).json({ error: "User already exists" });
 
   let { data: clubParticipants } = await axios.get(
