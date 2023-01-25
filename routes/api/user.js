@@ -21,11 +21,26 @@ const router = express.Router();
 
 router.post("/", dbConnect, async (req, res) => {
   const update = req.body;
-  console.log("update", update);
-  let user = await Participant.findOne({ email: update.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
-  console.log("update", update);
-  await user.updateOne(update);
+  let user;
+  try {
+    user = await Participant.findOne({
+      email_lower: update.email.toLowerCase(),
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ error: "Error finding user" });
+  }
+
+  if (!user || !user.user_id)
+    return res.status(404).json({ error: "User not found" });
+
+  try {
+    await user.updateOne(update);
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ error: "Error updating user" });
+  }
+
   res.json({ user });
 });
 
@@ -33,7 +48,12 @@ router.post("/signup", dbConnect, async (req, res) => {
   let { username, email, password, races } = req.body;
   let user;
 
-  user = await Participant.findOne({ email });
+  try {
+    user = await Participant.findOne({ email_lower: email.toLowerCase() });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ error: "Error finding user" });
+  }
 
   if (user?.user_id)
     return res.status(409).json({ error: "User already exists" });
@@ -91,7 +111,9 @@ router.post("/signup", dbConnect, async (req, res) => {
     );
 
     participant =
-      eventParticipants[0].find((p) => p.user?.email === email) || {};
+      eventParticipants[0].find(
+        (p) => p.user?.email_lower === email.toLowerCase()
+      ) || {};
   }
 
   if (!participant.user)
@@ -160,10 +182,15 @@ router.post("/logout", dbConnect, (req, res) => {
 
 router.post("/reset", async (req, res) => {
   const { email } = req.body;
+  let user;
+  try {
+    user = await Participant.findOne({ email_lower: email.toLowerCase() });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ error: "Error finding user" });
+  }
 
-  const user = await Participant.findOne({ email_lower: email.toLowerCase() });
-
-  if (!user)
+  if (!user?.user_id)
     return res
       .status(401)
       .json({ error: "No user with that email address exists" });
@@ -191,5 +218,26 @@ router.post("/reset", async (req, res) => {
     return res.status(500).json({ error: "Error sending email" });
   }
 });
+
+// router.get("/email", dbConnect, async (req, res) => {
+//   const participants = await Participant.find({});
+//   console.log("participants", participants);
+
+//   participants.forEach((participant) => {
+//     if (participant.email)
+//       participant.email_lower = participant.email.toLowerCase();
+
+//     if (participant.username)
+//       participant.username_lower = participant.username.toLowerCase();
+//     else {
+//       participant.username = participant.email;
+//       participant.username_lower = participant.email.toLowerCase();
+//     }
+
+//     participant.save();
+//   });
+
+//   res.json("All participants updated");
+// });
 
 export default router;

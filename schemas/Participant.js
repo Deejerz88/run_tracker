@@ -55,7 +55,7 @@ const participantSchema = new Schema({
   user_id: { type: Number, index: true, unique: true },
   username: { type: String },
   username_lower: { type: String, index: true },
-  email: { type: String, unique: true },
+  email: { type: String },
   settings: settingsSchema,
   email_lower: { type: String, index: true },
   phone: String,
