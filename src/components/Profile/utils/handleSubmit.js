@@ -72,6 +72,14 @@ const handleSubmit = async ({
   const { pace, duration, start, finish, mileage } = data;
   console.log("data", data);
 
+  if (finish.time < start.time) {
+    toast.error("End time must be after start time", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 1500,
+    });
+    return;
+  }
+
   console.log("participant races", participant.races);
 
   participant.races = [
@@ -95,7 +103,13 @@ const handleSubmit = async ({
 
   console.log("participant races", participant.races);
 
-  participant.settings = { ...participant.settings, defaultFields: defaults };
+  participant.settings.defaultFields = defaults;
+
+  console.log(
+    "settings",
+    participant.settings,
+    participant.settings.defaultFields
+  );
 
   try {
     let { data: newParticipant } = await axios.post(

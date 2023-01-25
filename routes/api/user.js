@@ -219,25 +219,26 @@ router.post("/reset", async (req, res) => {
   }
 });
 
-// router.get("/email", dbConnect, async (req, res) => {
-//   const participants = await Participant.find({});
-//   console.log("participants", participants);
+router.get("/update", dbConnect, async (req, res) => {
+  const participants = await Participant.find({});
+  console.log("participants", participants);
 
-//   participants.forEach((participant) => {
-//     if (participant.email)
-//       participant.email_lower = participant.email.toLowerCase();
+  participants.forEach((participant) => {
+    // if (participant.email)
+    //   participant.email_lower = participant.email.toLowerCase();
 
-//     if (participant.username)
-//       participant.username_lower = participant.username.toLowerCase();
-//     else {
-//       participant.username = participant.email;
-//       participant.username_lower = participant.email.toLowerCase();
-//     }
+    // if (participant.username)
+    //   participant.username_lower = participant.username.toLowerCase();
+    // else {
+    //   participant.username = participant.email;
+    //   participant.username_lower = participant.email.toLowerCase();
+    // }
 
-//     participant.save();
-//   });
+    if (!participant.settings) participant.settings = { defaultFields: [] };
+    participant.save();
+  });
 
-//   res.json("All participants updated");
-// });
+  res.json("All participants updated");
+});
 
 export default router;

@@ -38,7 +38,7 @@ const raceSchema = new Schema({
 });
 
 const settingsSchema = new Schema({
-  defaultFields: [String],
+  defaultFields: { type: [String], default: () => [] },
 });
 
 const goalSchema = new Schema({
@@ -56,7 +56,7 @@ const participantSchema = new Schema({
   username: { type: String },
   username_lower: { type: String, index: true },
   email: { type: String },
-  settings: settingsSchema,
+  settings: { type: settingsSchema, default: () => ({}) },
   email_lower: { type: String, index: true },
   phone: String,
   password: String,

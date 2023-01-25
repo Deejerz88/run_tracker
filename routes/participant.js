@@ -119,6 +119,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
   if (doc) {
     // update = { ...doc, ...update };
     // update = _.merge(doc, update);
+    doc.settings = update.settings;
     const attendanceUpdate = raceUpdate.attendance[0];
     console.log("attendance update", attendanceUpdate);
 
@@ -154,16 +155,24 @@ router.post("/checkin", dbConnect, async (req, res) => {
 
           race = doc.races.find((r) => r.id === raceUpdate.id);
         } else {
-          const { mileage, pace, duration, start, finish, checkedIn, checkedOut } = attendanceUpdate
-          attendance.mileage = mileage
-          attendance.pace = pace
-          attendance.duration = duration
-          attendance.start = start
-          attendance.finish = finish
-          attendance.checkedIn = checkedIn
-          attendance.checkedOut = checkedOut
+          const {
+            mileage,
+            pace,
+            duration,
+            start,
+            finish,
+            checkedIn,
+            checkedOut,
+          } = attendanceUpdate;
+          attendance.mileage = mileage;
+          attendance.pace = pace;
+          attendance.duration = duration;
+          attendance.start = start;
+          attendance.finish = finish;
+          attendance.checkedIn = checkedIn;
+          attendance.checkedOut = checkedOut;
 
-          console.log('attendance', attendance)
+          console.log("attendance", attendance);
           try {
             doc = await doc.save();
           } catch (err) {

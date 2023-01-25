@@ -19,13 +19,13 @@ import $ from "jquery";
 const Inputs = ({ state, setState }) => {
   const [activeKey, setActiveKey] = useState("in");
   const [races, setRaces] = useState([]);
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [showGroup, setShowGroup] = useState({});
-  const [defaults, setDefaults] = useState([]);
   const [Context, setContext] = useContext(AppContext);
   const [selectedRace, setSelectedRace] = useState(Context.race);
   const [selectedDate, setSelectedDate] = useState(Context.date);
+  const [checkedIn, setCheckedIn] = useState(false);
   const { participant } = Context;
+  const [showGroup, setShowGroup] = useState({});
+  const [defaults, setDefaults] = useState(participant.settings.defaultFields);
 
   const today = DateTime.local().toISODate();
 
@@ -35,6 +35,18 @@ const Inputs = ({ state, setState }) => {
       setRaces(["", ...races]);
     })();
   }, []);
+
+  useEffect(() => {
+    console.log("settings", participant.settings.defaultFields);
+    let groups = {};
+    participant.settings.defaultFields.forEach((d) => {
+      groups[d] = true;
+    });
+
+    setShowGroup(groups);
+
+    console.log("groups", groups);
+  }, [participant.settings.defaultFields]);
 
   useEffect(() => {
     if (!races?.length > 1) return;
@@ -228,7 +240,9 @@ const Inputs = ({ state, setState }) => {
               </Row>
               <Row>
                 <Col xs={6}>
-                  <Row className={`hidden mileage`}>
+                  <Row
+                    className={`${showGroup.mileage ? "" : "hidden"} mileage`}
+                  >
                     <FormLabel>Mileage</FormLabel>
                     <InputGroup className="mb-3">
                       <FloatingLabel label="Target">
@@ -247,7 +261,11 @@ const Inputs = ({ state, setState }) => {
               </Row>
               <Row className="mb-3 checkIn-row">
                 {["pace", "duration"].map((group, i) => (
-                  <Col key={group} name={group} className={`${group} hidden`}>
+                  <Col
+                    key={group}
+                    name={group}
+                    className={`${group} ${showGroup[group] ? "" : "hidden"}`}
+                  >
                     <FormLabel>{startCase(group)}</FormLabel>
                     <InputGroup className="mb-3">
                       {["hours", "minutes", "seconds"].map((type, i) => {
