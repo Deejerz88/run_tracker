@@ -38,6 +38,7 @@ const Inputs = ({ state, setState }) => {
 
   useEffect(() => {
     console.log("settings", participant.settings.defaultFields);
+    if (!participant.settings.defaultFields) return;
     let groups = {};
     participant.settings.defaultFields.forEach((d) => {
       groups[d] = true;
@@ -93,7 +94,7 @@ const Inputs = ({ state, setState }) => {
   const handleClick = (e) => {
     e.stopPropagation();
     const { name, type, classList, id } = e.target;
-    const expanded = e.target.getAttribute("aria-{expanded");
+    const expanded = e.target.getAttribute("aria-expanded");
 
     if (e.target.type === "number") {
       e.target.select();
