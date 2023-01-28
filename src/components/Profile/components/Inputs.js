@@ -25,7 +25,7 @@ const Inputs = ({ state, setState }) => {
   const [checkedIn, setCheckedIn] = useState(false);
   const { participant } = Context;
   const [showGroup, setShowGroup] = useState({});
-  const [defaults, setDefaults] = useState(participant.settings.defaultFields);
+  const [defaults, setDefaults] = useState(participant.settings?.defaultFields);
 
   const today = DateTime.local().toISODate();
 
@@ -37,10 +37,9 @@ const Inputs = ({ state, setState }) => {
   }, []);
 
   useEffect(() => {
-    console.log("settings", participant.settings.defaultFields);
-    if (!participant.settings.defaultFields) return;
+    if (!participant.settings?.defaultFields) return;
     let groups = {};
-    participant.settings.defaultFields.forEach((d) => {
+    participant.settings?.defaultFields.forEach((d) => {
       groups[d] = true;
     });
 
