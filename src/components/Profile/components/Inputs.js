@@ -45,8 +45,7 @@ const Inputs = ({ state, setState }) => {
 
     setShowGroup(groups);
 
-    console.log("groups", groups);
-  }, [participant.settings.defaultFields]);
+  }, [participant.settings?.defaultFields]);
 
   useEffect(() => {
     if (!races?.length > 1) return;
