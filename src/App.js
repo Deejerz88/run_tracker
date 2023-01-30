@@ -24,6 +24,7 @@ function App() {
     participant: {},
     race: {},
     date: DateTime.local().toISODate(),
+    defaultFields: {},
   });
 
   useEffect(() => {
