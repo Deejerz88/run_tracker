@@ -108,7 +108,7 @@ const History = () => {
                 return acc + duration;
               }
             }, 0);
-            const avg = total / numValues;
+            const avg = total / numValues || 0;
 
             const totalDuration = Duration.fromObject({
               seconds: total,
@@ -144,7 +144,7 @@ const History = () => {
               }
             }, 0);
             console.log("total", total, "numValues", numValues);
-            const avg = total / numValues;
+            const avg = total / numValues || 0;
 
             const totalDuration = Duration.fromObject({
               seconds: total,
@@ -153,7 +153,7 @@ const History = () => {
             const avgDuration = Duration.fromObject({
               seconds: avg,
             }).toFormat("h:mm:ss");
-            
+
             return `${totalDuration}<br/>${avgDuration}`;
           },
           bottomCalcFormatter: "html",
