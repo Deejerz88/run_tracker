@@ -103,7 +103,7 @@ const handleSubmit = async ({
 
   console.log("participant races", participant.races);
 
-  participant.settings.defaultFields = defaults;
+  participant.settings = { ...participant.settings, defaultFields: defaults };
 
   console.log(
     "settings",

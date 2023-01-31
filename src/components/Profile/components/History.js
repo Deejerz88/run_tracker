@@ -3,6 +3,7 @@ import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { DateTime, Duration } from "luxon";
 import axios from "axios";
 import { AppContext } from "../../../App.js";
+import { mean, sum } from "lodash";
 
 const History = () => {
   const [Context] = useContext(AppContext);
@@ -23,7 +24,7 @@ const History = () => {
       races?.forEach((race) => {
         const { attendance, id } = race;
         if (!attendance) return;
-        
+
         attendance.forEach((a) => {
           let { date, mileage, pace, duration } = a;
           date = DateTime.fromISO(date).toFormat("MM/dd/yyyy");
@@ -80,8 +81,8 @@ const History = () => {
           title: "Mileage",
           field: "mileage",
           bottomCalc: (values) => {
-            const total = values.reduce((acc, val) => acc + val, 0);
-            const avg = total / values.length;
+            const total = sum(values);
+            const avg = mean(values);
             return `${total.toFixed(1)}<br/>${avg?.toFixed(1) || null}`;
           },
           bottomCalcFormatter: "html",
@@ -92,19 +93,31 @@ const History = () => {
           title: "Pace",
           field: "pace",
           bottomCalc: (values) => {
+            let numValues = 0;
             const total = values.reduce((acc, val) => {
               const [minutes, seconds] = val.split(":");
-              return (
-                acc + Duration.fromObject({ minutes, seconds }).as("seconds")
+
+              const duration = Duration.fromObject({ minutes, seconds }).as(
+                "seconds"
               );
+
+              if (duration === 0) {
+                return acc;
+              } else {
+                numValues++;
+                return acc + duration;
+              }
             }, 0);
-            const avg = total / values.length;
+            const avg = total / numValues;
+
             const totalDuration = Duration.fromObject({
               seconds: total,
             }).toFormat("m:ss");
+
             const avgDuration = Duration.fromObject({ seconds: avg }).toFormat(
               "m:ss"
             );
+
             return `${totalDuration}<br/>${avgDuration}`;
           },
           bottomCalcFormatter: "html",
@@ -113,20 +126,34 @@ const History = () => {
           title: "Duration",
           field: "duration",
           bottomCalc: (values) => {
+            let numValues = 0;
             const total = values.reduce((acc, val) => {
               const [hours, minutes, seconds] = val.split(":");
-              return (
-                acc +
-                Duration.fromObject({ hours, minutes, seconds }).as("seconds")
-              );
+
+              const duration = Duration.fromObject({
+                hours,
+                minutes,
+                seconds,
+              }).as("seconds");
+
+              if (duration === 0) {
+                return acc;
+              } else {
+                numValues++;
+                return acc + duration;
+              }
             }, 0);
-            const avg = total / values.length;
+            console.log("total", total, "numValues", numValues);
+            const avg = total / numValues;
+
             const totalDuration = Duration.fromObject({
               seconds: total,
             }).toFormat("h:mm:ss");
+
             const avgDuration = Duration.fromObject({
               seconds: avg,
             }).toFormat("h:mm:ss");
+            
             return `${totalDuration}<br/>${avgDuration}`;
           },
           bottomCalcFormatter: "html",
