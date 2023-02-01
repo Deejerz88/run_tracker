@@ -120,10 +120,10 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
   useEffect(() => {
     const { race } = Context;
     console.log("races", races);
-    if (!races)
-      //change race input when context changes
-      document.getElementById("race-select").options.selectedIndex =
-        races?.findIndex((r) => r.id === race.id);
+    if (!races) return;
+    //change race input when context changes
+    document.getElementById("race-select").options.selectedIndex =
+      races?.findIndex((r) => r.id === race.id);
   }, [Context, races]);
 
   const nameFilter = ({ data, name }) => {

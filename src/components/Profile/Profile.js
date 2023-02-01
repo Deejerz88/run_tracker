@@ -37,6 +37,7 @@ const Profile = () => {
     start: null,
     finish: null,
   });
+  const [races, setRaces] = useState([]);
 
   // get participant from context
   const [Context, setContext] = useContext(AppContext);
@@ -144,6 +145,13 @@ const Profile = () => {
     }));
   }, [participant, Context, setContext]);
 
+  useEffect(() => {
+    (async () => {
+      let { data: races } = await axios.get("/race");
+      setRaces(["", ...races]);
+    })();
+  }, []);
+
   return (
     <>
       {!participant.user_id ? (
@@ -195,6 +203,7 @@ const Profile = () => {
                 setState={setState}
                 Context={Context}
                 setContext={setContext}
+                races={races}
               />
             </Tab>
 
@@ -221,6 +230,7 @@ const Profile = () => {
                 setState={setState}
                 Context={Context}
                 setContext={setContext}
+                races={races}
               />
             </Tab>
             {user?.user_id === participant.user_id && (

@@ -4,8 +4,9 @@ import { DateTime, Duration } from "luxon";
 import axios from "axios";
 import { mean, sum } from "lodash";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const History = ({ setState, Context, setContext }) => {
+const History = ({ setState, Context, setContext, races }) => {
   const { participant } = Context;
 
   const navigate = useNavigate();
@@ -175,7 +176,8 @@ const History = ({ setState, Context, setContext }) => {
       getHistory(table);
     });
     table.on("rowClick", (e, row) => {
-      let { date, mileage, pace, duration, start, finish } = row.getData();
+      let { raceId, date, mileage, pace, duration, start, finish } =
+        row.getData();
       console.log("row Data", row.getData());
       console.log(DateTime.fromMillis(start).toFormat("h:mm:ss"));
 
@@ -209,7 +211,13 @@ const History = ({ setState, Context, setContext }) => {
         finish,
       }));
 
-      setContext((prev) => ({ ...prev, date }));
+      const race = races.find((r) => r.id === raceId);
+
+      setContext((prev) => ({ ...prev, race, date }));
+      toast.success("Updating Event", {
+        autoClose: 1000,
+        position: "top-center",
+      });
     });
     // table.on("rowContext", async (e, row) => {
     //   e.preventDefault();
@@ -225,8 +233,7 @@ const History = ({ setState, Context, setContext }) => {
     //     table.deleteRow(row);
     //   }
     // });
-
-  }, [navigate, participant, setContext, setState]);
+  }, [navigate, participant, races, setContext, setState]);
 
   return <div id="history-table"></div>;
 };

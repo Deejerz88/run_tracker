@@ -12,12 +12,10 @@ import {
 import { DateTime } from "luxon";
 import { startCase, isEqual } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
-import axios from "axios";
 import $ from "jquery";
 
-const Inputs = ({ state, setState, Context, setContext }) => {
+const Inputs = ({ state, setState, Context, setContext, races }) => {
   const [activeKey, setActiveKey] = useState("in");
-  const [races, setRaces] = useState([]);
   const [selectedRace, setSelectedRace] = useState(Context.race);
   const [selectedDate, setSelectedDate] = useState(Context.date);
   const [checkedIn, setCheckedIn] = useState(false);
@@ -32,10 +30,6 @@ const Inputs = ({ state, setState, Context, setContext }) => {
   }, [state]);
 
   useEffect(() => {
-    (async () => {
-      let { data: races } = await axios.get("/race");
-      setRaces(["", ...races]);
-    })();
     setState({
       mileage: 3,
       pace: {
