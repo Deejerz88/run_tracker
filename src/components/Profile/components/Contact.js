@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Row,
@@ -10,11 +10,9 @@ import {
 import { startCase } from "lodash";
 import { toast } from "react-toastify";
 import $ from "jquery";
-import { AppContext } from "../../../App.js";
 
-const Contact = ({  handleClick }) => {
+const Contact = ({  handleClick, Context }) => {
   const [pin, setPin] = useState("");
-  const [Context] = useContext(AppContext);
   const { participant } = Context;
   const pw = "2299";
 

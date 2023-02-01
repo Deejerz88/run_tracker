@@ -1,40 +1,55 @@
-import { useContext } from "react";
+import { useState, useEffect } from "react";
 import { Row, Col, Card } from "react-bootstrap";
-import { AppContext } from "../../../App.js";
 
-const Stats = () => {
-  const [Context] = useContext(AppContext);
-  let { participant, race } = Context;
-  race = race.name ? race : { name: "Team Playmakers" };
+const Stats = ({ Context }) => {
+  const [participant, setParticipant] = useState({});
+  const [race, setRace] = useState({});
+
+  useEffect(() => {
+    console.log('context', Context)
+    setParticipant(Context.participant);
+
+    let { race: contextRace } = Context;
+    contextRace = contextRace.name
+      ? contextRace
+      : {
+          name: "Team Playmakers",
+        };
+
+    setRace(contextRace);
+  }, [Context]);
   console.log("participant", participant);
+
+  const defaultStats = {
+    totalAttendance: 0,
+    totalMileage: 0,
+    avgMileage: 0,
+    totalDuration: {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    },
+    avgDuration: {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    },
+    avgPace: {
+      minutes: 0,
+      seconds: 0,
+    },
+  };
   return (
     <Row className="stats-row">
       {["race", "Overall"].map((title, i) => {
         title = title === "race" ? race.name : title;
         const stats =
-          title === "Overall" && participant.totalDuration
+          title === "Overall"
             ? participant
-            : participant.races?.find((r) => r.name === title) || {
-                totalAttendance: 0,
-                totalMileage: 0,
-                avgMileage: 0,
-                totalDuration: {
-                  hours: 0,
-                  minutes: 0,
-                  seconds: 0,
-                },
-                avgDuration: {
-                  hours: 0,
-                  minutes: 0,
-                  seconds: 0,
-                },
-                avgPace: {
-                  minutes: 0,
-                  seconds: 0,
-                },
-              };
+            : participant.races?.find((r) => r.name === title) || defaultStats;
+        console.log("stats", stats)
         return (
-          <Col key={title}>
+          <Col key={i}>
             <h2 className="stats-title mt-5">{title}</h2>
             <Row className="w-100 justify-content-center">
               <Card id="attendance-card" className="stat-card">
@@ -126,7 +141,9 @@ const Stats = () => {
                         <p>hrs</p>
                       </Row>
                       <Row>
-                        <Card.Text>{stats.avgDuration?.hours?.toFixed(0) || 0}</Card.Text>
+                        <Card.Text>
+                          {stats.avgDuration?.hours?.toFixed(0) || 0}
+                        </Card.Text>
                       </Row>
                       <Row>
                         <p>hrs</p>

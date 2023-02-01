@@ -77,8 +77,8 @@ function App() {
 
   const BrowserRouter = createBrowserRouter(
     createRoutesFromElements([
-      <Route path="/" element={<Home />} />,
-      <Route path="/profile/:user_id" element={<ProfilePage />} />,
+      <Route path="/*" element={<Home />} />,
+      <Route path="/profile/:user_id*" element={<ProfilePage />} />,
     ])
   );
 

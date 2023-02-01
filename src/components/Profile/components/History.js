@@ -1,32 +1,40 @@
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { DateTime, Duration } from "luxon";
 import axios from "axios";
-import { AppContext } from "../../../App.js";
 import { mean, sum } from "lodash";
+import { useNavigate } from "react-router-dom";
 
-const History = () => {
-  const [Context] = useContext(AppContext);
+const History = ({ setState, Context, setContext }) => {
   const { participant } = Context;
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getHistory = async (table) => {
       if (!participant) return;
 
       const { user_id } = participant;
       const { data } = await axios.get(`/participant/${user_id}`);
-      if (!data) return;
-
       const { races } = data;
       if (!data.user_id || !races?.length) return;
 
       const history = [];
 
       races?.forEach((race) => {
-        const { attendance, id } = race;
+        const { attendance, id: raceId } = race;
         if (!attendance) return;
 
         attendance.forEach((a) => {
-          let { date, mileage, pace, duration } = a;
+          let {
+            id: attendanceId,
+            date,
+            mileage,
+            pace,
+            duration,
+            start,
+            finish,
+          } = a;
           date = DateTime.fromISO(date).toFormat("MM/dd/yyyy");
           pace = Duration.fromObject({
             minutes: pace.minutes,
@@ -39,12 +47,15 @@ const History = () => {
           }).toFormat("h:mm:ss");
 
           history.push({
-            id,
+            raceId,
+            attendanceId,
             race: race.name,
             date,
             mileage,
             pace,
             duration,
+            start,
+            finish,
           });
         });
       });
@@ -62,8 +73,8 @@ const History = () => {
       columnDefaults: {},
       columns: [
         {
-          title: "ID",
-          field: "id",
+          title: "Race ID",
+          field: "raceId",
           visible: false,
         },
         {
@@ -86,8 +97,8 @@ const History = () => {
             return `${total.toFixed(1)}<br/>${avg?.toFixed(1) || null}`;
           },
           bottomCalcFormatter: "html",
-          editable: true,
-          editor: "number",
+          // editable: true,
+          // editor: "number",
         },
         {
           title: "Pace",
@@ -163,9 +174,59 @@ const History = () => {
     table.on("tableBuilt", () => {
       getHistory(table);
     });
+    table.on("rowClick", (e, row) => {
+      let { date, mileage, pace, duration, start, finish } = row.getData();
+      console.log("row Data", row.getData());
+      console.log(DateTime.fromMillis(start).toFormat("h:mm:ss"));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      date = DateTime.fromFormat(date, "MM/dd/yyyy").toISODate();
+
+      const [paceMinutes, paceSeconds] = pace.split(":");
+
+      pace = Duration.fromObject({
+        minutes: paceMinutes,
+        seconds: paceSeconds,
+      }).toObject();
+
+      const [durationHours, durationMinutes, durationSeconds] =
+        duration.split(":");
+
+      duration = Duration.fromObject({
+        hours: durationHours,
+        minutes: durationMinutes,
+        seconds: durationSeconds,
+      }).toObject();
+
+      const { user_id } = participant;
+      navigate(`/profile/${user_id}/checkin`);
+
+      setState((state) => ({
+        ...state,
+        mileage,
+        pace,
+        duration,
+        start,
+        finish,
+      }));
+
+      setContext((prev) => ({ ...prev, date }));
+    });
+    // table.on("rowContext", async (e, row) => {
+    //   e.preventDefault();
+    //   let { date, raceId } = row.getData();
+    //   date = DateTime.fromFormat(date, "MM/dd/yyyy").toISODate();
+
+    //   const { user_id } = participant;
+    //   const res = await axios.delete(
+    //     `/participant/attendance/${user_id}/${raceId}/${date}`
+    //   );
+    //   console.log(res);
+    //   if (res.status === 200) {
+    //     table.deleteRow(row);
+    //   }
+    // });
+
+  }, [navigate, participant, setContext, setState]);
 
   return <div id="history-table"></div>;
 };

@@ -324,7 +324,7 @@ const ParticipantTable = () => {
         participant: row.getData(),
       }));
 
-      navigate(`/profile/${row.getData().user_id}`);
+      navigate(`/profile/${row.getData().user_id}/checkin`);
     });
 
     table.on("tableBuilt", () => {
@@ -359,7 +359,7 @@ const ParticipantTable = () => {
             ...prevcContext,
             participant: user,
           }));
-          navigate(`/profile/${user.user_id}`);
+          navigate(`/profile/${user.user_id}/checkin`);
         }}
         className={Context.loggedIn === "true" ? "" : "d-none"}
       >

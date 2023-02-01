@@ -22,6 +22,7 @@ const handleSubmit = async ({
   console.log("selectedRace", selectedRace);
 
   if (activeKey === "out" && !checkedIn) {
+    // return if participant is not checked in and trying to check out
     toast.error("Participant must be checked in before checking out", {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,
@@ -32,6 +33,7 @@ const handleSubmit = async ({
     state.duration?.hours >= 1 &&
     !state.acknowledged
   ) {
+    // return if duration is greater than 1 hour and acknowledgement is not checked
     toast.error("Please accept duration acknowledgement", {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,
@@ -39,6 +41,7 @@ const handleSubmit = async ({
     return;
   }
 
+  //get checkin or checkout fields
   let fields = $(`input[name=${activeKey}]`);
   //filter out fields that are not being shown
   fields = fields.filter((i, field) => {
@@ -62,11 +65,11 @@ const handleSubmit = async ({
     const [group, type] = id.split("-"); //duration-hours, pace-minutes, etc
 
     if (group !== "mileage")
-      data[group][type] =
+      data[group][type] = // data[duartion][hours]...
         group === "start" || group === "finish"
           ? DateTime.fromFormat(value, "HH:mm").toMillis()
           : Number(value);
-    else data[group] = Number(value);
+    else data[group] = Number(value); //mileage
   });
 
   const { pace, duration, start, finish, mileage } = data;
@@ -79,8 +82,6 @@ const handleSubmit = async ({
     });
     return;
   }
-
-  console.log("participant races", participant.races);
 
   participant.races = [
     {
@@ -101,15 +102,11 @@ const handleSubmit = async ({
     },
   ];
 
-  console.log("participant races", participant.races);
+  console.log('defaults', defaults)
 
   participant.settings = { ...participant.settings, defaultFields: defaults };
 
-  console.log(
-    "settings",
-    participant.settings,
-    participant.settings.defaultFields
-  );
+  console.log("participant settings", participant.settings);
 
   try {
     let { data: newParticipant } = await axios.post(

@@ -1,13 +1,11 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { startCase, isEqual } from "lodash";
 import { toast, Flip } from "react-toastify";
 import axios from "axios";
 import $ from "jquery";
-import { AppContext } from "../../../App.js";
 
-const Account = () => {
-  const [Context, setContext] = useContext(AppContext);
+const Account = ({ Context, setContext }) => {
   const { participant, race } = Context;
   const { first_name, last_name, username, email, phone } = participant;
   const [originalData, setOriginalData] = useState({
@@ -71,7 +69,7 @@ const Account = () => {
         });
         return;
       }
-      console.log('formData', formData)
+      console.log("formData", formData);
       try {
         await axios.post("/api/user", formData);
         $("#change_password").val("");
@@ -139,7 +137,6 @@ const Account = () => {
       }
     }
   };
-
 
   return (
     <>

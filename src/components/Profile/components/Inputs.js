@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -12,46 +12,63 @@ import {
 import { DateTime } from "luxon";
 import { startCase, isEqual } from "lodash";
 import { handleChange, handleSubmit } from "../utils/index.js";
-import { AppContext } from "../../../App.js";
 import axios from "axios";
 import $ from "jquery";
 
-const Inputs = ({ state, setState }) => {
+const Inputs = ({ state, setState, Context, setContext }) => {
   const [activeKey, setActiveKey] = useState("in");
   const [races, setRaces] = useState([]);
-  const [Context, setContext] = useContext(AppContext);
   const [selectedRace, setSelectedRace] = useState(Context.race);
   const [selectedDate, setSelectedDate] = useState(Context.date);
   const [checkedIn, setCheckedIn] = useState(false);
-  const { participant } = Context;
   const [showGroup, setShowGroup] = useState({});
-  const [defaults, setDefaults] = useState(participant.settings?.defaultFields);
 
+  const { participant } = Context;
+  const [defaults, setDefaults] = useState(participant.settings?.defaultFields);
   const today = DateTime.local().toISODate();
+
+  useEffect(() => {
+    console.log("state", state);
+  }, [state]);
 
   useEffect(() => {
     (async () => {
       let { data: races } = await axios.get("/race");
       setRaces(["", ...races]);
     })();
-  }, []);
+    setState({
+      mileage: 3,
+      pace: {
+        minutes: 10,
+        seconds: 0,
+      },
+      duration: {
+        hours: 0,
+        minutes: 30,
+        seconds: 0,
+      },
+      start: null,
+      finish: null,
+    });
+  }, [setState]);
 
   useEffect(() => {
     if (!participant.settings?.defaultFields) return;
     let groups = {};
-    participant.settings?.defaultFields.forEach((d) => {
-      groups[d] = true;
+    participant.settings?.defaultFields.forEach((field) => {
+      groups[field] = true;
     });
 
     setShowGroup(groups);
-
   }, [participant.settings?.defaultFields]);
 
   useEffect(() => {
     if (!races?.length > 1) return;
-    //change selected race when context changes
+    //change selected race & date when context changes
     setSelectedRace(Context.race.name ? Context.race : races[1]);
-  }, [races, Context]);
+    setSelectedDate(Context.date || today);
+    setShowGroup({ mileage: true, pace: true, duration: true });
+  }, [races, today, Context.race, Context.date]);
 
   useEffect(() => {
     //check if participant has checked in
@@ -67,23 +84,6 @@ const Inputs = ({ state, setState }) => {
 
     setCheckedIn(todaysEvent?.checkedIn || false);
   }, [participant.races, selectedDate, selectedRace]);
-
-  useEffect(() => {
-    setState({
-      mileage: 3,
-      pace: {
-        minutes: 10,
-        seconds: 0,
-      },
-      duration: {
-        hours: 0,
-        minutes: 30,
-        seconds: 0,
-      },
-      start: null,
-      finish: null,
-    });
-  }, [selectedDate, setState]);
 
   useEffect(() => {
     setActiveKey(checkedIn ? "out" : "in");
@@ -137,6 +137,16 @@ const Inputs = ({ state, setState }) => {
         })
       }
       onClick={handleClick}
+      onKeyDown={(e) => {
+        console.log("key pressed", e.key);
+        if (e.key === "Enter") {
+          //trigger tab event on enter key
+          console.log("enter pressed");
+          e.preventDefault();
+          console.log("next", $(e.target).next(".form-control"));
+          $(e.target).next().trigger("focus");
+        }
+      }}
       className="bg-light"
     >
       <Row id="checkin-race-row">

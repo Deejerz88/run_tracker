@@ -38,9 +38,9 @@ const Profile = () => {
     finish: null,
   });
 
+  // get participant from context
   const [Context, setContext] = useContext(AppContext);
   let { user, participant } = Context;
-  console.log("Profile Context", Context);
 
   const navigate = useNavigate();
 
@@ -50,21 +50,25 @@ const Profile = () => {
     (async () => {
       const { data } = await axios.get(`/participant/${user_id}`);
       if (!data) return;
-      setContext((prev) => ({ ...Context, participant: data }));
+      setContext((prev) => ({ ...prev, participant: data }));
     })();
   }
 
   const handleClick = (e) => {
+    //get closest contact cards
     const card = e.target.id.closest(".card");
     const { id } = card;
+
     if (id === "phone-card") {
       const phone = participant.phone;
+      //open phone app / tab
       if (phone) {
         window.open(`tel:${phone}`, "_blank");
       }
     } else if (id === "email-card") {
       const email = participant.email;
       if (email) {
+        //open email app / tab
         window.open(`mailto:${email}`, "_blank");
       }
     }
@@ -72,35 +76,37 @@ const Profile = () => {
 
   useEffect(() => {
     const { race, date } = Context;
-    console.log("race", race);
-    const selectedRace = document.getElementById("checkin-race");
-    console.log("selectedRace", selectedRace);
+
     if (!race.id) {
+      //set default race
       setContext((prev) => ({
         ...prev,
         race: { id: 2190, name: "Team Playmakers", type: "club" },
       }));
     }
+
     if (!participant.user_id || !race.id) return;
+
     if (race.name === "Team Playmakers") {
       //set default start times
       const { weekdayLong } = DateTime.local();
-      const startTime = weekdayLong === "Saturday" ? 8 : 18;
+      const startTime = weekdayLong === "Saturday" ? 8 : 18; // 8am on Saturday, 6pm otherwise
       setState((prev) => ({
         ...prev,
         start: DateTime.local().set({ hour: startTime, minute: 0 }).toMillis(),
       }));
     }
+
     const thisRace = participant.races?.find((r) => r?.id === race.id);
-    console.log("thisRace", thisRace);
+
     if (!thisRace) {
-      setState((prev) => ({
-        mileage: participant.avgMileage || prev.mileage,
-        pace: participant.avgPace || prev.pace,
-        duration: participant.avgDuration || prev.duration,
-        start: null,
-        finish: null,
-      }));
+      // setState((prev) => ({
+      //   mileage: participant.avgMileage || prev.mileage,
+      //   pace: participant.avgPace || prev.pace,
+      //   duration: participant.avgDuration || prev.duration,
+      //   start: null,
+      //   finish: null,
+      // }));
       return;
     }
 
@@ -117,9 +123,7 @@ const Profile = () => {
         start = DateTime.local().set({ hour: startTime, minute: 0 }).toMillis();
       }
       setState((prev) => ({
-        mileage: thisRace.avgMileage || prev.mileage,
-        pace: thisRace.avgPace || prev.pace,
-        duration: thisRace.avgDuration || prev.duration,
+        ...prev,
         start,
         finish: null,
       }));
@@ -168,13 +172,17 @@ const Profile = () => {
           </Row>
           <Tabs
             justify
-            defaultActiveKey={
+            activeKey={
               // user?.user_id === participant.user_id ? "checkIn" : "stats"
-              "checkIn"
+              window.location.href.split("/")[5] || "checkin"
             }
+            onSelect={(key) => {
+              console.log("key", key);
+              navigate(`/profile/${participant.user_id}/${key}`);
+            }}
           >
             <Tab
-              eventKey="checkIn"
+              eventKey="checkin"
               title={
                 <Row className="flex-column justify-content-end">
                   <BsCheck2All size="1.5em" />
@@ -182,7 +190,12 @@ const Profile = () => {
                 </Row>
               }
             >
-              <Inputs state={state} setState={setState} />
+              <Inputs
+                state={state}
+                setState={setState}
+                Context={Context}
+                setContext={setContext}
+              />
             </Tab>
 
             <Tab
@@ -194,7 +207,7 @@ const Profile = () => {
               }
               className="stats-tab"
             >
-              <Stats />
+              <Stats Context={Context} />
             </Tab>
             <Tab
               eventKey="history"
@@ -204,7 +217,11 @@ const Profile = () => {
                 </Row>
               }
             >
-              <History />
+              <History
+                setState={setState}
+                Context={Context}
+                setContext={setContext}
+              />
             </Tab>
             {user?.user_id === participant.user_id && (
               <Tab
@@ -227,7 +244,7 @@ const Profile = () => {
                   </Row>
                 }
               >
-                <Account />
+                <Account Context={Context} setContext={setContext} />
               </Tab>
             ) : (
               <Tab
@@ -235,7 +252,7 @@ const Profile = () => {
                 title="Contact Info"
                 className="contact-tab"
               >
-                <Contact handleClick={handleClick} />
+                <Contact handleClick={handleClick} Context={Context} />
               </Tab>
             )}
           </Tabs>
