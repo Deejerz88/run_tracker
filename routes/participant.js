@@ -143,8 +143,8 @@ router.post("/checkin", dbConnect, async (req, res) => {
         attendance.duration = attendanceUpdate.duration;
         attendance.start = attendanceUpdate.start;
         attendance.finish = attendanceUpdate.finish;
-        attendance.checkedIn = attendanceUpdate.checkedIn;
-        attendance.checkedOut = attendanceUpdate.checkedOut;
+        attendance.checkedIn = attendanceUpdate.checkedIn || attendance.checkedIn;
+        attendance.checkedOut = attendanceUpdate.checkedOut || attendance.checkedOut;
       }
     }
 

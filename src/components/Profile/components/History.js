@@ -235,7 +235,7 @@ const History = ({ setState, Context, setContext, races }) => {
     // });
   }, [navigate, participant, races, setContext, setState]);
 
-  return <div id="history-table"></div>;
+  return (<div id="history-table"></div>);
 };
 
 export default History;

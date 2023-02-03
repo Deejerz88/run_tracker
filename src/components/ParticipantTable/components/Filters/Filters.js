@@ -79,7 +79,7 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
 
   useEffect(() => {
     const { race } = Context;
-    //get attendances with Context.date
+    //get attendance with Context.date
     const races = tableData
       .map(
         (p) =>
@@ -87,7 +87,9 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
             ?.filter((r) => r.id === race.id)[0]
             ?.attendance?.filter((a) => a.date === Context.date)[0]
       )
+      //filter undefined / null values
       .filter((r) => r);
+    console.log("attendance races", races);
     //get total mileage and duration
     const totalMileage = races.reduce(
       (acc, curr) => acc + curr.mileage || 0,
@@ -294,11 +296,11 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
         </Form>
         <ButtonGroup id="table-stats" className="mb-2 ">
           <Button variant="light" className="stat-button">
-            <b>Total Miles:</b> {stats.totalMileage}
+            <b>Total Miles:</b> {stats.totalMileage.toFixed(1)}
           </Button>
-          <Button variant="light" className="stat-button">
+          {/* <Button variant="light" className="stat-button">
             <b>Total Duration:</b> {stats.totalDuration}
-          </Button>
+          </Button> */}
         </ButtonGroup>
       </Row>
     </>

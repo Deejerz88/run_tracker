@@ -19,8 +19,11 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
   const [selectedRace, setSelectedRace] = useState(Context.race);
   const [selectedDate, setSelectedDate] = useState(Context.date);
   const [checkedIn, setCheckedIn] = useState(false);
-  const [showGroup, setShowGroup] = useState({});
-
+  const [showGroup, setShowGroup] = useState({
+    mileage: true,
+    pace: true,
+    duration: true,
+  });
   const { participant } = Context;
   const [defaults, setDefaults] = useState(participant.settings?.defaultFields);
   const today = DateTime.local().toISODate();
@@ -101,8 +104,8 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
         );
         setShowGroup({});
       } else {
-        //show group
-        $(`.${name}`).toggleClass("hidden");
+        //show group {mileage: true, pace: false, duration: true}
+        $(`.${name}`).toggleClass("hidden"); // name: mileage, pace, duration
         setShowGroup({ ...showGroup, [name]: !showGroup[name] }); //toggle group
       }
     } else if (id === "default-fields") {

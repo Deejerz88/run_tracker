@@ -22,7 +22,6 @@ const handleSubmit = async ({
   console.log("selectedRace", selectedRace);
 
   if (activeKey === "out" && !checkedIn) {
-    // return if participant is not checked in and trying to check out
     toast.error("Participant must be checked in before checking out", {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 1500,
@@ -83,6 +82,8 @@ const handleSubmit = async ({
     return;
   }
 
+  console.log(`>>>>>>>>>>>>>>> checked${startCase(activeKey)}`, activeKey);
+
   participant.races = [
     {
       ...selectedRace,
@@ -94,15 +95,15 @@ const handleSubmit = async ({
           start: start.time,
           finish: finish.time,
           mileage,
-          checkedIn: state.checkedIn,
-          checkedOut: state.checkedOut,
+          // checkedIn: state.checkedIn || true,
+          // checkedOut: state.checkedOut || false,
           [`checked${startCase(activeKey)}`]: true,
         },
       ],
     },
   ];
 
-  console.log('defaults', defaults)
+  console.log("defaults", defaults);
 
   participant.settings = { ...participant.settings, defaultFields: defaults };
 
