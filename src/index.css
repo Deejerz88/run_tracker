@@ -1,3 +1,9 @@
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: "Roboto Slab", sans-serif;
@@ -15,7 +21,7 @@ code {
 #logo {
   margin-top: 20px;
   width: 450px;
-  transition: 0.2s all linear
+  transition: 0.2s all linear;
 }
 
 /* Media Queries */

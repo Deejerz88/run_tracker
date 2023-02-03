@@ -137,14 +137,16 @@ router.post("/checkin", dbConnect, async (req, res) => {
         // add attendance
         race.attendance.push(attendanceUpdate);
       } else {
-        // update attendance and update document
+        // update attendance
         attendance.mileage = attendanceUpdate.mileage;
         attendance.pace = attendanceUpdate.pace;
         attendance.duration = attendanceUpdate.duration;
         attendance.start = attendanceUpdate.start;
         attendance.finish = attendanceUpdate.finish;
-        attendance.checkedIn = attendanceUpdate.checkedIn || attendance.checkedIn;
-        attendance.checkedOut = attendanceUpdate.checkedOut || attendance.checkedOut;
+        attendance.checkedIn =
+          attendanceUpdate.checkedIn || attendance.checkedIn;
+        attendance.checkedOut =
+          attendanceUpdate.checkedOut || attendance.checkedOut;
       }
     }
 
@@ -155,6 +157,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
       return res.status(500).json({ error: "Error saving participant" });
     }
 
+    //TODO: combone these two into one aggregation
     //use aggregation to calculate race totals
     doc = await raceTotals(doc, update.user_id, race);
 
@@ -267,7 +270,7 @@ router.delete(
     }
 
     res.json(doc);
-  } 
+  }
 );
 
 export default router;
