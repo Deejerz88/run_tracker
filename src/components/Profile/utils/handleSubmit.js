@@ -27,18 +27,19 @@ const handleSubmit = async ({
       autoClose: 1500,
     });
     return;
-  } else if (
-    activeKey === "in" &&
-    state.duration?.hours >= 1 &&
-    !state.acknowledged
-  ) {
-    // return if duration is greater than 1 hour and acknowledgement is not checked
-    toast.error("Please accept duration acknowledgement", {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 1500,
-    });
-    return;
   }
+  // else if (
+  //   activeKey === "in" &&
+  //   state.duration?.hours >= 1 &&
+  //   !state.acknowledged
+  // ) {
+  //   // return if duration is greater than 1 hour and acknowledgement is not checked
+  //   toast.error("Please accept duration acknowledgement", {
+  //     position: toast.POSITION.TOP_CENTER,
+  //     autoClose: 1500,
+  //   });
+  //   return;
+  // }
 
   //get checkin or checkout fields
   let fields = $(`input[name=${activeKey}]`);

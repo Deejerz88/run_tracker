@@ -228,7 +228,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                     </Col>
                   );
                 })}
-                {state.duration?.hours >= 1 && (
+                {/* {state.duration?.hours >= 1 && (
                   <Form.Check
                     type="checkbox"
                     id={`acknowledged--${inOut}`}
@@ -242,7 +242,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                       }))
                     }
                   />
-                )}
+                )} */}
               </Row>
               <Row>
                 <Col xs={6}>
