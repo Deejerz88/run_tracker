@@ -4,6 +4,7 @@ import { startCase, isEqual } from "lodash";
 import { toast, Flip } from "react-toastify";
 import axios from "axios";
 import $ from "jquery";
+import { Feedback } from "./index.js";
 
 const Account = ({ Context, setContext }) => {
   const { participant, race } = Context;
@@ -28,17 +29,8 @@ const Account = ({ Context, setContext }) => {
     confirm_password: "",
   });
 
-  const [feedbackData, setFeedbackData] = useState({
-    subject: "",
-    message: "",
-    anonymous: false,
-  });
-
   const handleChange = (e) => {
-    const form = e.target.form;
     let { id, value } = e.target;
-    let key = id.replace(/ /g, "_").toLowerCase();
-
     if (id === "phone") {
       //format phone number
       value = value.replace(/(\D|-|\(|\))/g, "");
@@ -50,9 +42,6 @@ const Account = ({ Context, setContext }) => {
         ? $(".confirm_password").css({ display: "flex" })
         : $(".confirm_password").css({ display: "none" });
     }
-    form.id === "feedback-form"
-      ? setFeedbackData((prev) => ({ ...prev, [key]: value }))
-      : setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -97,39 +86,6 @@ const Account = ({ Context, setContext }) => {
       } catch (err) {
         console.log("err", err);
         toast.error("Error updating account", {
-          position: "top-center",
-          autoClose: 3000,
-          transition: Flip,
-        });
-      }
-    } else if (form.id === "feedback-form") {
-      const { subject, message } = feedbackData;
-      if (!subject || !message) {
-        toast.error("Please enter a subject and message", {
-          position: "top-center",
-          autoClose: 3000,
-          transition: Flip,
-        });
-        return;
-      }
-      try {
-        await axios.post("/feedback", {
-          ...feedbackData,
-          participant,
-          race,
-        });
-        setFeedbackData({ subject: "", message: "" });
-        $("#subject").val("");
-        $("#message").val("");
-        $("#anonymous").prop("checked", false);
-        toast.success("Feedback submitted", {
-          position: "top-center",
-          autoClose: 3000,
-          transition: Flip,
-        });
-      } catch (err) {
-        console.log("err", err);
-        toast.error("Error submitting feedback", {
           position: "top-center",
           autoClose: 3000,
           transition: Flip,
@@ -215,62 +171,7 @@ const Account = ({ Context, setContext }) => {
           </Col>
         </Row>
       </Form>
-      <Form id="feedback-form" onSubmit={handleSubmit} onChange={handleChange}>
-        <h2 className="styled-title">Feedback</h2>
-        <hr className="styled-hr w-25 mt-2" />
-        <Form.Group as={Row} className="m-3">
-          <Form.Label column sm={2}>
-            <b>Subject</b>
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control id="subject" type="text" />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="m-3 mb-0">
-          <Form.Label column sm={2}>
-            <b>Message</b>
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control id="message" as="textarea" rows={3} />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mx-4 mb-3 mt-1">
-          <Form.Label column sm={2}></Form.Label>
-          <Col sm={10}>
-            <Form.Check
-              id="anonymous"
-              type="checkbox"
-              label="Submit anonymously"
-            />
-          </Col>
-        </Form.Group>
-
-        <Row
-          id="submit-feedback-row"
-          style={{
-            display:
-              feedbackData.subject && feedbackData.message ? "flex" : "none",
-          }}
-        >
-          <Col className="d-flex justify-content-end">
-            <Button variant="outline-danger" type="submit">
-              Submit
-            </Button>
-          </Col>
-          <Col>
-            <Button
-              variant="outline-danger"
-              type="reset"
-              onClick={() => {
-                $("#submit-feedback-row").hide();
-                setFeedbackData({ subject: "", message: "" });
-              }}
-            >
-              Cancel
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <Feedback participant={participant} race={race} />
     </>
   );
 };

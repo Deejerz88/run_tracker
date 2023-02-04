@@ -92,9 +92,7 @@ const ParticipantTable = () => {
     const { checkedOut, checkedIn } = data;
     return checkedOut && checkedIn
       ? `<b>${value}</b>`
-      : value
-      ? `<i>${value}</i>`
-      : "";
+      : `<i>${value}</i>`;
   };
 
   const toggleCollapse = useCallback(() => {
@@ -109,19 +107,14 @@ const ParticipantTable = () => {
     $(".tabulator-responsive-collapse").each(
       (i, el) => (el.style.display = collapsed ? "" : "none")
     );
-    $(
-      ".tabulator-responsive-collapse-toggle-open"
-    ).each((i, el) => {
-      (el.style.display = collapsed ? "none" : "initial");
+    $(".tabulator-responsive-collapse-toggle-open").each((i, el) => {
+      el.style.display = collapsed ? "none" : "initial";
       $(el).data("collapsed", !collapsed);
     });
-    $(
-      ".tabulator-responsive-collapse-toggle-close"
-    ).each((i, el) => {
-      (el.style.display = collapsed ? "initial" : "none")
+    $(".tabulator-responsive-collapse-toggle-close").each((i, el) => {
+      el.style.display = collapsed ? "initial" : "none";
       $(el).data("collapsed", collapsed);
-    }
-    );
+    });
     $("#collapse-toggle").data("collapsed", !collapsed);
   }, []);
 
@@ -131,8 +124,6 @@ const ParticipantTable = () => {
   //   target.css("display", collapsed ? "none" : "");
   // target.data("collapsed", !collapsed);
   // }, []);
-
-
 
   useEffect(() => {
     //set table data when race context changes

@@ -10,10 +10,11 @@ import {
 import { startCase } from "lodash";
 import { toast } from "react-toastify";
 import $ from "jquery";
+import { Feedback } from "./index.js";
 
-const Contact = ({  handleClick, Context }) => {
+const Contact = ({ handleClick, Context }) => {
   const [pin, setPin] = useState("");
-  const { participant } = Context;
+  const { participant, race } = Context;
   const pw = "2299";
 
   useEffect(() => {
@@ -58,6 +59,7 @@ const Contact = ({  handleClick, Context }) => {
           );
         })}
       </Row>
+      <Feedback participant={participant} race={race} />
     </>
   );
 };
