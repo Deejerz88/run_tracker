@@ -228,6 +228,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                     </Col>
                   );
                 })}
+                <Form.Check id='no-wait' type="checkbox" label="Do not wait for me" inline className="ms-3" />
                 {/* {state.duration?.hours >= 1 && (
                   <Form.Check
                     type="checkbox"

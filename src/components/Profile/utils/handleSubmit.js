@@ -84,6 +84,7 @@ const handleSubmit = async ({
   }
 
   console.log(`>>>>>>>>>>>>>>> checked${startCase(activeKey)}`, activeKey);
+  const noWait = $("#no-wait").is(":checked");
 
   participant.races = [
     {
@@ -99,6 +100,7 @@ const handleSubmit = async ({
           // checkedIn: state.checkedIn || true,
           // checkedOut: state.checkedOut || false,
           [`checked${startCase(activeKey)}`]: true,
+          checkedOut: noWait,
         },
       ],
     },
