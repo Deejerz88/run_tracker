@@ -83,7 +83,6 @@ const handleSubmit = async ({
     return;
   }
 
-  console.log(`>>>>>>>>>>>>>>> checked${startCase(activeKey)}`, activeKey);
   const noWait = $("#no-wait").is(":checked");
 
   participant.races = [
@@ -99,8 +98,8 @@ const handleSubmit = async ({
           mileage,
           // checkedIn: state.checkedIn || true,
           // checkedOut: state.checkedOut || false,
-          [`checked${startCase(activeKey)}`]: true,
           checkedOut: noWait,
+          [`checked${startCase(activeKey)}`]: true,
         },
       ],
     },
