@@ -99,7 +99,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
     const { name, type, classList, id } = e.target;
     const expanded = e.target.getAttribute("aria-expanded");
 
-    if (e.target.type === "number") {
+    if (e.target.inputMode === "numeric" || e.target.inputMode === "decimal") {
       e.target.select();
     } else if (type === "button" && expanded === "false") {
       //toggle accordion
