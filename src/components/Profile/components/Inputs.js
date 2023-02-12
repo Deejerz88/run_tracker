@@ -34,8 +34,8 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
     ["pace", "duration"].forEach((field) => {
       ["hours", "minutes", "seconds"].forEach((unit) => {
         if (field === "pace" && unit === "hours") return;
-        $(`#${field}-${unit}-in`).val(state[field][unit]);
-        $(`#${field}-${unit}-out`).val(state[field][unit]);
+        $(`#${field}-${unit}-in`).val(Math.round(state[field][unit]));
+        $(`#${field}-${unit}-out`).val(Math.round(state[field][unit]));
       });
     });
   }, [state]);
@@ -52,8 +52,8 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
         minutes: 30,
         seconds: 0,
       },
-      start: null,
-      finish: null,
+      start: 0,
+      finish: 0,
     });
   }, [setState]);
 
@@ -269,9 +269,9 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                       <FloatingLabel label="Target">
                         <Form.Control
                           id={`mileage-target-${inOut}`}
-                          type="number"
-                          // step={0.1}
-                          defaultValue={state.mileage.toFixed(1) || 3}
+                          inputMode="decimal"
+                          step={0.01}
+                          defaultValue={state.mileage.toFixed(2) || 3}
                           onBlur={(e) => handleChange({ e, state, setState })}
                           name={inOut}
                         />
@@ -296,7 +296,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                             <FloatingLabel key={type} label={type}>
                               <Form.Control
                                 id={`${group}-${type}-${inOut}`} // pace-minutes-in, etc.
-                                type="number"
+                                inputMode="numeric"
                                 step={type === "seconds" ? 5 : 1}
                                 defaultValue={
                                   type === "seconds"

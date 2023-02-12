@@ -34,8 +34,8 @@ const Profile = () => {
       minutes: 30,
       seconds: 0,
     },
-    start: null,
-    finish: null,
+    start: 0,
+    finish: 0,
   });
   const [races, setRaces] = useState([]);
 
@@ -99,37 +99,10 @@ const Profile = () => {
     }
 
     const thisRace = participant.races?.find((r) => r?.id === race.id);
-
-    if (!thisRace) {
-      // setState((prev) => ({
-      //   mileage: participant.avgMileage || prev.mileage,
-      //   pace: participant.avgPace || prev.pace,
-      //   duration: participant.avgDuration || prev.duration,
-      //   start: null,
-      //   finish: null,
-      // }));
-      return;
-    }
+    if (!thisRace) return;
 
     const todaysAttendance = thisRace.attendance?.find((a) => a.date === date);
-    console.log("todaysAttendance", todaysAttendance);
-    if (!todaysAttendance) {
-      let start = null;
-      console.log("no attendance", race);
-      if (race.name === "Team Playmakers") {
-        //set default start times
-        const { weekdayLong } = DateTime.local();
-        const startTime = weekdayLong === "Saturday" ? 8 : 18;
-        console.log("weekdayLong", weekdayLong, "startTime", startTime);
-        start = DateTime.local().set({ hour: startTime, minute: 0 }).toMillis();
-      }
-      setState((prev) => ({
-        ...prev,
-        start,
-        finish: null,
-      }));
-      return;
-    }
+    if (!todaysAttendance) return;
 
     const { mileage, pace, duration, start, finish, checkedIn, checkedOut } =
       todaysAttendance;

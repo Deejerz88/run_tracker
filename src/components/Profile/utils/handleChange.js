@@ -103,6 +103,7 @@ const handleChange = ({
       .plus(update.duration)
       .toMillis();
   }
+
   setState(update);
 };
 
