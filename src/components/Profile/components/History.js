@@ -200,7 +200,6 @@ const History = ({ setState, Context, setContext, races }) => {
       }).toObject();
 
       const { user_id } = participant;
-      navigate(`/profile/${user_id}/checkin`);
 
       setState((state) => ({
         ...state,
@@ -211,6 +210,8 @@ const History = ({ setState, Context, setContext, races }) => {
         finish,
       }));
 
+
+      navigate(`/profile/${user_id}/checkin`);
       const race = races.find((r) => r.id === raceId);
 
       setContext((prev) => ({ ...prev, race, date }));
@@ -235,7 +236,7 @@ const History = ({ setState, Context, setContext, races }) => {
     // });
   }, [navigate, participant, races, setContext, setState]);
 
-  return (<div id="history-table"></div>);
+  return <div id="history-table"></div>;
 };
 
 export default History;

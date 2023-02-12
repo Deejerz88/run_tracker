@@ -30,6 +30,14 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
 
   useEffect(() => {
     console.log("state", state);
+    $('[id^="mileage-target-"]').val(state.mileage);
+    ["pace", "duration"].forEach((field) => {
+      ["hours", "minutes", "seconds"].forEach((unit) => {
+        if (field === "pace" && unit === "hours") return;
+        $(`#${field}-${unit}-in`).val(state[field][unit]);
+        $(`#${field}-${unit}-out`).val(state[field][unit]);
+      });
+    });
   }, [state]);
 
   useEffect(() => {
@@ -228,7 +236,13 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                     </Col>
                   );
                 })}
-                <Form.Check id='no-wait' type="checkbox" label="Do not wait for me" inline className="ms-3" />
+                <Form.Check
+                  id="no-wait"
+                  type="checkbox"
+                  label="Do not wait for me"
+                  inline
+                  className="ms-3"
+                />
                 {/* {state.duration?.hours >= 1 && (
                   <Form.Check
                     type="checkbox"
@@ -256,9 +270,9 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                         <Form.Control
                           id={`mileage-target-${inOut}`}
                           type="number"
-                          step={0.1}
-                          value={state.mileage || 3}
-                          onChange={(e) => handleChange({ e, state, setState })}
+                          // step={0.1}
+                          defaultValue={state.mileage.toFixed(1) || 3}
+                          onBlur={(e) => handleChange({ e, state, setState })}
                           name={inOut}
                         />
                       </FloatingLabel>
@@ -284,14 +298,14 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                                 id={`${group}-${type}-${inOut}`} // pace-minutes-in, etc.
                                 type="number"
                                 step={type === "seconds" ? 5 : 1}
-                                value={
+                                defaultValue={
                                   type === "seconds"
                                     ? (state[group] &&
                                         Math.round(state[group][type])) ||
                                       0
                                     : (state[group] && state[group][type]) || 0
                                 }
-                                onChange={(e) =>
+                                onBlur={(e) =>
                                   handleChange({ e, state, setState })
                                 }
                                 name={inOut}
