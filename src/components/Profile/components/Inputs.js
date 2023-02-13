@@ -100,7 +100,7 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
     const expanded = e.target.getAttribute("aria-expanded");
 
     if (e.target.inputMode === "numeric" || e.target.inputMode === "decimal") {
-      e.target.select();
+      // e.target.select();
     } else if (type === "button" && expanded === "false") {
       //toggle accordion
       setActiveKey(activeKey === "in" ? "out" : "in");
