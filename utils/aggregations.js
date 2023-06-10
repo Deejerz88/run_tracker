@@ -18,7 +18,6 @@ const defaultTotals = [
 ];
 
 export const raceTotals = async (doc, user_id, race) => {
-  console.log("user_id", user_id, "race", race, "raceId", race.id);
   const [raceTotals] = race.attendance.length
     ? await Participant.aggregate([
         {
@@ -71,8 +70,6 @@ export const raceTotals = async (doc, user_id, race) => {
       ])
     : defaultTotals;
 
-  console.log("raceTotals", raceTotals);
-
   // update race with new totals
   race.totalAttendance = raceTotals.totalAttendance;
   race.totalMileage = raceTotals.totalMileage;
@@ -105,8 +102,6 @@ export const raceTotals = async (doc, user_id, race) => {
 };
 
 export const userTotals = async (doc, user_id) => {
-  console.log("doc", doc, user_id);
-  console.log(doc.races.find((r) => r.id === 2190));
   const [totals] = doc.races.length
     ? await Participant.aggregate([
         {
@@ -185,8 +180,6 @@ export const userTotals = async (doc, user_id) => {
         },
       ])
     : defaultTotals;
-
-  console.log("totals", totals);
 
   let {
     totalAttendance,

@@ -19,21 +19,20 @@ import { AppContext } from "../../App.js";
 import "./style.css";
 import { toast, Flip } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { MdOutlineTimerOff } from "react-icons/md/index.esm.js";
 
 const ParticipantTable = () => {
   const [races, setRaces] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [Context, setContext] = useContext(AppContext);
   const [tableData, setTableData] = useState([]);
+  const [selectedRace, setSelectedRace] = useState({});
 
   const { user } = Context;
   const navigate = useNavigate();
 
-  console.log("Context", Context);
-
   const getRaces = async () => {
     const { data } = await axios.get("/race");
-    console.log("data", data);
     return data;
   };
 
@@ -90,15 +89,12 @@ const ParticipantTable = () => {
     const value = cell.getValue() || "";
     const data = cell.getRow().getData();
     const { checkedOut, checkedIn } = data;
-    return checkedOut && checkedIn
-      ? `<b>${value}</b>`
-      : `<i>${value}</i>`;
+    return checkedOut && checkedIn ? `<b>${value}</b>` : `<i>${value}</i>`;
   };
 
   const toggleCollapse = useCallback(() => {
     const toggle = $("#collapse-toggle");
     const collapsed = toggle.data("collapsed");
-    console.log("collapsed", collapsed);
     toggle.html(
       collapsed
         ? renderToString(<BsFillDashCircleFill />)
@@ -127,13 +123,16 @@ const ParticipantTable = () => {
 
   useEffect(() => {
     //set table data when race context changes
-    const { race } = Context;
+    const { race, date } = Context;
     const table = Tabulator.findTable("#participant-table")[0];
     if (!table || !race || !race.name) return;
 
     table.setData(
       `/participant/${race.type}/${race.id}?eventIds=${race.eventIds}`
     );
+
+    console.log("race context", race);
+    setSelectedRace({ ...race, date });
   }, [Context]);
 
   // useEffect(() => {
@@ -149,13 +148,14 @@ const ParticipantTable = () => {
   // }, [showCollapse]);
 
   useEffect(() => {
+    let race = {};
     //set race options, default race, and context
     getRaces().then((data) => {
-      console.log("races", data);
       setRaces(data);
+      race = Context.race.name ? Context.race : data[0];
       setContext((prevcContext) => ({
         ...prevcContext,
-        race: Context.race.name ? Context.race : data[0],
+        race,
       }));
     });
 
@@ -228,6 +228,17 @@ const ParticipantTable = () => {
           visible: true,
           mutator: (value, data) => {
             return `${data.first_name} ${data.last_name}`;
+          },
+          formatter: (cell) => {
+            const name = cell.getValue();
+            const data = cell.getRow().getData();
+            const attendance = data?.races
+              ?.find((r) => r.id === race.id)
+              ?.attendance?.find((a) => a.date === Context.date);
+            const doNotWaitIcon = renderToString(
+              <MdOutlineTimerOff color="red" />
+            );
+            return `${name} ${attendance?.doNotWait ? doNotWaitIcon : ""}`;
           },
           minWidth: 120,
           widthGrow: 2,
@@ -309,7 +320,6 @@ const ParticipantTable = () => {
       ],
     });
     table.on("rowClick", (e, row) => {
-      console.log("rowClick", row);
       setContext((prevcContext) => ({
         ...prevcContext,
         participant: row.getData(),

@@ -155,7 +155,6 @@ const History = ({ setState, Context, setContext, races }) => {
                 return acc + duration;
               }
             }, 0);
-            console.log("total", total, "numValues", numValues);
             const avg = total / numValues || 0;
 
             const totalDuration = Duration.fromObject({
@@ -178,8 +177,6 @@ const History = ({ setState, Context, setContext, races }) => {
     table.on("rowClick", (e, row) => {
       let { raceId, date, mileage, pace, duration, start, finish } =
         row.getData();
-      console.log("row Data", row.getData());
-      console.log(DateTime.fromMillis(start).toFormat("h:mm:ss"));
 
       date = DateTime.fromFormat(date, "MM/dd/yyyy").toISODate();
 
@@ -209,7 +206,6 @@ const History = ({ setState, Context, setContext, races }) => {
         start,
         finish,
       }));
-
 
       navigate(`/profile/${user_id}/checkin`);
       const race = races.find((r) => r.id === raceId);

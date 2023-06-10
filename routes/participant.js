@@ -133,6 +133,8 @@ router.post("/checkin", dbConnect, async (req, res) => {
         (a) => a.date === attendanceUpdate.date
       );
 
+      console.log("attendance wait", attendanceUpdate.doNotWait);
+
       if (!attendance) {
         // add attendance
         race.attendance.push(attendanceUpdate);
@@ -147,6 +149,8 @@ router.post("/checkin", dbConnect, async (req, res) => {
           attendanceUpdate.checkedIn || attendance.checkedIn;
         attendance.checkedOut =
           attendanceUpdate.checkedOut || attendance.checkedOut;
+        attendance.doNotWait =
+          attendanceUpdate.doNotWait ?? attendance.doNotWait;
       }
     }
 
@@ -157,7 +161,7 @@ router.post("/checkin", dbConnect, async (req, res) => {
       return res.status(500).json({ error: "Error saving participant" });
     }
 
-    //TODO: combone these two into one aggregation
+    //TODO: combine these two into one aggregation
     //use aggregation to calculate race totals
     doc = await raceTotals(doc, update.user_id, race);
 
@@ -221,7 +225,6 @@ router.delete(
   dbConnect,
   async (req, res) => {
     const { userId, raceId, date } = req.params;
-    console.log("userId", userId, "raceId", raceId, "date", date);
 
     let doc;
     try {
@@ -233,11 +236,8 @@ router.delete(
 
     if (!doc) return res.status(409).json("No participant found");
 
-    console.log("races", doc.races);
-
     let race = doc.races.find((r) => r.id === Number(raceId));
     const attendance = race.attendance.find((a) => a.date === date);
-    console.log("race", race, "attendance", attendance);
 
     if (!attendance) return res.status(409).json("no attendance found");
 

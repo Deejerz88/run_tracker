@@ -38,7 +38,6 @@ const Goals = () => {
   const [races, setRaces] = useState([]);
   const [Context] = useContext(AppContext);
   const [participant] = useState(Context.participant);
-  console.log("participant", participant);
   const resetState = (type) => {
     setState({
       type: type || "",
@@ -133,7 +132,6 @@ const Goals = () => {
 
   const handleBlur = (e) => {
     e.preventDefault();
-    console.log("state", state);
     const { id, value } = e.target;
     const [group, field] = id.split("-");
     group === "mileage"
@@ -171,7 +169,6 @@ const Goals = () => {
         race = races.find((r) => r.name === race);
         category =
           category.split(" ")[1]?.toLowerCase() || category.toLowerCase();
-        console.log("category", category, state, "race", race);
         const target =
           category === "Average Pace" ? "pace" : category.toLowerCase();
         const data = {
@@ -184,9 +181,7 @@ const Goals = () => {
             date,
           },
         };
-        console.log("data", data);
         const { data: goal } = await axios.post("/participant/goal", data);
-        console.log("goal", goal);
         const table = Tabulator.findTable("#goal-table")[0];
         table.addRow(data.goal);
         resetState();
@@ -202,7 +197,6 @@ const Goals = () => {
         });
       }
     } else if (id === "add-goal-date") {
-      console.log(e.target);
       setState((prevState) => ({
         ...prevState,
         date: DateTime.local().toISODate(),
@@ -396,7 +390,6 @@ const Goals = () => {
           field: "target",
           mutator: (value, data) => data[data.category],
           formatter: (cell) => {
-            console.log("value", cell.getValue());
             const { category } = cell.getRow().getData();
             if (category === "pace") {
               const { minutes, seconds } = cell.getValue();
@@ -423,12 +416,10 @@ const Goals = () => {
           width: 150,
           mutator: (value, data) => {
             let { type, race, category, target } = data;
-            console.log("progress target", target);
             if (type === "race") {
               if (!race) return 0;
               const { id } = race;
               const targetRace = participant.races.find((r) => r.id === id);
-              console.log("targetRace", targetRace);
               if (!targetRace) {
                 return renderToString(
                   <Row className="h-100 justify-content-center align-items-center">
@@ -443,7 +434,6 @@ const Goals = () => {
               if (category === "mileage") {
                 return (targetRace.totalMileage / target) * 100;
               } else if (category === "pace") {
-                console.log("pace mutator", category, targetRace.avgPace);
                 const { minutes: currentMinutes, seconds: currentSeconds } =
                   targetRace.avgPace || {};
                 if (!currentMinutes && !currentSeconds) return 0;
@@ -454,15 +444,7 @@ const Goals = () => {
                 delete target._id;
                 const targetPace =
                   DurationLux.fromObject(target).shiftTo("seconds");
-                console.log(
-                  "currentPace",
-                  currentPace,
-                  "targetPace",
-                  targetPace
-                );
                 const difference = currentPace.minus(targetPace);
-
-                console.log("difference", difference);
 
                 return difference.as("seconds");
               } else if (category === "duration") {
@@ -481,12 +463,6 @@ const Goals = () => {
                 delete target._id;
                 const targetDuration =
                   DurationLux.fromObject(target).as("seconds");
-                console.log(
-                  "currentDuration",
-                  currentDuration,
-                  "targetDuration",
-                  targetDuration
-                );
 
                 return (currentDuration / targetDuration) * 100;
               }
@@ -504,15 +480,7 @@ const Goals = () => {
                 delete target._id;
                 const targetPace =
                   DurationLux.fromObject(target).shiftTo("seconds");
-                console.log(
-                  "currentPace",
-                  currentPace,
-                  "targetPace",
-                  targetPace
-                );
                 const difference = currentPace.minus(targetPace);
-
-                console.log("difference", difference);
 
                 return difference.as("seconds");
               } else if (category === "duration") {
@@ -531,13 +499,6 @@ const Goals = () => {
                 delete target._id;
                 const targetDuration =
                   DurationLux.fromObject(target).as("seconds");
-                console.log(
-                  "currentDuration",
-                  currentDuration,
-                  "targetDuration",
-                  targetDuration
-                );
-
                 return (currentDuration / targetDuration) * 100;
               }
             }
@@ -550,7 +511,6 @@ const Goals = () => {
               if (!race) return;
               const { id } = race;
               const targetRace = participant.races.find((r) => r.id === id);
-              console.log("targetRace", targetRace);
               if (!targetRace) {
                 return renderToString(
                   <Row className="h-100 justify-content-center align-items-center">
@@ -609,7 +569,6 @@ const Goals = () => {
                 const difference = DurationLux.fromObject({ seconds: value })
                   .shiftTo("minutes", "seconds")
                   .toObject();
-                console.log("pace difference", difference);
                 const { minutes, seconds } = difference;
                 const sign = minutes < 0 || seconds < 0 ? "- " : "+ ";
                 return renderToString(
@@ -670,7 +629,6 @@ const Goals = () => {
               if (category === "mileage") {
                 const { totalMileage } = participant;
                 value = value > 100 ? 100 : value;
-                console.log("mileage value", value);
                 return renderToString(
                   <Row className="h-100 justify-content-center align-items-center">
                     <ButtonGroup className="progress-button">
@@ -715,7 +673,6 @@ const Goals = () => {
                 const difference = DurationLux.fromObject({ seconds: value })
                   .shiftTo("minutes", "seconds")
                   .toObject();
-                console.log("pace difference", difference);
                 const { minutes, seconds } = difference;
                 const sign = minutes < 0 || seconds < 0 ? "- " : "+ ";
                 return renderToString(
@@ -782,7 +739,6 @@ const Goals = () => {
       ],
     });
     table.on("tableBuilt", () => {
-      console.log("goals table built");
       table.setData(participant.goals);
     });
   }, [participant]);

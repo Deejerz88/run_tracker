@@ -19,7 +19,6 @@ const handleSubmit = async ({
   e.preventDefault();
   e.stopPropagation();
   const activeKey = $("#checkInOut").attr("name"); //in or out
-  console.log("selectedRace", selectedRace);
 
   if (activeKey === "out" && !checkedIn) {
     toast.error("Participant must be checked in before checking out", {
@@ -50,8 +49,6 @@ const handleSubmit = async ({
   });
   if (!fields) return;
 
-  console.log("fields", fields);
-
   const data = {
     duration: {},
     pace: {},
@@ -73,7 +70,6 @@ const handleSubmit = async ({
   });
 
   const { pace, duration, start, finish, mileage } = data;
-  console.log("data", data);
 
   if (finish.time < start.time) {
     toast.error("End time must be after start time", {
@@ -100,16 +96,13 @@ const handleSubmit = async ({
           // checkedOut: state.checkedOut || false,
           checkedOut: noWait,
           [`checked${startCase(activeKey)}`]: true,
+          doNotWait: state.doNotWait,
         },
       ],
     },
   ];
 
-  console.log("defaults", defaults);
-
   participant.settings = { ...participant.settings, defaultFields: defaults };
-
-  console.log("participant settings", participant.settings);
 
   try {
     let { data: newParticipant } = await axios.post(

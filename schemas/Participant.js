@@ -22,6 +22,7 @@ const attendanceSchema = new Schema({
   pace: paceSchema,
   checkedIn: { type: Boolean, default: () => false },
   checkedOut: { type: Boolean, default: () => false },
+  doNotWait: Boolean,
 });
 
 const raceSchema = new Schema({
@@ -79,7 +80,6 @@ const participantSchema = new Schema({
 });
 
 participantSchema.statics.checkPassword = async function (password, hash) {
-  console.log("password", password, "hash", hash);
   return await bcrypt.compare(password, hash);
 };
 

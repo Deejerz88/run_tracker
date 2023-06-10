@@ -6,7 +6,6 @@ const Stats = ({ Context }) => {
   const [race, setRace] = useState({});
 
   useEffect(() => {
-    console.log('context', Context)
     setParticipant(Context.participant);
 
     let { race: contextRace } = Context;
@@ -18,7 +17,6 @@ const Stats = ({ Context }) => {
 
     setRace(contextRace);
   }, [Context]);
-  console.log("participant", participant);
 
   const defaultStats = {
     totalAttendance: 0,
@@ -47,7 +45,6 @@ const Stats = ({ Context }) => {
           title === "Overall"
             ? participant
             : participant.races?.find((r) => r.name === title) || defaultStats;
-        console.log("stats", stats)
         return (
           <Col key={i}>
             <h2 className="stats-title mt-5">{title}</h2>

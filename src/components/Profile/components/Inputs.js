@@ -29,7 +29,6 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
   const today = DateTime.local().toISODate();
 
   useEffect(() => {
-    console.log("state", state);
     $('[id^="mileage-target-"]').val(state.mileage);
     ["pace", "duration"].forEach((field) => {
       ["hours", "minutes", "seconds"].forEach((unit) => {
@@ -38,24 +37,30 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
         $(`#${field}-${unit}-out`).val(Math.round(state[field][unit]));
       });
     });
+    console.log("state", state);
+    console.log("no wait", $("#no-wait"));
   }, [state]);
 
-  useEffect(() => {
-    setState({
-      mileage: 3,
-      pace: {
-        minutes: 10,
-        seconds: 0,
-      },
-      duration: {
-        hours: 0,
-        minutes: 30,
-        seconds: 0,
-      },
-      start: 0,
-      finish: 0,
-    });
-  }, [setState]);
+  // useEffect(
+  //   (prev) => {
+  //     setState({
+  //       ...prev,
+  //       mileage: 3,
+  //       pace: {
+  //         minutes: 10,
+  //         seconds: 0,
+  //       },
+  //       duration: {
+  //         hours: 0,
+  //         minutes: 30,
+  //         seconds: 0,
+  //       },
+  //       start: 0,
+  //       finish: 0,
+  //     });
+  //   },
+  //   [setState]
+  // );
 
   useEffect(() => {
     if (!participant.settings?.defaultFields) return;
@@ -143,12 +148,9 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
       }
       onClick={handleClick}
       onKeyDown={(e) => {
-        console.log("key pressed", e.key);
         if (e.key === "Enter") {
           //trigger tab event on enter key
-          console.log("enter pressed");
           e.preventDefault();
-          console.log("next", $(e.target).next(".form-control"));
           $(e.target).next().trigger("focus");
         }
       }}
@@ -242,6 +244,13 @@ const Inputs = ({ state, setState, Context, setContext, races }) => {
                   label="Do not wait for me"
                   inline
                   className="ms-3"
+                  checked={state.doNotWait}
+                  onChange={(e) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      doNotWait: e.target.checked,
+                    }))
+                  }
                 />
                 {/* {state.duration?.hours >= 1 && (
                   <Form.Check

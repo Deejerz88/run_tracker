@@ -36,6 +36,7 @@ const Profile = () => {
     },
     start: 0,
     finish: 0,
+    doNotWait: false,
   });
   const [races, setRaces] = useState([]);
 
@@ -104,17 +105,26 @@ const Profile = () => {
     const todaysAttendance = thisRace.attendance?.find((a) => a.date === date);
     if (!todaysAttendance) return;
 
-    const { mileage, pace, duration, start, finish, checkedIn, checkedOut } =
-      todaysAttendance;
+    const {
+      mileage,
+      pace,
+      duration,
+      start,
+      finish,
+      checkedIn,
+      checkedOut,
+      doNotWait,
+    } = todaysAttendance;
 
     setState((prev) => ({
-      mileage: mileage || prev.mileage,
-      pace: pace || prev.pace,
-      duration: duration || prev.duration,
-      checkedIn: checkedIn || prev.checkedIn,
-      checkedOut: checkedOut || prev.checkedOut,
-      start: start || prev.start,
-      finish: finish || prev.finish,
+      mileage: mileage ?? prev.mileage,
+      pace: pace ?? prev.pace,
+      duration: duration ?? prev.duration,
+      checkedIn: checkedIn ?? prev.checkedIn,
+      checkedOut: checkedOut ?? prev.checkedOut,
+      start: start ?? prev.start,
+      finish: finish ?? prev.finish,
+      doNotWait: doNotWait ?? prev.doNotWait,
     }));
   }, [participant, Context, setContext]);
 

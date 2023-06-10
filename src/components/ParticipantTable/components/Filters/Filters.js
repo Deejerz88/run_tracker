@@ -89,7 +89,6 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
       )
       //filter undefined / null values
       .filter((r) => r);
-    console.log("attendance races", races);
     //get total mileage and duration
     const totalMileage = races.reduce(
       (acc, curr) => acc + curr.mileage || 0,
@@ -121,7 +120,6 @@ const Filters = ({ races, tableData, toggleCollapse }) => {
 
   useEffect(() => {
     const { race } = Context;
-    console.log("races", races);
     if (!races) return;
     //change race input when context changes
     document.getElementById("race-select").options.selectedIndex =

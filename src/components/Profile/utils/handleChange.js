@@ -17,7 +17,6 @@ const handleChange = ({
   if (group === "checkin") {
     if (type === "race") {
       const race = races?.find((r) => r.name === value);
-      console.log("race change", race);
       setContext((prevState) => ({
         ...prevState,
         race,
@@ -40,8 +39,6 @@ const handleChange = ({
   const update = {
     ...state,
   };
-
-  console.log("update", update);
 
   update.duration = update.duration || { hours: 0, minutes: 0, seconds: 0 };
   update.pace = update.pace || { minutes: 0, seconds: 0 };

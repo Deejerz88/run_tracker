@@ -61,7 +61,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log("context", Context);
     if (Context.stayLoggedIn === "true") {
       localStorage.setItem("user", JSON.stringify(Context.user));
       localStorage.setItem("loggedIn", Context.loggedIn);
